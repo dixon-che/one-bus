@@ -5,10 +5,7 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    # Example:
-    # (r'^bus/', include('bus.foo.urls')),
-
-    # Uncomment the admin/doc line below to enable admin documentation:
+    (r'^$', "one-bus.views.hello"),
     (r'^admin/doc/', include('django.contrib.admindocs.urls')),
     (r'^admin/', include(admin.site.urls)),
 )

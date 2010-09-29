@@ -1,3 +1,4 @@
 *.pyc
 *~
-one-bus.bd
+onebus.bd
+settings_local.py
