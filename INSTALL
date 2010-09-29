@@ -1,0 +1,9 @@
+Development install:
+
+1) pip install -U virtualenv virtualenvwrapper
+2) mkvirtualenv one-bus-env
+3) workon one-bus-env
+4) easy_install pip
+5) pip install -U -r requirements.txt
+6) python manage.py syncdb
+7) python manage.py runserver
