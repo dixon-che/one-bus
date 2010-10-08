@@ -1,4 +1,5 @@
 *.pyc
 *~
-onebus.bd
+one-bus.bd
 settings_local.py
+*.gif

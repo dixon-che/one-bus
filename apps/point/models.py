@@ -1,12 +1,14 @@
 from django.db import models
 
 
-
 class Transport(models.Model):
     name = models.CharField(max_length=155)
     ico = models.ImageField(upload_to="ico_transport")
     price = models.FloatField()
     description = models.TextField()
+
+    class Meta:
+        ordering = ['name']
 
     def __unicode__(self):
         return self.name
@@ -18,6 +20,9 @@ class Route(models.Model):
     speed = models.FloatField()
     price = models.FloatField() 
     one_pay = models.BooleanField()
+
+    class Meta:
+        ordering = ['route']
 
     def __unicode__(self):
         return self.route
@@ -34,9 +39,11 @@ class Station(models.Model):
     name = models.CharField(max_length=155)
     coordinate_x = models.FloatField()
     coordinate_y = models.FloatField()
-    next_station = models.CharField(max_length=155)
-    prev_station = models.CharField(max_length=155)
+    order = models.IntegerField()
     meta_station = models.ForeignKey(Metastation)
+
+    class Meta:
+        ordering = ['order']
 
     def __unicode__(self):
         return self.name

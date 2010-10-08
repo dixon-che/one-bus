@@ -8,9 +8,58 @@
             table { width: 100%; }
             table th { text-align: left; }
         </style>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script src="http://api-maps.yandex.ru/1.1/index.xml?loadByRequire=1&key=APEAr0wBAAAAJrknXQIASORkZ-rKH8Hv37gaOWDewXqdAkQAAAAAAAAAAABgmyiOSP0eECGDwj_Pp1upxhql8A==" type="text/javascript"></script>
+    <script type="text/javascript">
+       var map;
+      // Создает обработчик события window.onLoad
+        //YMaps.jQuery(function () {
+            // Создает экземпляр карты и привязывает его к созданному контейнеру
+            //var map = new YMaps.Map(YMaps.jQuery("#YMapsID")[0]);
+
+            // Устанавливает начальные параметры отображения карты: центр карты и коэффициент масштабирования
+            //map.setCenter(new YMaps.GeoPoint(37.64, 55.76), 10);
+
+        //})
+  
+        function init () {
+             // Создание экземпляра карты и его привязка к созданному контейнеру
+             map = new YMaps.Map(YMaps.jQuery("#YMapsID")[0]);
+
+             // Установка для карты ее центра и масштаба
+             map.setCenter(new YMaps.GeoPoint(37.64, 55.76), 10);
+
+            var toolbar = new YMaps.ToolBar(); 
+
+            // Создание кнопки
+            var button = new YMaps.ToolBarButton({
+            caption: "Добавить метку",
+            hint: "Добавляет метку в центр карты" });
+
+            // При щелчке на кнопке добавляется новая кнопка
+            YMaps.Events.observe(button, button.Events.Click, function () {
+            this.addOverlay(new YMaps.Placemark(map.getCenter(), {draggable: true}));
+            }, map);
+
+            // Добавление кнопки на панель инструментов
+            toolbar.add(button);
+
+            // Добавление панели инструментов на карту
+            map.addControl(toolbar);
+        }  
+
+    </script>
+
     </head>
     <body>
         <h1>{{text}}</h1>
-        {% block content %}{% endblock %}
+        {% block content %}
+
+	<input type="button" onclick="YMaps.load(init)" value="показать">
+        <input type="button" onclick="map.destructor()" value="не показать">
+        <div id="YMapsID" style="width:1000px;height:1000px"></div>
+
+	{% endblock %}
     </body>
 </html>
