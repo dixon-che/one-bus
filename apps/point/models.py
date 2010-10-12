@@ -4,8 +4,8 @@ from django.db import models
 class Transport(models.Model):
     name = models.CharField(max_length=155)
     ico = models.ImageField(upload_to="ico_transport")
-    price = models.FloatField()
-    description = models.TextField()
+    price = models.FloatField(blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
 
     class Meta:
         ordering = ['name']

@@ -4,7 +4,6 @@ from django.contrib import admin
 
 class TransportAdmin(admin.ModelAdmin):
     list_display = ('id','name', 'ico', 'price', 'description')
-    list_editable = ('price', 'description')
 
 admin.site.register(Transport, TransportAdmin)
 
