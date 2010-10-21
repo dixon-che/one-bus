@@ -1,0 +1,10 @@
+{# {% load common %} #}
+<script type="text/javascript" charset="utf-8">
+  var picker_{{ name }} = new ColorPicker('window');
+</script>
+<input type="text" readonly="true" tabindex="-1" size="2" style="background-color: {{ value }};" id="{{ attrs.id }}-sample"/>
+<input type="text" name="{{ name }}" size="8" value="{{ value }}" id="{{ attrs.id }}" onChange="alert('changed');"/>
+<a href="#" onclick="picker_{{ name }}.select(document.getElementById('{{ attrs.id }}'),document.getElementById('{{ attrs.id }}-sample'),'{{ attrs.id }}-pick');return false;" name="{{ attrs.id }}-pick" id="{{ attrs.id }}-pick">Pick</a>
+<script type="text/javascript" charset="utf-8">
+  picker_{{ name }}.writeDiv();
+</script>
