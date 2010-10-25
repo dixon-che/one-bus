@@ -1,4 +1,5 @@
 from django.db import models
+from apps.point.customfields import HexColorField 
 
 
 class Transport(models.Model):
@@ -20,6 +21,7 @@ class Route(models.Model):
     speed = models.FloatField()
     price = models.FloatField() 
     one_pay = models.BooleanField()
+    color = HexColorField(max_length=8)
 
     class Meta:
         ordering = ['route']
@@ -39,8 +41,8 @@ class Station(models.Model):
     name = models.CharField(max_length=155)
     coordinate_x = models.FloatField()
     coordinate_y = models.FloatField()
-    order = models.IntegerField()
-    meta_station = models.ForeignKey(Metastation)
+    order = models.IntegerField(blank=True, null=True)
+    meta_station = models.ForeignKey(Metastation, blank=True, null=True)
 
     class Meta:
         ordering = ['order']

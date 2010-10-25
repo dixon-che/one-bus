@@ -8,7 +8,7 @@ class TransportAdmin(admin.ModelAdmin):
 admin.site.register(Transport, TransportAdmin)
 
 class RouteAdmin(admin.ModelAdmin):
-    list_display = ('id', 'route', 'interval', 'transport_type', 'speed', 'price', 'one_pay')
+    list_display = ('id', 'route', 'interval', 'transport_type', 'speed', 'price', 'one_pay', 'color')
     list_filter = ('transport_type', 'price')
     list_editable = ('price', 'speed', 'interval')
 
@@ -17,7 +17,8 @@ admin.site.register(Route, RouteAdmin)
 class StationAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'coordinate_x', 'coordinate_y', 'route', 'order', 'meta_station')
     list_filter = ('route', 'meta_station', 'name')
-    list_editable = ('coordinate_x', 'coordinate_y', 'order')
+    list_editable = ('coordinate_x', 'coordinate_y', 'order', 'meta_station')
+
 
 admin.site.register(Station, StationAdmin)
 

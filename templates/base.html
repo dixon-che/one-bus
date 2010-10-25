@@ -1,65 +1,28 @@
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
     <head>
         <style type="text/css">
             body { margin: 30px; font-family: sans-serif; background: #fff; }
             h1 { background: #ccf; padding: 20px; }
             h2 { background: #ddf; padding: 10px 20px; }
             h3 { background: #eef; padding: 5px 20px; }
-            table { width: 100%; }
             table th { text-align: left; }
         </style>
 
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <script src="http://api-maps.yandex.ru/1.1/index.xml?loadByRequire=1&key=APEAr0wBAAAAJrknXQIASORkZ-rKH8Hv37gaOWDewXqdAkQAAAAAAAAAAABgmyiOSP0eECGDwj_Pp1upxhql8A==" type="text/javascript"></script>
-    <script type="text/javascript">
-       var map;
-      // Создает обработчик события window.onLoad
-        //YMaps.jQuery(function () {
-            // Создает экземпляр карты и привязывает его к созданному контейнеру
-            //var map = new YMaps.Map(YMaps.jQuery("#YMapsID")[0]);
+    <script type="text/javascript" src="http://api-maps.yandex.ru/1.1/index.xml?key=ADeQTkwBAAAAuMr-NQIA8BfhPGjPxWuKOAPDJVBPAU6QyjkAAAAAAAAAAAB5fpcMwDw9jHcS4ciq3BK5Ks13Tw=="></script>
 
-            // Устанавливает начальные параметры отображения карты: центр карты и коэффициент масштабирования
-            //map.setCenter(new YMaps.GeoPoint(37.64, 55.76), 10);
-
-        //})
-  
-        function init () {
-             // Создание экземпляра карты и его привязка к созданному контейнеру
-             map = new YMaps.Map(YMaps.jQuery("#YMapsID")[0]);
-
-             // Установка для карты ее центра и масштаба
-             map.setCenter(new YMaps.GeoPoint(37.64, 55.76), 10);
-
-            var toolbar = new YMaps.ToolBar(); 
-
-            // Создание кнопки
-            var button = new YMaps.ToolBarButton({
-            caption: "Добавить метку",
-            hint: "Добавляет метку в центр карты" });
-
-            // При щелчке на кнопке добавляется новая кнопка
-            YMaps.Events.observe(button, button.Events.Click, function () {
-            this.addOverlay(new YMaps.Placemark(map.getCenter(), {draggable: true}));
-            }, map);
-
-            // Добавление кнопки на панель инструментов
-            toolbar.add(button);
-
-            // Добавление панели инструментов на карту
-            map.addControl(toolbar);
-        }  
-
-    </script>
+    <script type="text/javascript" src="/s/js/transportmenu.js"></script>
 
     </head>
     <body>
-        <h1>{{text}}</h1>
+        <h1>{{ text }}</h1>
+      <center><table>
         {% block content %}
-
-	<input type="button" onclick="YMaps.load(init)" value="показать">
-        <input type="button" onclick="map.destructor()" value="не показать">
-        <div id="YMapsID" style="width:1000px;height:1000px"></div>
-
+	<tr>
+          <td><div id="YMapsID" style="width:800px;height:600px"></div></td>
+	  <td valign="top"><ul id="menu"></ul></td>
+	</tr>
 	{% endblock %}
+      </center>
     </body>
 </html>

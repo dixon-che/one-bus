@@ -10,6 +10,8 @@ PROJECT_ROOT = rel('')
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
+MEDIA_APACHE_DIRECT = False
+
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
 )

@@ -182,7 +182,7 @@ YMaps.jQuery(function()
 				var tline;
 				for (var i in Transports)
 				{
-					if(Transports[i].id != oldid)
+					if(Transports[i].route__id != oldid)
 					{
 						tstyle = new YMaps.Style();
 						tstyle.polygonStyle = new YMaps.PolygonStyle();
@@ -205,7 +205,7 @@ YMaps.jQuery(function()
 					pm.description = Transports[i].route__route;
 					TransportMenuItem.add(pm);
 					tline.addPoint(new YMaps.GeoPoint(Transports[i].coordinate_x, Transports[i].coordinate_y));											
-					oldid = Transports[i].id;
+					oldid = Transports[i].route__id;
 				}
 			} 
 		};
