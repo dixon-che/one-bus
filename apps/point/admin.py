@@ -15,9 +15,9 @@ class RouteAdmin(admin.ModelAdmin):
 admin.site.register(Route, RouteAdmin)
 
 class StationAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'coordinate_x', 'coordinate_y', 'route', 'order', 'meta_station')
+    list_display = ('id', 'name', 'coordinate_x', 'coordinate_y', 'route', 'order', 'meta_station', 'matrix_index')
     list_filter = ('route', 'meta_station', 'name')
-    list_editable = ('coordinate_x', 'coordinate_y', 'order', 'meta_station')
+    list_editable = ('coordinate_x', 'coordinate_y', 'order', 'meta_station', 'matrix_index')
 
 
 admin.site.register(Station, StationAdmin)

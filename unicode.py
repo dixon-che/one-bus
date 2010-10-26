@@ -24,5 +24,5 @@ for point in s:
         pname = item['pname']
         qwaz = Station(route_id=a, coordinate_x=x, coordinate_y=y, name=pname)
         qwaz.save()
-        print qwaz   # a, x, y, name, pname
+        print qwaz   
 

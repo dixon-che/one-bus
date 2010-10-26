@@ -43,6 +43,7 @@ class Station(models.Model):
     coordinate_y = models.FloatField()
     order = models.IntegerField(blank=True, null=True)
     meta_station = models.ForeignKey(Metastation, blank=True, null=True)
+    matrix_index = models.IntegerField()
 
     class Meta:
         ordering = ['order']
