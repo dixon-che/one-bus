@@ -44,7 +44,8 @@ YMaps.jQuery(function()
 					var Line;
 				
 					p = JSON.parse(http_request.responseText);
-					oldRouteid = 0;
+				    
+				    oldRouteid = 0;
 					var pm ;
 					for (var i in p)
 					{
@@ -189,9 +190,9 @@ YMaps.jQuery(function()
 						tstyle.polygonStyle.fillColor = Transports[i].route__color;
 						tstyle.lineStyle = new YMaps.LineStyle();
 						tstyle.lineStyle.strokeColor = Transports[i].route__color;
-						tstyle.lineStyle.strokeWidth = 4;
+						tstyle.lineStyle.strokeWidth = 3;
 						tstyle.hasHint = true;
-						YMaps.Styles.add(Transports[i].id, tstyle);
+						YMaps.Styles.add(Transports[i].route__id, tstyle);
 						TransportMenuItem = new YMaps.GeoObjectCollection();
 						TransportMenuItem.title = Transports[i].route__route;
 						c = Transports[i].route__color[0] + Transports[i].route__color[1] + Transports[i].route__color[2] + Transports[i].route__color[3] + Transports[i].route__color[4] + Transports[i].route__color[5];
