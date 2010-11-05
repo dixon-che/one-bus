@@ -35,7 +35,8 @@ def route(request):
     time = list()
     closed_points_list = []
     coord_v_km = 111.1
-    speed_Pesh = 5 
+    speed_Pesh = 5.0
+    wating_time = 1/2.0
 
     for q in a:
         name = q['name']
@@ -66,30 +67,6 @@ def route(request):
                      pow(start_point[1] - end_point[1], 2)), 1/2.0)
         return lenth
 
-    def get_border_points(points_price_min, closed_points_list):
-        points_list = []
-        for graph_key in graphs_dict:
-            points_list_item = graphs_dict[graph_key]
-            len_points_list_item = len(points_list_item)
-            if points_price_min in points_list_item:
-                index_in_list = points_list_item.index(points_price_min)
-                if index_in_list < len_points_list_item - 1:
-                    right_border_index = points_list_item[index_in_list + 1]
-                    if right_border_index not in closed_points_list:
-                        points_list += [right_border_index]
-                if index_in_list > 0:
-                    left_border_index = points_list_item[index_in_list - 1]
-                    if left_border_index not in closed_points_list:
-                        points_list += [left_border_index]
-
-                for swaq in points_list_chenge :
-                    if points_price_min in swaq:
-                        next_index = swaq.index(points_price_min) - 1
-                        next_item = swaq[next_index]
-                        if next_item not in closed_points_list:
-                            points_list += [next_item]
-        return list(set(points_list))
-
     for j in graphs_dict:
         item_list = graphs_dict[j]
         speed_to = all_speeds[j]
@@ -103,7 +80,7 @@ def route(request):
             to_matrix_index = item_list[next_item_index]
             go_matrix[to_matrix_index][from_matrix_index] = go_matrix[from_matrix_index][to_matrix_index] = len_witput_points(points_list[from_matrix_index],points_list[to_matrix_index]) * coord_v_km
 
-            speed_matrix[to_matrix_index][from_matrix_index] = speed_matrix[from_matrix_index][to_matrix_index] = len_witput_points(points_list[from_matrix_index],points_list[to_matrix_index])*speed_to * coord_v_km
+            speed_matrix[to_matrix_index][from_matrix_index] = speed_matrix[from_matrix_index][to_matrix_index] = len_witput_points(points_list[from_matrix_index],points_list[to_matrix_index]) / speed_to * coord_v_km
 
     for swaq in points_list_chenge:
         for item in swaq:
@@ -117,7 +94,7 @@ def route(request):
                     item_list = graphs_dict[j]
                     chenge = time_chenge[j]
                     if next_item in item_list:
-                        speed_matrix[next_item][item] = chenge
+                        speed_matrix[next_item][item] = chenge * wating_time
 
     start_x = request.GET['x1']
     start_x = float(start_x)
@@ -135,35 +112,91 @@ def route(request):
         coordinate_y = float(coordinate_y) 
         
         l_s = pow((pow(start_x - coordinate_x, 2) +
-                     pow(start_y - coordinate_y, 2)), 1/2.0)
+                     pow(start_y - coordinate_y, 2)), 1/2.0) / speed_Pesh * coord_v_km
         lenth_start += [l_s]
 
         l_f = pow((pow(finish_x - coordinate_x, 2) +
-                     pow(finish_y - coordinate_y, 2)), 1/2.0)
+                     pow(finish_y - coordinate_y, 2)), 1/2.0) / speed_Pesh * coord_v_km
         lenth_finish += [l_f]
 
+    s_f = pow((pow(finish_x - start_x, 2) +
+                     pow(finish_y - start_y, 2)), 1/2.0) / speed_Pesh * coord_v_km
+        
+    lenth_start.append(0)
+    lenth_start.append(s_f)
+    lenth_finish.append(s_f)
+    lenth_finish.append(0)
+
+    for Mass in speed_matrix:
+        index_Mass = speed_matrix.index(Mass)
+        Mass.append(lenth_start[index_Mass])
+        Mass.append(lenth_finish[index_Mass])
+
+    speed_matrix.append(lenth_start)
+    speed_matrix.append(lenth_finish)
+
+    print speed_matrix
+
     lenth_finish_min = min(lenth_finish)
-    T_pesh_finish = lenth_finish_min * speed_Pesh
+    T_pesh_finish = lenth_finish_min / speed_Pesh
     lenth_start_min = min(lenth_start)
-    T_pesh_start = lenth_start_min * speed_Pesh
-    end_point = lenth_finish.index(lenth_finish_min)
-    start_point = lenth_start.index(lenth_start_min)
+    T_pesh_start = lenth_start_min / speed_Pesh
+    end_point = index_Mass + 2
+    start_point = index_Mass +1
+#    end_point = lenth_finish.index(lenth_finish_min)
+#    start_point = lenth_start.index(lenth_start_min)
+#    s_x = Station.objects.get(matrix_index=start_point).coordinate_x
+#    s_y = Station.objects.get(matrix_index=start_point).coordinate_y
+#    s_name = Station.objects.get(matrix_index=start_point).name
+#    s_route_id = Station.objects.get(matrix_index=start_point).route_id
 
-    M_point = Station.objects.get(matrix_index=start_point).meta_station_id
-#    Station_M_point = Station.objects.filter(meta_station_id=M_point).matrix_index
-    print M_point
+    for graph_key in graphs_dict:
+        graphs_dict[graph_key] += [start_point]
+        graphs_dict[graph_key] +=[end_point]
 
-    s_x = Station.objects.get(matrix_index=start_point).coordinate_x
-    s_y = Station.objects.get(matrix_index=start_point).coordinate_y
-    s_name = Station.objects.get(matrix_index=start_point).name
-    s_route_id = Station.objects.get(matrix_index=start_point).route_id
-    f_x = Station.objects.get(matrix_index=end_point).coordinate_x
-    f_y = Station.objects.get(matrix_index=end_point).coordinate_y
-    f_name = Station.objects.get(matrix_index=end_point).name
-    f_route_id = Station.objects.get(matrix_index=end_point).route_id
+    range_len_points = range(len_points)
+    range_len_points += [start_point]
+    range_len_points += [end_point]
+    graphs_dict[end_point] = range_len_points 
+    graphs_dict[start_point] = range_len_points
+
+    for Meta in points_list_chenge:
+        Meta.append(start_point)
+        Meta.append(end_point)
+#    print points_list_chenge
+
+    def get_border_points(points_price_min, closed_points_list):
+        points_list = []
+        for graph_key in graphs_dict:
+            points_list_item = graphs_dict[graph_key]
+            len_points_list_item = len(points_list_item)
+
+            if points_price_min in points_list_item:
+                index_in_list = points_list_item.index(points_price_min)
+                if index_in_list < len_points_list_item - 1:
+                    right_border_index = points_list_item[index_in_list + 1]
+                    if right_border_index not in closed_points_list:
+                        points_list += [right_border_index]
+                if index_in_list > 0:
+                    left_border_index = points_list_item[index_in_list - 1]
+                    if left_border_index not in closed_points_list:
+                        points_list += [left_border_index]
+
+                for swaq in points_list_chenge :
+                    if points_price_min in swaq:
+                        for M_index in range(len(swaq)):
+                            next = M_index + 1
+                            if next == len(swaq):
+                                break
+                            next_index = swaq.index(points_price_min) - next
+                            next_item = swaq[next_index]
+                            if next_item not in closed_points_list:
+                                points_list += [next_item]
+        return list(set(points_list))
 
     points_price = {str(start_point): [0, [start_point], [0]]}
     next_points_list = [start_point]
+
     while next_points_list:
         p = [[next_key, points_price[str(next_key)][0]] for next_key in next_points_list]
         active_point = min(p, key=lambda x: x[1])[0]
@@ -171,7 +204,6 @@ def route(request):
         active_point_P = points_price[str(active_point)][1]
         active_point_Pe = points_price[str(active_point)][2]
         border_points = get_border_points(active_point, closed_points_list)
-
         for item_point_index in border_points:
             go_price = speed_matrix[active_point][item_point_index]
             if str(item_point_index) not in points_price:
@@ -194,10 +226,12 @@ def route(request):
     if str(end_point) in points_price:
         print "Your way is:", points_price[str(end_point)][1]
         print "Your time is:", points_price[str(end_point)][2]
-    final_views = [{'x': start_x, 'y': start_y, 'idRoute':"-1", 'transportName':"", 'stopName':"Start", 't':'0'}, {'x': s_x, 'y': s_y, 'idRoute': s_route_id, 'transportName':"", 'stopName':s_name, 't': T_pesh_start}]
-    
+    final_views = [{'x': start_x, 'y': start_y, 'idRoute':"-1", 'transportName':"", 'stopName':"Start", 't':'0'}]
+    points_price[str(end_point)][1].remove(start_point)
+    points_price[str(end_point)][1].remove(end_point)
     i = 0
     for q in points_price[str(end_point)][1]:
+        print q
         item_dict = {}
         point = Station.objects.get(matrix_index=q)
         point_name = point.name
