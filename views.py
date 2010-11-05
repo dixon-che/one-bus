@@ -35,7 +35,7 @@ def route(request):
     time = list()
     closed_points_list = []
     coord_v_km = 111.1
-    speed_Pesh = 5.0
+    speed_Pesh = 3
     wating_time = 1/2.0
 
     for q in a:
@@ -112,16 +112,16 @@ def route(request):
         coordinate_y = float(coordinate_y) 
         
         l_s = pow((pow(start_x - coordinate_x, 2) +
-                     pow(start_y - coordinate_y, 2)), 1/2.0) / speed_Pesh * coord_v_km
+                     pow(start_y - coordinate_y, 2)), 1/2.0) * coord_v_km / speed_Pesh
         lenth_start += [l_s]
 
         l_f = pow((pow(finish_x - coordinate_x, 2) +
-                     pow(finish_y - coordinate_y, 2)), 1/2.0) / speed_Pesh * coord_v_km
+                     pow(finish_y - coordinate_y, 2)), 1/2.0) * coord_v_km / speed_Pesh
         lenth_finish += [l_f]
 
     s_f = pow((pow(finish_x - start_x, 2) +
-                     pow(finish_y - start_y, 2)), 1/2.0) / speed_Pesh * coord_v_km
-        
+                     pow(finish_y - start_y, 2)), 1/2.0) * coord_v_km / speed_Pesh
+
     lenth_start.append(0)
     lenth_start.append(s_f)
     lenth_finish.append(s_f)
@@ -135,12 +135,10 @@ def route(request):
     speed_matrix.append(lenth_start)
     speed_matrix.append(lenth_finish)
 
-    print speed_matrix
-
     lenth_finish_min = min(lenth_finish)
-    T_pesh_finish = lenth_finish_min / speed_Pesh
+    T_pesh_finish = lenth_finish_min * speed_Pesh
     lenth_start_min = min(lenth_start)
-    T_pesh_start = lenth_start_min / speed_Pesh
+    T_pesh_start = lenth_start_min * speed_Pesh
     end_point = index_Mass + 2
     start_point = index_Mass +1
 #    end_point = lenth_finish.index(lenth_finish_min)
@@ -163,7 +161,6 @@ def route(request):
     for Meta in points_list_chenge:
         Meta.append(start_point)
         Meta.append(end_point)
-#    print points_list_chenge
 
     def get_border_points(points_price_min, closed_points_list):
         points_list = []
@@ -222,8 +219,8 @@ def route(request):
         next_points_list = list(set(next_points_list))
         if end_point in closed_points_list:
             break
-
-    if str(end_point) in points_price:
+    print s_f
+    if str(end_point) in points_price and points_price[str(end_point)][0] < s_f:
         print "Your way is:", points_price[str(end_point)][1]
         print "Your time is:", points_price[str(end_point)][2]
     final_views = [{'x': start_x, 'y': start_y, 'idRoute':"-1", 'transportName':"", 'stopName':"Start", 't':'0'}]
