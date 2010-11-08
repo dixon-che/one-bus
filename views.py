@@ -33,8 +33,14 @@ def route(request):
     lenth_finish = list()
     zb = list()
     time = list()
-    closed_points_list = []
+    closed_points_list = list()
+    radius = list()
+    radius_x = list()
+    radius_x2 = list()
+    radiuss = list()
+    radius_y2 = list()
     coord_v_km = 111.1
+    coord_v_km2 = 78.56
     speed_Pesh = 3
     wating_time = 1/2.0
 
@@ -63,8 +69,8 @@ def route(request):
         points_list_chenge += [qwas]
 
     def len_witput_points(start_point, end_point):
-        lenth = pow((pow(start_point[0] - end_point[0], 2) +
-                     pow(start_point[1] - end_point[1], 2)), 1/2.0)
+        lenth = pow((pow(start_point[0] - end_point[0], 2) * coord_v_km2) +
+                     (pow(start_point[1] - end_point[1], 2) * coord_v_km), 1/2.0)
         return lenth
 
     for j in graphs_dict:
@@ -78,10 +84,10 @@ def route(request):
 
             from_matrix_index = item_list[item_index]
             to_matrix_index = item_list[next_item_index]
-            go_matrix[to_matrix_index][from_matrix_index] = go_matrix[from_matrix_index][to_matrix_index] = len_witput_points(points_list[from_matrix_index],points_list[to_matrix_index]) * coord_v_km
+            go_matrix[to_matrix_index][from_matrix_index] = go_matrix[from_matrix_index][to_matrix_index] = len_witput_points(points_list[from_matrix_index],points_list[to_matrix_index])
 
-            speed_matrix[to_matrix_index][from_matrix_index] = speed_matrix[from_matrix_index][to_matrix_index] = len_witput_points(points_list[from_matrix_index],points_list[to_matrix_index]) / speed_to * coord_v_km
-
+            speed_matrix[to_matrix_index][from_matrix_index] = speed_matrix[from_matrix_index][to_matrix_index] = len_witput_points(points_list[from_matrix_index],points_list[to_matrix_index]) / speed_to
+            print speed_matrix[to_matrix_index][from_matrix_index]
     for swaq in points_list_chenge:
         for item in swaq:
             for item_index in range(len(swaq)):
@@ -98,29 +104,38 @@ def route(request):
 
     start_x = request.GET['x1']
     start_x = float(start_x)
+    sx1 = start_x + 0.01
+    sx2 = start_x - 0.01
     start_y = request.GET['y1']
     start_y = float(start_y)
+    sy1 = start_y + 0.01
+    sy2 = start_y - 0.01
     finish_x = request.GET['x2']
     finish_x = float(finish_x)
+    fx1 = finish_x + 0.01
+    fx2 = finish_x - 0.01
     finish_y = request.GET['y2']
     finish_y = float(finish_y)
+    fy1 = finish_y + 0.01
+    fy2 = finish_y - 0.01
 
     for q in a:
         coordinate_x = q['coordinate_x']
         coordinate_x = float(coordinate_x)
+        radius_x += [coordinate_x]
         coordinate_y = q['coordinate_y']
         coordinate_y = float(coordinate_y) 
         
-        l_s = pow((pow(start_x - coordinate_x, 2) +
-                     pow(start_y - coordinate_y, 2)), 1/2.0) * coord_v_km / speed_Pesh
+        l_s = pow((pow(start_x - coordinate_x, 2) * coord_v_km2) +
+                     (pow(start_y - coordinate_y, 2) * coord_v_km), 1/2.0) / speed_Pesh
         lenth_start += [l_s]
 
-        l_f = pow((pow(finish_x - coordinate_x, 2) +
-                     pow(finish_y - coordinate_y, 2)), 1/2.0) * coord_v_km / speed_Pesh
+        l_f = pow((pow(finish_x - coordinate_x, 2) * coord_v_km2) +
+                    (pow(finish_y - coordinate_y, 2) * coord_v_km), 1/2.0) / speed_Pesh
         lenth_finish += [l_f]
 
-    s_f = pow((pow(finish_x - start_x, 2) +
-                     pow(finish_y - start_y, 2)), 1/2.0) * coord_v_km / speed_Pesh
+    s_f = pow((pow(finish_x - start_x, 2) * coord_v_km2) +
+                    (pow(finish_y - start_y, 2) * coord_v_km), 1/2.0) / speed_Pesh
 
     lenth_start.append(0)
     lenth_start.append(s_f)
@@ -141,27 +156,35 @@ def route(request):
     T_pesh_start = lenth_start_min * speed_Pesh
     end_point = index_Mass + 2
     start_point = index_Mass +1
-#    end_point = lenth_finish.index(lenth_finish_min)
-#    start_point = lenth_start.index(lenth_start_min)
-#    s_x = Station.objects.get(matrix_index=start_point).coordinate_x
-#    s_y = Station.objects.get(matrix_index=start_point).coordinate_y
-#    s_name = Station.objects.get(matrix_index=start_point).name
-#    s_route_id = Station.objects.get(matrix_index=start_point).route_id
 
-    for graph_key in graphs_dict:
-        graphs_dict[graph_key] += [start_point]
-        graphs_dict[graph_key] +=[end_point]
+    for z in radius_x:
+        if sx2 < z < sx1:
+            radius_x2 += [z]
+    for j in radius_x2:
+        qwesd = Station.objects.filter(coordinate_x=j).values_list('coordinate_y', 'matrix_index')
+        for wq in qwesd:
+            if sy2 < wq[0] < sy1:
+                radius += [wq[1]]
+    for q in radius:
+        thet = list()
+        thet += [start_point]
+        thet += [q]
+        points_list_chenge += [thet]
 
-    range_len_points = range(len_points)
-    range_len_points += [start_point]
-    range_len_points += [end_point]
-    graphs_dict[end_point] = range_len_points 
-    graphs_dict[start_point] = range_len_points
-
-    for Meta in points_list_chenge:
-        Meta.append(start_point)
-        Meta.append(end_point)
-
+    for z in radius_x:
+        if fx2 < z < fx1:
+            radius_y2 += [z]
+    for j in radius_y2:
+        qwesd = Station.objects.filter(coordinate_x=j).values_list('coordinate_y', 'matrix_index')
+        for wq in qwesd:
+            if fy2 < wq[0] < fy1:
+                radiuss += [wq[1]]
+    for q in radiuss:
+        thet = list()
+        thet += [end_point]
+        thet += [q]
+        points_list_chenge += [thet]
+    print points_list_chenge 
     def get_border_points(points_price_min, closed_points_list):
         points_list = []
         for graph_key in graphs_dict:
@@ -189,6 +212,17 @@ def route(request):
                             next_item = swaq[next_index]
                             if next_item not in closed_points_list:
                                 points_list += [next_item]
+            
+        for swaq in points_list_chenge :
+            if points_price_min in swaq:
+                for M_index in range(len(swaq)):
+                    next = M_index + 1
+                    if next == len(swaq):
+                        break
+                    next_index = swaq.index(points_price_min) - next
+                    next_item = swaq[next_index]
+                    if next_item not in closed_points_list:
+                        points_list += [next_item]
         return list(set(points_list))
 
     points_price = {str(start_point): [0, [start_point], [0]]}
@@ -217,18 +251,18 @@ def route(request):
         next_points_list.remove(active_point)
         next_points_list += border_points
         next_points_list = list(set(next_points_list))
+        the_end = list()
         if end_point in closed_points_list:
             break
-    print s_f
-    if str(end_point) in points_price and points_price[str(end_point)][0] < s_f:
+    if str(end_point) in points_price:
         print "Your way is:", points_price[str(end_point)][1]
         print "Your time is:", points_price[str(end_point)][2]
     final_views = [{'x': start_x, 'y': start_y, 'idRoute':"-1", 'transportName':"", 'stopName':"Start", 't':'0'}]
     points_price[str(end_point)][1].remove(start_point)
     points_price[str(end_point)][1].remove(end_point)
+    points_price[str(end_point)][2].remove(0)
     i = 0
     for q in points_price[str(end_point)][1]:
-        print q
         item_dict = {}
         point = Station.objects.get(matrix_index=q)
         point_name = point.name
