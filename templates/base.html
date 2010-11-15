@@ -1,6 +1,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
+      <title>Peresadok.net</title>
+      <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+      <link rel="stylesheet" type="text/css" href="main.css" />
         <style type="text/css">
             body { margin: 30px; font-family: sans-serif; background: #fff; }
             h1 { background: #ccf; padding: 20px; }
@@ -15,14 +18,29 @@
 
     </head>
     <body>
+
+      
         <h1>{{ text }}</h1>
-      <center><table>
+      <center><table border = 2>
         {% block content %}
 	<tr>
+	  <td><form action = ^$> 
+	      <input type=checkbox name=option1 value=a1>AAAAA<br>
+	      <input type=checkbox name=option2 value=a2>BBBBB<br>
+	      <input type=checkbox name=option3 value=a3>CCCCC<br>
+	      <input type=checkbox name=option4 value=a4>DDDDD<br>
+	      <input type=checkbox name=option5 value=a5>EEEEE<br>
+	      <input type=checkbox name=option6 value=a6>FFFFF<br>
+              <p><input type=submit value="Отправить"> 
+	  </form></td>
           <td><div id="YMapsID" style="width:800px;height:600px"></div></td>
-	  <td valign="top"><ul id="menu"></ul></td>
+	  <td valign="top"><ul id="menu"></ul></td>	  
+	</tr>
+	      <table>
+	<tr>
+          <td><div>=============================================</div></td>	  
 	</tr>
 	{% endblock %}
       </center>
-    </body>
+       </body>
 </html>
