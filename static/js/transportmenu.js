@@ -71,8 +71,12 @@ YMaps.jQuery(function()
 						}
 						if(p[i].idRoute == -1)
 							pm = new YMaps.Placemark(new YMaps.GeoPoint(p[i].x,p[i].y),{draggable: false, style:"1bus#Peshehod"});			
-						else
-							pm = new YMaps.Placemark(new YMaps.GeoPoint(p[i].x,p[i].y),{draggable: false, style:"1bus#TramvayStation"});			
+						else {
+						    if (p[i].route__transport_type == 1)
+							pm = new YMaps.Placemark(new YMaps.GeoPoint(p[i].x,p[i].y),{draggable: false, style:"1bus#TramvayStation"});
+						    else
+							pm = new YMaps.Placemark(new YMaps.GeoPoint(p[i].x,p[i].y),{draggable: false, style:"1bus#MetroStation"});
+						}						
 						pm.name = p[i].stopName;
 						pm.description = p[i].transportName + " t=" + p[i].t;
 						Marks.add(pm);
@@ -163,6 +167,15 @@ YMaps.jQuery(function()
 		TramvayStationStyle.hintContentStyle = new YMaps.HintContentStyle(new YMaps.Template("<b>$[name]</b><div>$[description]</div>"));
 		TramvayStationStyle.hasHint = true;
 		YMaps.Styles.add("1bus#TramvayStation", TramvayStationStyle);
+
+		MetroStationStyle = new YMaps.Style();
+		MetroStationStyle.iconStyle = new YMaps.IconStyle();
+		MetroStationStyle.iconStyle.href = "/s/images/only_trol_small.png";
+		MetroStationStyle.iconStyle.size = new YMaps.Point(20, 14);
+		MetroStationStyle.iconStyle.offset = new YMaps.Point(-10, -7);
+		MetroStationStyle.hintContentStyle = new YMaps.HintContentStyle(new YMaps.Template("<b>$[name]</b><div>$[description]</div>"));
+		MetroStationStyle.hasHint = true;
+		YMaps.Styles.add("1bus#MetroStation", MetroStationStyle);
 		
 		style = new YMaps.Style();
 		style.polygonStyle = new YMaps.PolygonStyle();
@@ -201,7 +214,14 @@ YMaps.jQuery(function()
 						TransportMenuItem.add(tline);
 						tline.setStyle(tstyle);
 					}
-					pm = new YMaps.Placemark(new YMaps.GeoPoint(Transports[i].coordinate_x,Transports[i].coordinate_y),{draggable: false, style:TramvayStationStyle});
+				        if(Transports[i].route__transport_type == 1)
+					    {
+						pm = new YMaps.Placemark(new YMaps.GeoPoint(Transports[i].coordinate_x,Transports[i].coordinate_y),{draggable: false, style:TramvayStationStyle});
+					    }
+				        else
+				            { 
+						pm = new YMaps.Placemark(new YMaps.GeoPoint(Transports[i].coordinate_x,Transports[i].coordinate_y),{draggable: false, style:MetroStationStyle});
+					    }	
 					pm.name = Transports[i].name;
 					pm.description = Transports[i].route__route;
 					TransportMenuItem.add(pm);

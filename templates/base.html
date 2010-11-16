@@ -2,11 +2,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
       <title>Peresadok.net</title>
-      <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-      <link rel="stylesheet" type="text/css" href="main.css" />
         <style type="text/css">
-            body { margin: 30px; font-family: sans-serif; background: #fff; }
-            h1 { background: #ccf; padding: 20px; }
+            body { margin: 20px; font-family: sans-serif; background: #fff; }
+            h1 { padding: 20px; }
             h2 { background: #ddf; padding: 10px 20px; }
             h3 { background: #eef; padding: 5px 20px; }
             table th { text-align: left; }
@@ -18,20 +16,18 @@
 
     </head>
     <body>
-
-      
-        <h1>{{ text }}</h1>
       <center><table border = 2>
         {% block content %}
+	<tr><td colspan=3 cellpadding=1 align=center valign=bottom background=/s/images/img1.jpg ><h1>{{ text }}</h1></td></tr>
 	<tr>
-	  <td><form action = ^$> 
+	  <td background=/s/images/navbg1.jpg><form action = ^$> 
 	      <input type=checkbox name=option1 value=a1>AAAAA<br>
 	      <input type=checkbox name=option2 value=a2>BBBBB<br>
 	      <input type=checkbox name=option3 value=a3>CCCCC<br>
 	      <input type=checkbox name=option4 value=a4>DDDDD<br>
 	      <input type=checkbox name=option5 value=a5>EEEEE<br>
 	      <input type=checkbox name=option6 value=a6>FFFFF<br>
-              <p><input type=submit value="Отправить"> 
+              <p><input type=submit value="Отправить" background=/s/images/img1.jpg> 
 	  </form></td>
           <td><div id="YMapsID" style="width:800px;height:600px"></div></td>
 	  <td valign="top"><ul id="menu"></ul></td>	  

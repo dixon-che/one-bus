@@ -3,7 +3,8 @@
 
 from django.shortcuts import render_to_response
 from django.http import HttpResponse
-from apps.point.models import Route, Station, Metastation#, Transport
+from apps.point.models import Route, Station, Metastation, Transport
+from math import *
 import json
 
 
@@ -11,10 +12,9 @@ def hello(request):
     text = 'Welcome to "Transplants do not"'
     return render_to_response('base.html', {"text": text})
 
-
 def transport_list(request):
     stations = list(Station.objects.all().values('route__id', 'route__route',
-                                                 'route__color', 'name',
+                                                 'route__color', 'route__transport_type', 'name',
                                                  'coordinate_x', 'coordinate_y'))
     return HttpResponse(json.dumps(stations), 'application/javascript')
 
@@ -41,19 +41,20 @@ def route(request):
                      (pow(start_point[1] - end_point[1], 2) * coord_v_km), 1/2.0)
         return lenth
 
-    start_x = float(request.GET['x1'])
+    start_x = float(request.GET['x1'])#*pi/180
     sx1 = start_x + KoeRad
     sx2 = start_x - KoeRad
-    start_y = float(request.GET['y1'])
+    start_y = float(request.GET['y1'])#*pi/180
     sy1 = start_y + KoeRad
     sy2 = start_y - KoeRad
-    finish_x = float(request.GET['x2'])
+    finish_x = float(request.GET['x2'])#*pi/180
     fx1 = finish_x + KoeRad
     fx2 = finish_x - KoeRad
-    finish_y = float(request.GET['y2'])
+    finish_y = float(request.GET['y2'])#*pi/180
     fy1 = finish_y + KoeRad
     fy2 = finish_y - KoeRad
-
+#    R = 6376
+#    ddd = acos(sin(start_y)*sin(finish_y) + cos(start_y)*cos(finish_y)*cos(finish_x-start_x))*R
 
     # заполняем routes_dict, routes_speeds, routes_intevals
     routes_dict, routes_intevals, routes_speeds = dict(), dict(), dict()
@@ -61,6 +62,7 @@ def route(request):
         routes_dict[route_item.id] = list(route_item.station_set.values_list('matrix_index', flat=True))
         routes_speeds[route_item.id] = route_item.speed
         routes_intevals[route_item.id] = route_item.interval
+#    print ddd, pi
 
     # заполняем список точек пересадок metastations_stations_list
     metastations_stations_list = list()
@@ -253,10 +255,9 @@ def route(request):
         item_dict['stopName'] = point_name
         point_route_id = point.route_id
         P_route_id = str(point_route_id)
-        item_dict['idRoute'] = P_route_id
-        transport_id = Route.objects.get(id=point_route_id).transport_type_id
-        transportT_id = str(transport_id)
-        item_dict['transportName'] = transportT_id
+        item_dict['idRoute'] = str(point.route_id) #P_route_id
+        item_dict['route__transport_type'] = str(point.route.transport_type_id)
+        item_dict['transportName'] = item_dict['route__transport_type']
         point_coordinate_x = point.coordinate_x
         item_dict['x'] = str(point_coordinate_x)
         point_coordinate_y = point.coordinate_y

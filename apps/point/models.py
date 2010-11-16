@@ -4,10 +4,10 @@ from apps.point.customfields import HexColorField
 
 class Transport(models.Model):
     name = models.CharField(max_length=155)
-    ico = models.ImageField(upload_to="ico_transport")
+    ico = models.ImageField(upload_to="images")
     price = models.FloatField(blank=True, null=True)
     description = models.TextField(blank=True, null=True)
-#    timestamp = models.DateTimeField()
+    timestamp = models.DateTimeField(auto_now=True, blank=True, null=True)
 
     class Meta:
         ordering = ['name']
@@ -24,7 +24,7 @@ class Route(models.Model):
     price = models.FloatField()
     one_pay = models.BooleanField()
     color = HexColorField(max_length=8)
-#    timestamp = models.DateTimeField()
+    timestamp = models.DateTimeField(auto_now=True, blank=True, null=True)
 
     class Meta:
         ordering = ['route']
@@ -36,7 +36,7 @@ class Route(models.Model):
 class Metastation(models.Model):
     name = models.CharField(max_length=55)
     address = models.CharField(max_length=255)
-#    timestamp = models.DateTimeField()
+    timestamp = models.DateTimeField(auto_now=True, blank=True, null=True)
 
     def __unicode__(self):
         return self.name
@@ -50,7 +50,7 @@ class Station(models.Model):
     order = models.IntegerField(blank=True, null=True)
     meta_station = models.ForeignKey(Metastation, blank=True, null=True)
     matrix_index = models.IntegerField(unique=True)
-#    timestamp = models.DateTimeField()
+    timestamp = models.DateTimeField(auto_now=True, blank=True, null=True)
 
     class Meta:
         ordering = ['order']
