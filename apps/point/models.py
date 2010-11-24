@@ -44,7 +44,7 @@ class Metastation(models.Model):
 
 class Station(models.Model):
     route = models.ForeignKey(Route)
-    name = models.CharField(max_length=155)
+    name = models.CharField(max_length=255)
     coordinate_x = models.FloatField()
     coordinate_y = models.FloatField()
     order = models.IntegerField(blank=True, null=True)

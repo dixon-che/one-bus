@@ -5,8 +5,40 @@ from django.shortcuts import render_to_response
 from django.http import HttpResponse
 from apps.point.models import Route, Station, Metastation, Transport
 from math import *
+from utils import len_witput_points, get_speed_matrix, get_border_points, get_lenth_finish, get_lenth_start, get_all_x, get_points_in_radius_start, get_points_in_radius_finish
 import json
 
+
+def station_save(request):
+    route0 = request.POST['route']
+    routeName = request.POST['routeName']
+    transportType = request.POST['routeType']
+    route = eval(route0)
+    routeName = str(routeName)
+    transportType = str(transportType)
+    transport = Transport.objects.get(name=transportType)
+    new_route = Route(route = routeName, transport_type = transport, interval = 12, speed = 12, color = "FFFFFFFF", price = 1)
+    new_route.save()
+    for index in range(len(route)):
+        station_1 = route[str(index)]
+        station_name = station_1[0].decode('utf8')
+        station_y = station_1[1]
+        station_x = station_1[2]
+        matrix_index = list()
+        for station_out_bd in Station.objects.all():
+            matrix_index += [station_out_bd.matrix_index]
+        matrix_index_max = max(matrix_index) + 1
+        station_in_bd = Station(route = new_route, name = station_name, coordinate_x = station_x, coordinate_y = station_y, matrix_index = matrix_index_max)
+        station_in_bd.save()
+    return HttpResponse('ok')
+
+def station_add(request):
+    text2 = 'Welcome to "Transplants do not"'
+    return render_to_response('add_stations.html', {"text2": text2})
+
+def station_edit(request):
+    text3 = 'Welcome to "Transplants do not"'
+    return render_to_response('edit_stations.html', {"text3": text3})
 
 def hello(request):
     text = 'Welcome to "Transplants do not"'
@@ -18,51 +50,29 @@ def transport_list(request):
                                                  'coordinate_x', 'coordinate_y'))
     return HttpResponse(json.dumps(stations), 'application/javascript')
 
-
 def route(request):
-    points_list = Station.objects.values_list('coordinate_x', 'coordinate_y').order_by('id')
-    len_points = len(points_list)
-    speed_matrix = [[0] * len_points  for i in range(len_points)]
-    all_station_list = Station.objects.values('id', 'route_id', 'coordinate_x', 'coordinate_y',
-                                              'name', 'meta_station_id', 'matrix_index').order_by('matrix_index')
-
-    lenth_start, lenth_finish, lenth_finish_to_z, lenth_start_to_z = list(), list(), list(), list()
     closed_points_list = list()
-    points_in_radius_start, points_in_radius_finish = list(), list()
-    all_station_x, radius_x_start, radius_x_finish = list(), list(), list()
+    KoeRad = 0.01
+    R = 6376 # радиус земли
+    speed_matrix = get_speed_matrix()
 
-    coord_v_km, coord_v_km2 = 111.1, 78.56
-    speed_Pesh = 3.0
-    wating_index = 1/2.0
-    KoeRad = 0.001
-
-    def len_witput_points(start_point, end_point):
-        lenth = pow((pow(start_point[0] - end_point[0], 2) * coord_v_km2) +
-                     (pow(start_point[1] - end_point[1], 2) * coord_v_km), 1/2.0)
-        return lenth
-
-    start_x = float(request.GET['x1'])#*pi/180
+    start_x = float(request.GET['x1'])
+    start_x_rad = start_x*pi/180 
     sx1 = start_x + KoeRad
     sx2 = start_x - KoeRad
-    start_y = float(request.GET['y1'])#*pi/180
+    start_y = float(request.GET['y1'])
+    start_y_rad = start_y*pi/180
     sy1 = start_y + KoeRad
     sy2 = start_y - KoeRad
-    finish_x = float(request.GET['x2'])#*pi/180
+    finish_x = float(request.GET['x2'])
+    finish_x_rad = finish_x*pi/180
     fx1 = finish_x + KoeRad
     fx2 = finish_x - KoeRad
-    finish_y = float(request.GET['y2'])#*pi/180
+    finish_y = float(request.GET['y2'])
+    finish_y_rad = finish_y*pi/180
     fy1 = finish_y + KoeRad
     fy2 = finish_y - KoeRad
-#    R = 6376
-#    ddd = acos(sin(start_y)*sin(finish_y) + cos(start_y)*cos(finish_y)*cos(finish_x-start_x))*R
-
-    # заполняем routes_dict, routes_speeds, routes_intevals
-    routes_dict, routes_intevals, routes_speeds = dict(), dict(), dict()
-    for route_item in Route.objects.all():
-        routes_dict[route_item.id] = list(route_item.station_set.values_list('matrix_index', flat=True))
-        routes_speeds[route_item.id] = route_item.speed
-        routes_intevals[route_item.id] = route_item.interval
-#    print ddd, pi
+    s_f = acos(sin(start_y_rad)*sin(finish_y_rad) + cos(start_y_rad)*cos(finish_y_rad)*cos(finish_x_rad-start_x_rad))*R
 
     # заполняем список точек пересадок metastations_stations_list
     metastations_stations_list = list()
@@ -70,51 +80,9 @@ def route(request):
         metastation_station_set = list(metastation_item.station_set.values_list('matrix_index', flat=True))
         metastations_stations_list += [metastation_station_set]
 
-    # формирование матрици времени переходов speed_matrix)
-    for route_id in routes_dict:
-        route_item_list = routes_dict[route_id]
-        route_speed = float(routes_speeds[route_id])
-
-        for item_index in range(len(route_item_list)):
-            next_item_index = item_index + 1
-            if next_item_index == len(route_item_list):
-                break
-
-            from_matrix_index = route_item_list[item_index]
-            to_matrix_index = route_item_list[next_item_index]
-
-            speed_matrix[to_matrix_index][from_matrix_index] = \
-            speed_matrix[from_matrix_index][to_matrix_index] = len_witput_points(points_list[from_matrix_index],
-                                                                                 points_list[to_matrix_index]) / route_speed
-    # добавление в speed_matrix переходов по метастанциям
-    for item_metastation_stations_list in metastations_stations_list:
-        for item_station_from in item_metastation_stations_list:
-            for item_station_to in item_metastation_stations_list:
-                route_interval_time = routes_intevals[Station.objects.get(matrix_index=item_station_to).route_id]
-                speed_matrix[item_station_from][item_station_to] = route_interval_time * wating_index
-
-    # добавляем точки старта-финиша к матрице переходов
-    for station_item in all_station_list:
-        coordinate_x = float(station_item['coordinate_x'])
-        all_station_x += [coordinate_x]
-        coordinate_y = float(station_item['coordinate_y'])
-
-        l_s = pow((pow(start_x - coordinate_x, 2) * coord_v_km2) +
-                  (pow(start_y - coordinate_y, 2) * coord_v_km),
-                  1/2.0) / speed_Pesh
-        lenth_start += [l_s]
-        lenth_start_to_z += [l_s]
-
-        l_f = pow((pow(finish_x - coordinate_x, 2) * coord_v_km2) +
-                  (pow(finish_y - coordinate_y, 2) * coord_v_km),
-                  1/2.0) / speed_Pesh
-        lenth_finish += [l_f]
-        lenth_finish_to_z += [l_f]
-
-    s_f = pow((pow(finish_x - start_x, 2) * coord_v_km2) +
-              (pow(finish_y - start_y, 2) * coord_v_km),
-              1/2.0) / speed_Pesh
-
+    all_station_x = get_all_x()
+    lenth_start = get_lenth_start(start_y_rad, start_x_rad)
+    lenth_finish = get_lenth_finish(finish_y_rad, finish_x_rad)
     lenth_finish_min = min(lenth_finish)
     T_pesh_finish = lenth_finish_min
     lenth_start_min = min(lenth_start)
@@ -137,33 +105,14 @@ def route(request):
     speed_matrix.append(lenth_start)
     speed_matrix.append(lenth_finish)
 
-#    end_point = index_Mass + 2
-#    start_point = index_Mass +1
-
-    for station_x in all_station_x:
-        if sx2 < station_x < sx1:
-            radius_x_start += [station_x]
-    for x_start in radius_x_start:
-        station_for_y = Station.objects.filter(coordinate_x=x_start).values_list('coordinate_y', 'matrix_index')
-        for station_y in station_for_y:
-            if sy2 < station_y[0] < sy1:
-                points_in_radius_start += [station_y[1]]
-
+    points_in_radius_start = get_points_in_radius_start(sx2, sx1, sy1, sy2, all_station_x)
     for point_in_radius in points_in_radius_start:
         that = list()
         that += [start_point]
         that += [point_in_radius]
         metastations_stations_list += [that]
 
-    for station_x in all_station_x:
-        if fx2 < station_x < fx1:
-            radius_x_finish += [station_x]
-    for x_finish in radius_x_finish:
-        station_for_y = Station.objects.filter(coordinate_x=x_finish).values_list('coordinate_y', 'matrix_index')
-        for station_y in station_for_y:
-            if fy2 < station_y[0] < fy1:
-                points_in_radius_finish += [station_y[1]]
-
+    points_in_radius_finish = get_points_in_radius_finish(fx2, fx1, fy1, fy2, all_station_x)
     for point_in_radius in points_in_radius_finish:
         thet = list()
         thet += [end_point]
@@ -174,45 +123,6 @@ def route(request):
         end_point = tend_point
     if points_in_radius_start == []:
         start_point = tstart_point
-
-    def get_border_points(points_price_min, closed_points_list):
-        points_list = []
-        for route_id in routes_dict:
-            points_list_item = routes_dict[route_id]
-            len_points_list_item = len(points_list_item)
-            if points_price_min in points_list_item:
-                index_in_list = points_list_item.index(points_price_min)
-                if index_in_list < len_points_list_item - 1:
-                    right_border_index = points_list_item[index_in_list + 1]
-                    if right_border_index not in closed_points_list:
-                        points_list += [right_border_index]
-                if index_in_list > 0:
-                    left_border_index = points_list_item[index_in_list - 1]
-                    if left_border_index not in closed_points_list:
-                        points_list += [left_border_index]
-
-                for metastation in metastations_stations_list:
-                    if points_price_min in metastation:
-                        for metastation_index in range(len(metastation)):
-                            metastation_index_next = metastation_index + 1
-                            if metastation_index_next == len(metastation):
-                                break
-                            next_index = metastation.index(points_price_min) - metastation_index_next
-                            next_item = metastation[next_index]
-                            if next_item not in closed_points_list:
-                                points_list += [next_item]
-
-        for metastation in metastations_stations_list:
-            if points_price_min in metastation:
-                for metastation_index in range(len(metastation)):
-                    metastation_index_next = metastation_index + 1
-                    if metastation_index_next == len(metastation):
-                        break
-                    next_index = metastation.index(points_price_min) - metastation_index_next
-                    next_item = metastation[next_index]
-                    if next_item not in closed_points_list:
-                        points_list += [next_item]
-        return list(set(points_list))
 
     points_price = {str(start_point): [0, [start_point], [0]]}
     next_points_list = [start_point]
@@ -251,17 +161,12 @@ def route(request):
     for q in points_price[str(end_point)][1]:
         item_dict = {}
         point = Station.objects.get(matrix_index=q)
-        point_name = point.name
-        item_dict['stopName'] = point_name
-        point_route_id = point.route_id
-        P_route_id = str(point_route_id)
-        item_dict['idRoute'] = str(point.route_id) #P_route_id
+        item_dict['stopName'] = point.name
+        item_dict['idRoute'] = str(point.route_id)
         item_dict['route__transport_type'] = str(point.route.transport_type_id)
         item_dict['transportName'] = item_dict['route__transport_type']
-        point_coordinate_x = point.coordinate_x
-        item_dict['x'] = str(point_coordinate_x)
-        point_coordinate_y = point.coordinate_y
-        item_dict['y'] = str(point_coordinate_y)
+        item_dict['x'] = str(point.coordinate_x)
+        item_dict['y'] = str(point.coordinate_y)
         item_dict['t'] = str(points_price[str(end_point)][2][i])
         final_views += [item_dict]
         i += 1
