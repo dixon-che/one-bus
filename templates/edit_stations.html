@@ -44,8 +44,7 @@
 	}
 	$stops = $db->get_all_rows("SELECT stop_id, stop_name, stop_lat, stop_lon FROM stops WHERE stop_name<>'temporary' ORDER BY stop_name");
 	$stops_count = count($stops);
-?>{% endcomment %}
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+?>{% endcomment %}<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -62,22 +61,16 @@
 		var map;
 		var main_bounds;
 		var points = [];
-<?php
-	if($stops_count == 0)
-	{
-?>
+		{% if not stations.count %}
 		var point_index = 1;
-<?php
-	}
-	else
-	{
-		for($i = 0; $i < $stops_count; $i++)
-		{
-			echo "points[".$i."] = [new YMaps.GeoPoint(".$stops[$i]["stop_lon"].", ".$stops[$i]["stop_lat"]."), '".$stops[$i]["stop_name"]."', 'point_".($i + 1)."'];\n";
-		}
-		echo "var point_index = ".($stops_count + 1).";\n";
-	}
-?>
+		{% else %}
+		{% for station in stations %}
+		points[{{ forloop.counter }}] = [new YMaps.GeoPoint({{ station.coordinate_x|floatformat }}, {{ station.coordinate_y|floatformat }}), '{{ station.name }}', 'point_{{ forloop.counter }}'];
+		
+
+		{% endfor %}
+		var point_index = {{ stations.count }} + 1;		
+		{% endif %}
 		var points_collection;
 		var drag_index;
 		var point_style;
@@ -361,23 +354,30 @@
 			Добавить остановку:<br />
 			<input type="text" id="new_point" value="пр. Ленина, 9" style="width: 200px" />&nbsp;<input type="button" id="add_point" value="Добавить" /><br />
 			<div id="points" style="margin-top: 20px">
-<?php
-	if($stops_count == 0)
-	{
-?>
+			  {% if not stations.count %}
 				Ни одна остановка еще не добавлена
-<?php
-	}
-	else
-	{
-		echo "<ul id=\"points_list\">\n";
-		for($i = 0; $i < $stops_count; $i++)
-		{
-			echo "<li db_id=\"".$stops[$i]["stop_id"]."\" id=\"point_".($i + 1)."\"><a href=\"javascript:delete_point('point_".($i + 1)."')\"><img src=\"/s/images/delete.png\" class=\"button\" /></a><a id=\"sl_".($i + 1)."\" href=\"javascript:save_point('point_".($i + 1)."')\" style=\"display: none\"><img src=\"/s/images/save.png\" class=\"save_button\" /></a></span>&nbsp;<span id=\"point_".($i + 1)."_value\"><a href=\"javascript:rename_point('point_".($i + 1)."')\">".$stops[$i]["stop_name"]."</a></span></li>\n";
-		}
-		echo "</ul>\n";
-	}
-?>
+			  {% else %}
+			  <ul id="points_list">
+
+			    {% for station in stations %}
+
+			    <li db_id="station.id" id="point_{{ forloop.counter }}">
+			      <span>
+			      <a href="javascript:delete_point('point_{{ forloop.counter }}')">
+				<img src="/s/images/delete.png" class="button" />
+			      </a>
+			      <a id="sl_{{ forloop.counter }}" href="javascript:save_point('point_{{ forloop.counter }}')" style="display: none">
+				<img src="/s/images/save.png" class="save_button" />
+			      </a>
+			      </span>&nbsp;
+			      <span id="point_{{ forloop.counter }}_value">
+				<a href="javascript:rename_point('point_{{ forloop.counter }}')">{{ station.name }}</a>
+			      </span>
+			    </li>
+			    {% endfor %}
+			  </ul>
+			  {% endif %}
+
 			</div>
 		</div>
 	</div>

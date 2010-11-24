@@ -36,9 +36,9 @@ def station_add(request):
     text2 = 'Welcome to "Transplants do not"'
     return render_to_response('add_stations.html', {"text2": text2})
 
-def station_edit(request):
-    text3 = 'Welcome to "Transplants do not"'
-    return render_to_response('edit_stations.html', {"text3": text3})
+def station_edit(request, route_id):
+    stations = Station.objects.filter(route = route_id)
+    return render_to_response('edit_stations.html', {"stations": stations})
 
 def hello(request):
     text = 'Welcome to "Transplants do not"'
