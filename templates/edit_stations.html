@@ -65,12 +65,12 @@
 		var point_index = 1;
 		{% else %}
 		{% for station in stations %}
-		points[{{ forloop.counter }}] = [new YMaps.GeoPoint({{ station.coordinate_x|floatformat }}, {{ station.coordinate_y|floatformat }}), '{{ station.name }}', 'point_{{ forloop.counter }}'];
-		
+		points[{{ forloop.counter0 }}] = [new YMaps.GeoPoint({{ station.coordinate_x|floatformat:-10 }}, {{ station.coordinate_y|floatformat:-10 }}), '{{ station.name }}', 'point_{{ forloop.counter }}'];
 
 		{% endfor %}
 		var point_index = {{ stations.count }} + 1;		
 		{% endif %}
+		
 		var points_collection;
 		var drag_index;
 		var point_style;
@@ -84,7 +84,7 @@
 		function init_page()
 		{
 			$('#add_point').bind('click', add_point_handler);
-			point_style = new YMaps.Style();
+			point_style = new YMaps.Style(); 
 			point_style.iconStyle = new YMaps.IconStyle();
 			point_style.iconStyle.offset = new YMaps.Point(-8, -8);
 			point_style.iconStyle.href = "/s/images/stop.png";
@@ -117,8 +117,8 @@
 	    	var placemark;
 	    	for(i = 0; i < points.length; i++)
 	    	{
-	    		placemark = new YMaps.Placemark(points[i][0], {draggable: true});
-	        //placemark = new YMaps.Placemark(points[i][0], {draggable: true, style: point_style});
+	    		       placemark = new YMaps.Placemark(points[i][0], {draggable: true});
+	        // placemark = new YMaps.Placemark(points[i][0], {draggable: true, style: point_style});
 	        placemark.setIconContent(points[i][1]);
 	        placemark.setBalloonContent(points[i][1]);
 	        points_collection.add(placemark);
@@ -212,7 +212,7 @@
     {
     	if(v == true)
     	{
-    		$.post('/stations/route_save/', {action: 'delete', id: db_id}, function(data){
+    		$.post('{% url ajax-station-delete %}', {action: 'delete', id: db_id}, function(data){
     			if(data == 'OK')
     			{
     				_delete();
@@ -313,7 +313,7 @@
     		db_id = $('#' + id).attr('db_id');
     		if(db_id != undefined)
     		{
-					$.post('/stations/route_save/', {action: 'edit', id: db_id, name: points[i][1], lat: points[i][0].getLat(), lon: points[i][0].getLng()}, function(data){
+					$.post('{% url ajax-station-save %}', {id: db_id, name: points[i][1], lat: points[i][0].getLat(), lon: points[i][0].getLng()}, function(data){
 	    			if(data == 'OK')
 	    			{
 	    				$('#sl_' + id.replace('point_', '')).hide();
@@ -326,9 +326,10 @@
     		}
     		else
     		{
-    			$.post('/stations/route_save/', {action: 'add', name: points[i][1], lat: points[i][0].getLat(), lon: points[i][0].getLng()}, function(data){
-    				var reg_exp = /^[0-9]+$/;
-	    			if(data != 'FAIL' && reg_exp.test(data))
+    			$.post('{% url ajax-newstation-save %}', {action: 'add', name: points[i][1], lat: points[i][0].getLat(), lon: points[i][0].getLng(), route_id: {{ route_id }}}, function(data){
+    			//	var reg_exp = /^[0-9]+$/;
+	    		//	if(data != 'FAIL' && reg_exp.test(data))
+		                if(data == 'OK')
 	    			{
 	    				$('#sl_' + id.replace('point_', '')).hide();
 	    				$('#' + id).attr('db_id', data);
@@ -361,7 +362,7 @@
 
 			    {% for station in stations %}
 
-			    <li db_id="station.id" id="point_{{ forloop.counter }}">
+			    <li db_id="{{ station.id }}" id="point_{{ forloop.counter }}">
 			      <span>
 			      <a href="javascript:delete_point('point_{{ forloop.counter }}')">
 				<img src="/s/images/delete.png" class="button" />
@@ -377,7 +378,8 @@
 			    {% endfor %}
 			  </ul>
 			  {% endif %}
-
+			  {{ text2 }}
+			  {{ text3 }}
 			</div>
 		</div>
 	</div>

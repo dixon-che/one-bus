@@ -9,6 +9,41 @@ from utils import len_witput_points, get_speed_matrix, get_border_points, get_le
 import json
 
 
+def new_station_save_in_route(request):
+    print request.POST
+    name = request.POST['name']
+    y = request.POST['lat']
+    x = request.POST['lon']
+    route_id = request.POST['route_id']
+    matrix_index = list()
+    for station_out_bd in Station.objects.all():
+        matrix_index += [station_out_bd.matrix_index]
+    matrix_index_max = max(matrix_index) + 1
+    new_station = Station(route_id = route_id, name = name, coordinate_x = x, coordinate_y = y, matrix_index = matrix_index_max)
+    new_station.save()
+    return HttpResponse('OK')
+
+
+def station_save_in_route(request):
+    station_id = request.POST['id']
+    name = request.POST['name']
+    y = request.POST['lat']
+    x = request.POST['lon']
+    station = Station.objects.get(id=station_id)
+    station.name = name
+    station.coordinate_x = x
+    station.coordinate_y = y
+    station.save()
+    return HttpResponse('OK')
+
+
+def station_delete(request):
+    station_id = request.POST['id']
+    station = Station.objects.get(id=station_id)
+    station.delete()
+    return HttpResponse('OK')
+
+
 def station_save(request):
     route0 = request.POST['route']
     routeName = request.POST['routeName']
@@ -32,23 +67,29 @@ def station_save(request):
         station_in_bd.save()
     return HttpResponse('ok')
 
+
 def station_add(request):
     text2 = 'Welcome to "Transplants do not"'
     return render_to_response('add_stations.html', {"text2": text2})
 
+
 def station_edit(request, route_id):
     stations = Station.objects.filter(route = route_id)
-    return render_to_response('edit_stations.html', {"stations": stations})
+    return render_to_response('edit_stations.html', {"stations": stations,
+                                                     "route_id": route_id})
+
 
 def hello(request):
     text = 'Welcome to "Transplants do not"'
     return render_to_response('base.html', {"text": text})
+
 
 def transport_list(request):
     stations = list(Station.objects.all().values('route__id', 'route__route',
                                                  'route__color', 'route__transport_type', 'name',
                                                  'coordinate_x', 'coordinate_y'))
     return HttpResponse(json.dumps(stations), 'application/javascript')
+
 
 def route(request):
     closed_points_list = list()
