@@ -1,12 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
+
 from math import *
 from apps.point.models import Route, Station, Metastation, Transport
+from django.db.models import Max
+import os
+import datetime
 
 
 R = 6376 # радиус земли
 speed_Pesh = 3.0
-wating_index = 1/2.0
 points_list = Station.objects.values_list('coordinate_x', 'coordinate_y').order_by('id')
 len_points = len(points_list)
 speed_matrix = [[0] * len_points  for i in range(len_points)]
@@ -30,7 +34,7 @@ def len_witput_points(start_point, end_point):
     return lenth
 
 #функция нахождения соседних точек
-def get_border_points(points_price_min, closed_points_list):
+def get_border_points(points_price_min, closed_points_list, metastations_stations_list):
     points_list = []
     for route_id in routes_dict:
         points_list_item = routes_dict[route_id]
@@ -75,38 +79,46 @@ def get_speed_matrix():
     points_list = Station.objects.values_list('coordinate_x', 'coordinate_y').order_by('id')
     len_points = len(points_list)
     speed_matrix = [[0] * len_points  for i in range(len_points)]
-#    jq = max(Station.objects.all().values_list('timestamp', flat=True))
-#    for Date in Station.objects.all().values_list('timestamp', flat=True):
-#        if Date < jq:    
-    for route_id in routes_dict:
-        route_item_list = routes_dict[route_id]
-        route_speed = float(routes_speeds[route_id])
+    max_station_timestamp = Station.objects.all().aggregate(Max('timestamp'))
+    max_route_timestamp = Route.objects.all().aggregate(Max('timestamp'))
+    max_transport_timestamp = Transport.objects.all().aggregate(Max('timestamp'))
+    max_metastation_timestamp = Metastation.objects.all().aggregate(Max('timestamp'))
+    max_timestamp = max(max_metastation_timestamp, max_station_timestamp, max_route_timestamp, max_transport_timestamp)
+    max_timestamp = max_timestamp['timestamp__max']
+    sm_file = os.path.getmtime('speed_matrix.txt')
+    stat = os.stat('speed_matrix.txt')
+    file_size = stat.st_size
+    timestamp = datetime.datetime.fromtimestamp(sm_file)
+    if timestamp < max_timestamp or file_size == 0:    
+        for route_id in routes_dict:
+            route_item_list = routes_dict[route_id]
+            route_speed = float(routes_speeds[route_id]) 
         
-        for item_index in range(len(route_item_list)):
-            next_item_index = item_index + 1
-            if next_item_index == len(route_item_list):
-                break
+            for item_index in range(len(route_item_list)):
+                next_item_index = item_index + 1
+                if next_item_index == len(route_item_list):
+                    break
 
-            from_matrix_index = route_item_list[item_index]
-            to_matrix_index = route_item_list[next_item_index]
+                from_matrix_index = route_item_list[item_index]
+                to_matrix_index = route_item_list[next_item_index]
             
-            speed_matrix[to_matrix_index][from_matrix_index] = \
-                speed_matrix[from_matrix_index][to_matrix_index] = len_witput_points(points_list[from_matrix_index],
+                speed_matrix[to_matrix_index][from_matrix_index] = \
+                    speed_matrix[from_matrix_index][to_matrix_index] = len_witput_points(points_list[from_matrix_index],
                                                                                  points_list[to_matrix_index]) / route_speed
                 # добавление в speed_matrix переходов по метастанциям
-    for item_metastation_stations_list in metastations_stations_list:
-        for item_station_from in item_metastation_stations_list:
-            for item_station_to in item_metastation_stations_list:
-                route_interval_time = routes_intevals[Station.objects.get(matrix_index=item_station_to).route_id]
-                speed_matrix[item_station_from][item_station_to] = route_interval_time * wating_index
-    fp = open('speed_matrix.txt', 'r+')
-    fp.write(repr(speed_matrix))
-    fp.close()
-#        else:
-#            fp = open('speed_matrix.txt', 'r')
-#            sqwa = fp.read()
-#            speed_matrix = eval(sqwa)
-#            fp.close()            
+        for item_metastation_stations_list in metastations_stations_list:
+            for item_station_from in item_metastation_stations_list:
+                for item_station_to in item_metastation_stations_list:
+                    route_interval_time = routes_intevals[Station.objects.get(matrix_index=item_station_to).route_id]
+                    speed_matrix[item_station_from][item_station_to] = route_interval_time * wating_index
+        fp = open('speed_matrix.txt', 'r+')
+        fp.write(repr(speed_matrix))
+        fp.close()
+    else:
+        fp = open('speed_matrix.txt', 'r')
+        read_file = fp.read()
+        speed_matrix = eval(read_file)
+        fp.close()            
 
     return speed_matrix
 
@@ -166,3 +178,22 @@ def get_points_in_radius_finish(fx2, fx1, fy1, fy2, all_station_x):
             if fy2 < station_y[0] < fy1:
                 points_in_radius_finish += [station_y[1]]
     return list(set(points_in_radius_finish))
+
+def get_metastations_stations_list(points_in_radius_finish, points_in_radius_start, start_point, end_point):
+    metastations_stations_list = list()
+    for metastation_item in Metastation.objects.all():
+        metastation_station_set = list(metastation_item.station_set.values_list('matrix_index', flat=True))
+        metastations_stations_list += [metastation_station_set]
+
+    for point_in_radius in points_in_radius_start:
+        that = list()
+        that += [start_point]
+        that += [point_in_radius]
+        metastations_stations_list += [that]
+
+    for point_in_radius in points_in_radius_finish:
+        thet = list()
+        thet += [end_point]
+        thet += [point_in_radius]
+        metastations_stations_list += [thet]
+    return metastations_stations_list
