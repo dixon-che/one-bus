@@ -5,12 +5,11 @@ from django.shortcuts import render_to_response
 from django.http import HttpResponse
 from apps.point.models import Route, Station, Metastation, Transport
 from math import *
-from utils import len_witput_points, get_speed_matrix, get_border_points, get_lenth_finish, get_lenth_start, get_all_x, get_points_in_radius_start, get_points_in_radius_finish
+from utils import len_witput_points, get_speed_matrix, get_border_points, get_lenth_finish, get_lenth_start, get_all_x, get_points_in_radius_start, get_points_in_radius_finish, get_metastations_stations_list
 import json
 
 
 def new_station_save_in_route(request):
-    print request.POST
     name = request.POST['name']
     y = request.POST['lat']
     x = request.POST['lon']
@@ -92,8 +91,8 @@ def transport_list(request):
 
 
 def route(request):
-    closed_points_list = list()
-    KoeRad = 0.01
+    closed_points_list, border_in_radius = list(), list()
+    KoeRad = 0.005
     R = 6376 # радиус земли
     speed_matrix = get_speed_matrix()
 
@@ -115,23 +114,16 @@ def route(request):
     fy2 = finish_y - KoeRad
     s_f = acos(sin(start_y_rad)*sin(finish_y_rad) + cos(start_y_rad)*cos(finish_y_rad)*cos(finish_x_rad-start_x_rad))*R
 
-    # заполняем список точек пересадок metastations_stations_list
-    metastations_stations_list = list()
-    for metastation_item in Metastation.objects.all():
-        metastation_station_set = list(metastation_item.station_set.values_list('matrix_index', flat=True))
-        metastations_stations_list += [metastation_station_set]
-
     all_station_x = get_all_x()
     lenth_start = get_lenth_start(start_y_rad, start_x_rad)
     lenth_finish = get_lenth_finish(finish_y_rad, finish_x_rad)
     lenth_finish_min = min(lenth_finish)
-    T_pesh_finish = lenth_finish_min
     lenth_start_min = min(lenth_start)
     tstart_point = lenth_start.index(lenth_start_min)
     tend_point = lenth_finish.index(lenth_finish_min)
 
-    start_point = lenth_start.index(lenth_start_min)
-    end_point = lenth_finish.index(lenth_finish_min)
+    start_point = len(all_station_x)
+    end_point = start_point + 1
 
     lenth_start.append(0)
     lenth_start.append(s_f)
@@ -142,23 +134,13 @@ def route(request):
         index_Mass = speed_matrix.index(Mass)
         Mass.append(lenth_start[index_Mass])
         Mass.append(lenth_finish[index_Mass])
-
+    
     speed_matrix.append(lenth_start)
     speed_matrix.append(lenth_finish)
 
+    points_in_radius_finish = get_points_in_radius_finish(fx2, fx1, fy1, fy2, all_station_x)    
     points_in_radius_start = get_points_in_radius_start(sx2, sx1, sy1, sy2, all_station_x)
-    for point_in_radius in points_in_radius_start:
-        that = list()
-        that += [start_point]
-        that += [point_in_radius]
-        metastations_stations_list += [that]
-
-    points_in_radius_finish = get_points_in_radius_finish(fx2, fx1, fy1, fy2, all_station_x)
-    for point_in_radius in points_in_radius_finish:
-        thet = list()
-        thet += [end_point]
-        thet += [point_in_radius]
-        metastations_stations_list += [thet]
+    metastations_stations_list = get_metastations_stations_list(points_in_radius_finish, points_in_radius_start, start_point, end_point)
 
     if points_in_radius_finish == []:
         end_point = tend_point
@@ -174,7 +156,7 @@ def route(request):
         active_point_price = points_price[str(active_point)][0]
         active_point_P = points_price[str(active_point)][1]
         active_point_Pe = points_price[str(active_point)][2]
-        border_points = get_border_points(active_point, closed_points_list)
+        border_points = get_border_points(active_point, closed_points_list, metastations_stations_list)
         for item_point_index in border_points:
             go_price = speed_matrix[active_point][item_point_index]
             if str(item_point_index) not in points_price:
@@ -197,6 +179,10 @@ def route(request):
     if str(end_point) in points_price:
         print "Your way is:", points_price[str(end_point)][1]
         print "Your time is:", points_price[str(end_point)][2]
+        final_time = points_price[str(end_point)][2][-1]
+        points_price[str(end_point)][1].remove(start_point)
+        points_price[str(end_point)][1].remove(end_point)
+        points_price[str(end_point)][2] = points_price[str(end_point)][2][1:-1]
     final_views = [{'x': start_x, 'y': start_y, 'idRoute':"-1", 'transportName':"", 'stopName':"Start", 't':'0'}]
     i = 0
     for q in points_price[str(end_point)][1]:
@@ -211,7 +197,6 @@ def route(request):
         item_dict['t'] = str(points_price[str(end_point)][2][i])
         final_views += [item_dict]
         i += 1
-    final_time = points_price[str(end_point)][2][-1] + T_pesh_finish
     final_views.append({'x': finish_x, 'y': finish_y, 'idRoute': "-1", 'transportName': "", 'stopName': "Finish", 't': final_time})
     final_views.reverse()
 
