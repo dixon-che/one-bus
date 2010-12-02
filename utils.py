@@ -11,22 +11,15 @@ import datetime
 
 R = 6376 # радиус земли
 speed_Pesh = 3.0
-points_list = Station.objects.values_list('coordinate_x', 'coordinate_y').order_by('id')
-len_points = len(points_list)
-speed_matrix = [[0] * len_points  for i in range(len_points)]
 
-# заполняем routes_dict, routes_speeds, routes_intevals
-routes_dict, routes_intevals, routes_speeds = dict(), dict(), dict()
-for route_item in Route.objects.all():
-    routes_dict[route_item.id] = list(route_item.station_set.values_list('matrix_index', flat=True))
-    routes_speeds[route_item.id] = route_item.speed
-    routes_intevals[route_item.id] = route_item.interval
+#ф-ия построения нулевой speed_matrix
+def S_M():
+    points_list = Station.objects.values_list('coordinate_x', 'coordinate_y').order_by('id')
+    len_points = len(points_list)
+    speed_matrix = [[0] * len_points  for i in range(len_points)]
+    return speed_matrix
 
-# заполняем список точек пересадок metastations_stations_list
-metastations_stations_list = list()
-for metastation_item in Metastation.objects.all():
-    metastation_station_set = list(metastation_item.station_set.values_list('matrix_index', flat=True))
-    metastations_stations_list += [metastation_station_set]
+speed_matrix = S_M
 
 # функция нахождения растояния по шаровым координатам
 def len_witput_points(start_point, end_point):
@@ -35,6 +28,12 @@ def len_witput_points(start_point, end_point):
 
 #функция нахождения соседних точек
 def get_border_points(points_price_min, closed_points_list, metastations_stations_list):
+
+         # заполняем routes_dict, routes_speeds, routes_intevals
+    routes_dict = dict()
+    for route_item in Route.objects.all():
+        routes_dict[route_item.id] = list(route_item.station_set.values_list('matrix_index', flat=True))
+
     points_list = []
     for route_id in routes_dict:
         points_list_item = routes_dict[route_id]
@@ -89,7 +88,15 @@ def get_speed_matrix():
     stat = os.stat('speed_matrix.txt')
     file_size = stat.st_size
     timestamp = datetime.datetime.fromtimestamp(sm_file)
-    if timestamp < max_timestamp or file_size == 0:    
+    if timestamp < max_timestamp or file_size == 0:
+
+               # заполняем routes_dict, routes_speeds, routes_intevals
+        routes_dict, routes_intevals, routes_speeds = dict(), dict(), dict()
+        for route_item in Route.objects.all():
+            routes_dict[route_item.id] = list(route_item.station_set.values_list('matrix_index', flat=True))
+            routes_speeds[route_item.id] = route_item.speed
+            routes_intevals[route_item.id] = route_item.interval
+
         for route_id in routes_dict:
             route_item_list = routes_dict[route_id]
             route_speed = float(routes_speeds[route_id]) 
@@ -105,6 +112,13 @@ def get_speed_matrix():
                 speed_matrix[to_matrix_index][from_matrix_index] = \
                     speed_matrix[from_matrix_index][to_matrix_index] = len_witput_points(points_list[from_matrix_index],
                                                                                  points_list[to_matrix_index]) / route_speed
+
+                # заполняем список точек пересадок metastations_stations_list
+        metastations_stations_list = list()
+        for metastation_item in Metastation.objects.all():
+            metastation_station_set = list(metastation_item.station_set.values_list('matrix_index', flat=True))
+            metastations_stations_list += [metastation_station_set]
+
                 # добавление в speed_matrix переходов по метастанциям
         for item_metastation_stations_list in metastations_stations_list:
             for item_station_from in item_metastation_stations_list:
@@ -122,12 +136,9 @@ def get_speed_matrix():
 
     return speed_matrix
 
-                             # списки растояний от start и finish до всех точек
-
-all_station_list = Station.objects.values('id', 'route_id', 'coordinate_x', 'coordinate_y','name', 'meta_station_id', 'matrix_index').order_by('matrix_index')
-
 # функция создания списка растояний от start
 def get_lenth_start(start_y_rad, start_x_rad):
+    all_station_list = Station.objects.values('coordinate_x', 'coordinate_y').order_by('matrix_index')
     lenth_start = list()
     for station_item in all_station_list:
         coordinate_x = float(station_item['coordinate_x'])*pi/180
@@ -138,6 +149,7 @@ def get_lenth_start(start_y_rad, start_x_rad):
 
 # функция создания списка растояний от finish
 def get_lenth_finish(finish_y_rad, finish_x_rad):
+    all_station_list = Station.objects.values('coordinate_x', 'coordinate_y').order_by('matrix_index')
     lenth_finish = list()
     for station_item in all_station_list:
         coordinate_x = float(station_item['coordinate_x'])*pi/180
@@ -146,7 +158,9 @@ def get_lenth_finish(finish_y_rad, finish_x_rad):
         lenth_finish += [l_s]
     return lenth_finish
 
+#ф-ия нахождения х(иксов) всех станций
 def get_all_x():
+    all_station_list = Station.objects.values('coordinate_x').order_by('matrix_index')
     all_station_x = list()
     for station_item in all_station_list:
         coordinate_x = float(station_item['coordinate_x'])
@@ -179,6 +193,7 @@ def get_points_in_radius_finish(fx2, fx1, fy1, fy2, all_station_x):
                 points_in_radius_finish += [station_y[1]]
     return list(set(points_in_radius_finish))
 
+#ф-ия добавления переходов от точек старта и финиша до точек их радиуса
 def get_metastations_stations_list(points_in_radius_finish, points_in_radius_start, start_point, end_point):
     metastations_stations_list = list()
     for metastation_item in Metastation.objects.all():

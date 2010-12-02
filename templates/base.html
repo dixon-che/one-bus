@@ -1,42 +1,65 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-    <head>
-      <title>Peresadok.net</title>
-        <style type="text/css">
-            body { margin: 20px; font-family: sans-serif; background: #fff; }
-            h1 { padding: 50px; }
-            h2 { background: #ddf; padding: 10px 20px; }
-            h3 { background: #eef; padding: 5px 20px; }
-            table th { text-align: left; }
-        </style>
+<head>
+	<meta name="author" content="Wink Hosting (www.winkhosting.com)" />
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+	<link rel="stylesheet" href="/s/css/style2.css" type="text/css" />
+	<script type="text/javascript" src="http://api-maps.yandex.ru/1.1/index.xml?key=ADeQTkwBAAAAuMr-NQIA8BfhPGjPxWuKOAPDJVBPAU6QyjkAAAAAAAAAAAB5fpcMwDw9jHcS4ciq3BK5Ks13Tw=="></script>
 
-    <script type="text/javascript" src="http://api-maps.yandex.ru/1.1/index.xml?key=ADeQTkwBAAAAuMr-NQIA8BfhPGjPxWuKOAPDJVBPAU6QyjkAAAAAAAAAAAB5fpcMwDw9jHcS4ciq3BK5Ks13Tw=="></script>
+	<script type="text/javascript" src="/s/js/transportmenu.js"></script>
 
-    <script type="text/javascript" src="/s/js/transportmenu.js"></script>
+	<title>Peresadok.net</title>
+</head>
+<body>
 
-    </head>
-    <body>
-      <center><table border = 2>
+
+	<div id="page" align="center">
+		<div id="toppage" align="center">
+			<div id="date">
+				<div class="smalltext" style="padding:13px;"><strong>1.12.2010</strong></div>
+			</div>
+			<div id="topbar">
+				<div align="right" style="padding:12px;" class="smallwhitetext"><a href="#">Home</a> | <a href="#">Sitemap</a> | <a href="#">Contact Us</a></div>
+			</div>
+		</div>
+		<div id="header" align="center">
+			<div class="titletext" id="logo">
+				<div class="logotext" style="margin:30px">Ca<span class="orangelogotext">$</span>h</div> 
+			</div>
+			<div id="pagetitle">
+				<div id="title" class="titletext" align="right">Welcome to Peresadok.net</div>
+			</div>
+		</div>
+		<div id="content" align="center">
+			<div id="menus" align="right">
+				<div align="right" style="width:189px; height:8px;"><img src="/s/images/mnu_topshadow.gif" width="189" height="8" alt="mnutopshadow" /></div>
+				<div id="linksmenu" align="center">
+					<a href="#" title="Home">Home</a>
+					<a href="#" title="About Us">About Us</a>
+					<a href="#" title="Products">Products</a>
+					<a href="#" title="Our Services">Our Services</a>
+					<a href="#" title="Contact Us">Contact Us</a>
+				</div>
+				<div align="right" style="width:189px; height:8px;"><img src="/s/images/mnu_bottomshadow.gif" width="189" height="8" alt="mnubottomshadow" /></div>
+			</div>
+
+		<div id="contenttext">
+		  <table>
         {% block content %}
-	<tr><td colspan=3 cellpadding=1 align=center valign=bottom background=/s/images/img1.jpg ><h1>{{ text }}</h1></td></tr>
-	<tr>
-	  <td bgcolor=#0f0><form action = ^$> 
-	      <input type=checkbox name=option1 value=a1>AAAAA<br>
-	      <input type=checkbox name=option2 value=a2>BBBBB<br>
-	      <input type=checkbox name=option3 value=a3>CCCCC<br>
-	      <input type=checkbox name=option4 value=a4>DDDDD<br>
-	      <input type=checkbox name=option5 value=a5>EEEEE<br>
-	      <input type=checkbox name=option6 value=a6>FFFFF<br>
-              <p><input type=submit style="background: url(/s/images/img1.jpg)" value="Отправить"> 
-	  </form></td>
-          <td><div id="YMapsID" style="width:800px;height:600px"></div></td>
-	  <td valign="top" background=/s/images/hbg.jpg ><ul id="menu"></ul></td>	  
-	</tr>
-	      <table>
-	<tr>
-          <td><div>=============================================</div></td>	  
-	</tr>
+		    <tr>
+		      <td><div id="YMapsID" style="width:800px;height:600px"></div></td>
+		      <td><ul id="menu"></ul></td>	  
+		    </tr>
 	{% endblock %}
-      </center>
-       </body>
+	<tr>
+	  <td><div id="footer" class="smallgraytext" align="center">
+	      <a href="#">Home</a> | <a href="#">About Us</a> | <a href="#">Products</a> | <a href="#">Our Services</a> | <a href="#">Contact Us</a><br />
+	      Your Company Name &copy; 2007<br />
+	      <a href="http://www.winkhosting.com" title="Hosting Colombia">Hosting Colombia</a><br />
+	    </div></td>
+	</tr>
+		</div>
+	</div>
+
+</body>
 </html>
