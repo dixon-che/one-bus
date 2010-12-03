@@ -12,6 +12,7 @@ YMaps.jQuery(function()
 	CreateStyles();
 	
 	var myEventListener = YMaps.Events.observe(map, map.Events.Click, function (map, mEvent)
+
 	{
 		map.removeOverlay(placemark);
 		placemark = new YMaps.Placemark(mEvent.getGeoPoint(), {draggable: true, style: "default#redSmallPoint"});
@@ -46,6 +47,7 @@ YMaps.jQuery(function()
 					p = JSON.parse(http_request.responseText);
 				    
 				    oldRouteid = 0;
+				    var human_readable = '';
 					var pm ;
 					for (var i in p)
 					{
@@ -62,7 +64,7 @@ YMaps.jQuery(function()
 							{
 								Line.setStyle("1bus#Peshkom");
 								if(i != 0)
-									Line.addPoint(new YMaps.GeoPoint(p[i-1].x, p[i-1].y));											
+									Line.addPoint(new YMaps.GeoPoint(p[i-1].x, p[i-1].y));										
 							}
 							else
 								Line.setStyle(p[i].idRoute);
@@ -81,12 +83,14 @@ YMaps.jQuery(function()
 						pm.description = p[i].transportName + " t=" + p[i].t;
 						Marks.add(pm);
 						Line.addPoint(new YMaps.GeoPoint(p[i].x, p[i].y));
+human_readable = '(' + p[i].TransportsType + '-' + p[i].routeName + ' : ' + p[i].stopName + '' + ') ' + human_readable;
 					}
 					Lines.add(Line);
 					map.addOverlay(Lines);								
 					map.addOverlay(Marks);
 					Start_x = Start_y = Finish_x = Finish_y = -1;
 					map.removeOverlay(placemark);
+				        YMaps.jQuery('#human_readable').html(human_readable);
 				} 
 			};
 			var url = "/route/?x1=" + encodeURI(Start_x) 
@@ -191,7 +195,7 @@ YMaps.jQuery(function()
 			if (http_request.readyState == 4) 
 			{
 				Transports = JSON.parse(http_request.responseText);
-				oldid = -1;
+			        oldid = -1;
 				var tstyle;
 				var tline;
 				for (var i in Transports)
@@ -217,6 +221,7 @@ YMaps.jQuery(function()
 				        if(Transports[i].route__transport_type == 1)
 					    {
 						pm = new YMaps.Placemark(new YMaps.GeoPoint(Transports[i].coordinate_x,Transports[i].coordinate_y),{draggable: false, style:TramvayStationStyle});
+
 					    }
 				        else
 				            { 
@@ -228,9 +233,12 @@ YMaps.jQuery(function()
 					tline.addPoint(new YMaps.GeoPoint(Transports[i].coordinate_x, Transports[i].coordinate_y));											
 					oldid = Transports[i].route__id;
 				}
+
 			} 
+
 		};
-		http_request.open("GET", "/transport_list/", true);
+	        http_request.open("GET", "/transport_list/", true);
 		http_request.send(null);		
+
 	}
 })

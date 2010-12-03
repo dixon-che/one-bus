@@ -92,7 +92,7 @@ def transport_list(request):
 
 def route(request):
     closed_points_list, border_in_radius = list(), list()
-    KoeRad = 0.005
+    KoeRad = 0.0005
     R = 6376 # радиус земли
     speed_matrix = get_speed_matrix()
 
@@ -183,21 +183,24 @@ def route(request):
         points_price[str(end_point)][1].remove(start_point)
         points_price[str(end_point)][1].remove(end_point)
         points_price[str(end_point)][2] = points_price[str(end_point)][2][1:-1]
-    final_views = [{'x': start_x, 'y': start_y, 'idRoute':"-1", 'transportName':"", 'stopName':"Start", 't':'0'}]
+        your_way = points_price[str(end_point)][1]
+        final_views = [{'x': start_x, 'y': start_y, 'idRoute':"-1", 'transportName':"", 'stopName':"Start", 't':'0', 'TransportsType':'', 'routeName':''}]
     i = 0
     for q in points_price[str(end_point)][1]:
         item_dict = {}
         point = Station.objects.get(matrix_index=q)
         item_dict['stopName'] = point.name
         item_dict['idRoute'] = str(point.route_id)
+        item_dict['routeName'] = Route.objects.get(id=point.route_id).route
         item_dict['route__transport_type'] = str(point.route.transport_type_id)
-        item_dict['transportName'] = item_dict['route__transport_type']
+        transport_id = item_dict['transportName'] = item_dict['route__transport_type']
+        item_dict['TransportsType'] = Transport.objects.get(id=transport_id).name
         item_dict['x'] = str(point.coordinate_x)
         item_dict['y'] = str(point.coordinate_y)
         item_dict['t'] = str(points_price[str(end_point)][2][i])
         final_views += [item_dict]
         i += 1
-    final_views.append({'x': finish_x, 'y': finish_y, 'idRoute': "-1", 'transportName': "", 'stopName': "Finish", 't': final_time})
+    final_views.append({'x': finish_x, 'y': finish_y, 'idRoute': "-1", 'transportName': "", 'stopName': "Finish", 't': final_time, 'TransportsType':'', 'routeName':''})
     final_views.reverse()
 
     return HttpResponse(json.dumps(final_views), 'application/javascript')
