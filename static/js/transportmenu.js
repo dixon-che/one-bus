@@ -76,9 +76,15 @@ YMaps.jQuery(function()
 						else {
 						    if (p[i].route__transport_type == 1)
 							pm = new YMaps.Placemark(new YMaps.GeoPoint(p[i].x,p[i].y),{draggable: false, style:"1bus#TramvayStation"});
-						    else
-							pm = new YMaps.Placemark(new YMaps.GeoPoint(p[i].x,p[i].y),{draggable: false, style:"1bus#MetroStation"});
-						}						
+						    else {
+							if (p[i].route__transport_type == 2)
+							    pm = new YMaps.Placemark(new YMaps.GeoPoint(p[i].x,p[i].y),{draggable: false, style:"1bus#MetroStation"});
+							else {
+							    if (p[i].route__transport_type == 3)
+								pm = new YMaps.Placemark(new YMaps.GeoPoint(p[i].x,p[i].y),{draggable: false, style:"1bus#BusStation"});
+							    else
+								pm = new YMaps.Placemark(new YMaps.GeoPoint(p[i].x,p[i].y),{draggable: false, style:"1bus#TrolStation"});
+						}}}						
 						pm.name = p[i].stopName;
 						pm.description = p[i].transportName + " t=" + p[i].t;
 						Marks.add(pm);
@@ -172,10 +178,29 @@ human_readable = '(' + p[i].TransportsType + '-' + p[i].routeName + ' : ' + p[i]
 		TramvayStationStyle.hasHint = true;
 		YMaps.Styles.add("1bus#TramvayStation", TramvayStationStyle);
 
+		BusStationStyle = new YMaps.Style();
+		BusStationStyle.iconStyle = new YMaps.IconStyle();
+		BusStationStyle.iconStyle.href = "/s/images/only_bus_small.png";
+		BusStationStyle.iconStyle.size = new YMaps.Point(20, 10);
+		BusStationStyle.iconStyle.offset = new YMaps.Point(-10, -7);
+		BusStationStyle.hintContentStyle = new YMaps.HintContentStyle(new YMaps.Template("<b>$[name]</b><div>$[description]</div>"));
+		BusStationStyle.hasHint = true;
+		YMaps.Styles.add("1bus#BusStation", BusStationStyle);
+
+		TrolStationStyle = new YMaps.Style();
+		TrolStationStyle.iconStyle = new YMaps.IconStyle();
+		TrolStationStyle.iconStyle.href = "/s/images/only_trol_small.png";
+		TrolStationStyle.iconStyle.size = new YMaps.Point(20, 14);
+		TrolStationStyle.iconStyle.offset = new YMaps.Point(-10, -7);
+		TrolStationStyle.hintContentStyle = new YMaps.HintContentStyle(new YMaps.Template("<b>$[name]</b><div>$[description]</div>"));
+		TrolStationStyle.hasHint = true;
+		YMaps.Styles.add("1bus#TrolStation", TrolStationStyle);
+
+
 		MetroStationStyle = new YMaps.Style();
 		MetroStationStyle.iconStyle = new YMaps.IconStyle();
-		MetroStationStyle.iconStyle.href = "/s/images/only_trol_small.png";
-		MetroStationStyle.iconStyle.size = new YMaps.Point(20, 14);
+		MetroStationStyle.iconStyle.href = "/s/images/only_metro_small.png";
+		MetroStationStyle.iconStyle.size = new YMaps.Point(14, 14);
 		MetroStationStyle.iconStyle.offset = new YMaps.Point(-10, -7);
 		MetroStationStyle.hintContentStyle = new YMaps.HintContentStyle(new YMaps.Template("<b>$[name]</b><div>$[description]</div>"));
 		MetroStationStyle.hasHint = true;
@@ -221,12 +246,16 @@ human_readable = '(' + p[i].TransportsType + '-' + p[i].routeName + ' : ' + p[i]
 				        if(Transports[i].route__transport_type == 1)
 					    {
 						pm = new YMaps.Placemark(new YMaps.GeoPoint(Transports[i].coordinate_x,Transports[i].coordinate_y),{draggable: false, style:TramvayStationStyle});
-
 					    }
-				        else
-				            { 
+				        else {
+					    if(Transports[i].route__transport_type == 2)
 						pm = new YMaps.Placemark(new YMaps.GeoPoint(Transports[i].coordinate_x,Transports[i].coordinate_y),{draggable: false, style:MetroStationStyle});
-					    }	
+					    else {
+						if(Transports[i].route__transport_type == 3)
+						    pm = new YMaps.Placemark(new YMaps.GeoPoint(Transports[i].coordinate_x,Transports[i].coordinate_y),{draggable: false, style:BusStationStyle});
+						else {
+						pm = new YMaps.Placemark(new YMaps.GeoPoint(Transports[i].coordinate_x,Transports[i].coordinate_y),{draggable: false, style:TrolStationStyle});
+					    }}}	
 					pm.name = Transports[i].name;
 					pm.description = Transports[i].route__route;
 					TransportMenuItem.add(pm);

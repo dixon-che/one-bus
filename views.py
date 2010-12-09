@@ -92,7 +92,7 @@ def transport_list(request):
 
 def route(request):
     closed_points_list, border_in_radius = list(), list()
-    KoeRad = 0.0005
+    KoeRad = 0.005
     R = 6376 # радиус земли
     speed_matrix = get_speed_matrix()
 
@@ -180,11 +180,20 @@ def route(request):
         print "Your way is:", points_price[str(end_point)][1]
         print "Your time is:", points_price[str(end_point)][2]
         final_time = points_price[str(end_point)][2][-1]
-        points_price[str(end_point)][1].remove(start_point)
-        points_price[str(end_point)][1].remove(end_point)
-        points_price[str(end_point)][2] = points_price[str(end_point)][2][1:-1]
-        your_way = points_price[str(end_point)][1]
-        final_views = [{'x': start_x, 'y': start_y, 'idRoute':"-1", 'transportName':"", 'stopName':"Start", 't':'0', 'TransportsType':'', 'routeName':''}]
+
+    if points_in_radius_start != []:
+            points_price[str(end_point)][1].remove(start_point)
+            points_price[str(end_point)][2] = points_price[str(end_point)][2][1:]
+
+    if points_in_radius_finish != []:
+            points_price[str(end_point)][1].remove(end_point)
+            points_price[str(end_point)][2] = points_price[str(end_point)][2][0:-1]
+
+    print "Your way is:", points_price[str(end_point)][1]
+    print "Your time is:", points_price[str(end_point)][2]
+
+
+    final_views = [{'x': start_x, 'y': start_y, 'idRoute':"-1", 'transportName':"", 'stopName':"Start", 't':'0', 'TransportsType':'', 'routeName':''}]
     i = 0
     for q in points_price[str(end_point)][1]:
         item_dict = {}
