@@ -180,7 +180,7 @@ def route(request):
     if str(end_point) in points_price:
         print "Your way is:", points_price[str(end_point)][1]
         print "Your time is:", points_price[str(end_point)][2]
-        final_time = points_price[str(end_point)][2][-1]
+        final_time = round((points_price[str(end_point)][2][-1])*60, 2)
 
     if points_in_radius_start != []:
         points_price[str(end_point)][1].remove(start_point)
@@ -190,10 +190,7 @@ def route(request):
         points_price[str(end_point)][1].remove(end_point)
         points_price[str(end_point)][2] = points_price[str(end_point)][2][0:-1]
     else:
-        final_time = final_time + lenth_finish_min
-
-    print "Your way is:", points_price[str(end_point)][1]
-    print "Your time is:", points_price[str(end_point)][2]
+        final_time = round(((final_time / 60)+ lenth_finish_min)*60, 2)
 
     final_views = [{'x': start_x, 'y': start_y, 'idRoute':"-1", 'transportName':"", 'stopName':"Start", 't':'0', 'TransportsType':'', 'routeName':''}]
     i = 0
@@ -208,7 +205,7 @@ def route(request):
         item_dict['TransportsType'] = Transport.objects.get(id=transport_id).name
         item_dict['x'] = str(point.coordinate_x)
         item_dict['y'] = str(point.coordinate_y)
-        item_dict['t'] = str(points_price[str(end_point)][2][i])
+        item_dict['t'] = round(points_price[str(end_point)][2][i]*60, 2)
         final_views += [item_dict]
         i += 1
     final_views.append({'x': finish_x, 'y': finish_y, 'idRoute': "-1", 'transportName': "", 'stopName': "Finish", 't': final_time, 'TransportsType':'', 'routeName':''})

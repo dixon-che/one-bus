@@ -1,15 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-
 from math import *
 from apps.point.models import Route, Station, Metastation, Transport
 from django.db.models import Max
 import os
 import datetime
 
-
-R = 6376 # радиус земли
 speed_Pesh = 3.0
 
 #ф-ия построения нулевой speed_matrix
@@ -24,7 +21,11 @@ speed_matrix = S_M
 # функция нахождения растояния по шаровым координатам
 def len_witput_points(start_point, end_point):
     R = 6376 # радиус земли
-    lenth = acos(sin(start_point[1])*sin(end_point[1]) + cos(start_point[1])*cos(end_point[1])*cos(end_point[0]-start_point[0]))*R
+    sp1 = start_point[1]*pi/180
+    ep1 = end_point[1]*pi/180
+    sp0 = start_point[0]*pi/180
+    ep0 = end_point[0]*pi/180
+    lenth = acos(sin(sp1)*sin(ep1) + cos(sp1)*cos(ep1)*cos(ep0-sp0))*R
     return lenth
 
 #функция нахождения соседних точек
