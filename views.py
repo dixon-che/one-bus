@@ -112,8 +112,7 @@ def route(request):
     finish_y_rad = finish_y*pi/180
     fy1 = finish_y + KoeRad
     fy2 = finish_y - KoeRad
-    s_f = acos(sin(start_y_rad)*sin(finish_y_rad) + cos(start_y_rad)*cos(finish_y_rad)*cos(finish_x_rad-start_x_rad))*R
-
+    s_f = (acos(sin(start_y_rad)*sin(finish_y_rad) + cos(start_y_rad)*cos(finish_y_rad)*cos(finish_x_rad-start_x_rad))*R)/3
     all_station_x = get_all_x()
     lenth_start = get_lenth_start(start_y_rad, start_x_rad)
     lenth_finish = get_lenth_finish(finish_y_rad, finish_x_rad)
@@ -146,8 +145,10 @@ def route(request):
         end_point = tend_point
     if points_in_radius_start == []:
         start_point = tstart_point
+        points_price = {str(start_point): [lenth_start_min, [start_point], [lenth_start_min]]}
+    else:
+        points_price = {str(start_point): [0, [start_point], [0]]}
 
-    points_price = {str(start_point): [0, [start_point], [0]]}
     next_points_list = [start_point]
 
     while next_points_list:
@@ -182,16 +183,17 @@ def route(request):
         final_time = points_price[str(end_point)][2][-1]
 
     if points_in_radius_start != []:
-            points_price[str(end_point)][1].remove(start_point)
-            points_price[str(end_point)][2] = points_price[str(end_point)][2][1:]
+        points_price[str(end_point)][1].remove(start_point)
+        points_price[str(end_point)][2] = points_price[str(end_point)][2][1:]
 
     if points_in_radius_finish != []:
-            points_price[str(end_point)][1].remove(end_point)
-            points_price[str(end_point)][2] = points_price[str(end_point)][2][0:-1]
+        points_price[str(end_point)][1].remove(end_point)
+        points_price[str(end_point)][2] = points_price[str(end_point)][2][0:-1]
+    else:
+        final_time = final_time + lenth_finish_min
 
     print "Your way is:", points_price[str(end_point)][1]
     print "Your time is:", points_price[str(end_point)][2]
-
 
     final_views = [{'x': start_x, 'y': start_y, 'idRoute':"-1", 'transportName':"", 'stopName':"Start", 't':'0', 'TransportsType':'', 'routeName':''}]
     i = 0

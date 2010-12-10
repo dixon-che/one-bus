@@ -23,6 +23,7 @@ speed_matrix = S_M
 
 # функция нахождения растояния по шаровым координатам
 def len_witput_points(start_point, end_point):
+    R = 6376 # радиус земли
     lenth = acos(sin(start_point[1])*sin(end_point[1]) + cos(start_point[1])*cos(end_point[1])*cos(end_point[0]-start_point[0]))*R
     return lenth
 
@@ -138,23 +139,25 @@ def get_speed_matrix():
 
 # функция создания списка растояний от start
 def get_lenth_start(start_y_rad, start_x_rad):
+    R = 6376 # радиус земли
     all_station_list = Station.objects.values('coordinate_x', 'coordinate_y').order_by('matrix_index')
     lenth_start = list()
     for station_item in all_station_list:
         coordinate_x = float(station_item['coordinate_x'])*pi/180
         coordinate_y = float(station_item['coordinate_y'])*pi/180
-        l_s = acos(sin(start_y_rad)*sin(coordinate_y) + cos(start_y_rad)*cos(coordinate_y)*cos(coordinate_x-start_x_rad))*R/speed_Pesh
+        l_s = acos(sin(start_y_rad)*sin(coordinate_y) + cos(start_y_rad)*cos(coordinate_y)*cos(coordinate_x-start_x_rad))*R / speed_Pesh
         lenth_start += [l_s]
     return lenth_start
 
 # функция создания списка растояний от finish
 def get_lenth_finish(finish_y_rad, finish_x_rad):
+    R = 6376 # радиус земли
     all_station_list = Station.objects.values('coordinate_x', 'coordinate_y').order_by('matrix_index')
     lenth_finish = list()
     for station_item in all_station_list:
         coordinate_x = float(station_item['coordinate_x'])*pi/180
         coordinate_y = float(station_item['coordinate_y'])*pi/180
-        l_s = acos(sin(finish_y_rad)*sin(coordinate_y) + cos(finish_y_rad)*cos(coordinate_y)*cos(coordinate_x-finish_x_rad))*R/speed_Pesh
+        l_s = acos(sin(finish_y_rad)*sin(coordinate_y) + cos(finish_y_rad)*cos(coordinate_y)*cos(coordinate_x-finish_x_rad))*R / speed_Pesh
         lenth_finish += [l_s]
     return lenth_finish
 
