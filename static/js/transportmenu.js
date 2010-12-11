@@ -12,6 +12,7 @@ YMaps.jQuery(function()
 	CreateStyles();
 	
 	var myEventListener = YMaps.Events.observe(map, map.Events.Click, function (map, mEvent)
+
 	{
 		map.removeOverlay(placemark);
 		placemark = new YMaps.Placemark(mEvent.getGeoPoint(), {draggable: true, style: "default#redSmallPoint"});
@@ -46,6 +47,7 @@ YMaps.jQuery(function()
 					p = JSON.parse(http_request.responseText);
 				    
 				    oldRouteid = 0;
+				    var human_readable = '';
 					var pm ;
 					for (var i in p)
 					{
@@ -62,7 +64,7 @@ YMaps.jQuery(function()
 							{
 								Line.setStyle("1bus#Peshkom");
 								if(i != 0)
-									Line.addPoint(new YMaps.GeoPoint(p[i-1].x, p[i-1].y));											
+									Line.addPoint(new YMaps.GeoPoint(p[i-1].x, p[i-1].y));										
 							}
 							else
 								Line.setStyle(p[i].idRoute);
@@ -71,18 +73,30 @@ YMaps.jQuery(function()
 						}
 						if(p[i].idRoute == -1)
 							pm = new YMaps.Placemark(new YMaps.GeoPoint(p[i].x,p[i].y),{draggable: false, style:"1bus#Peshehod"});			
-						else
-							pm = new YMaps.Placemark(new YMaps.GeoPoint(p[i].x,p[i].y),{draggable: false, style:"1bus#TramvayStation"});			
+						else {
+						    if (p[i].route__transport_type == 1)
+							pm = new YMaps.Placemark(new YMaps.GeoPoint(p[i].x,p[i].y),{draggable: false, style:"1bus#TramvayStation"});
+						    else {
+							if (p[i].route__transport_type == 2)
+							    pm = new YMaps.Placemark(new YMaps.GeoPoint(p[i].x,p[i].y),{draggable: false, style:"1bus#MetroStation"});
+							else {
+							    if (p[i].route__transport_type == 3)
+								pm = new YMaps.Placemark(new YMaps.GeoPoint(p[i].x,p[i].y),{draggable: false, style:"1bus#BusStation"});
+							    else
+								pm = new YMaps.Placemark(new YMaps.GeoPoint(p[i].x,p[i].y),{draggable: false, style:"1bus#TrolStation"});
+						}}}						
 						pm.name = p[i].stopName;
 						pm.description = p[i].transportName + " t=" + p[i].t;
 						Marks.add(pm);
 						Line.addPoint(new YMaps.GeoPoint(p[i].x, p[i].y));
+human_readable = '(' + p[i].TransportsType + '-' + p[i].routeName + ' : ' + p[i].stopName + '' + ') ' + human_readable;
 					}
 					Lines.add(Line);
 					map.addOverlay(Lines);								
 					map.addOverlay(Marks);
 					Start_x = Start_y = Finish_x = Finish_y = -1;
 					map.removeOverlay(placemark);
+				        YMaps.jQuery('#human_readable').html(human_readable);
 				} 
 			};
 			var url = "/route/?x1=" + encodeURI(Start_x) 
@@ -163,6 +177,34 @@ YMaps.jQuery(function()
 		TramvayStationStyle.hintContentStyle = new YMaps.HintContentStyle(new YMaps.Template("<b>$[name]</b><div>$[description]</div>"));
 		TramvayStationStyle.hasHint = true;
 		YMaps.Styles.add("1bus#TramvayStation", TramvayStationStyle);
+
+		BusStationStyle = new YMaps.Style();
+		BusStationStyle.iconStyle = new YMaps.IconStyle();
+		BusStationStyle.iconStyle.href = "/s/images/only_bus_small.png";
+		BusStationStyle.iconStyle.size = new YMaps.Point(20, 10);
+		BusStationStyle.iconStyle.offset = new YMaps.Point(-10, -7);
+		BusStationStyle.hintContentStyle = new YMaps.HintContentStyle(new YMaps.Template("<b>$[name]</b><div>$[description]</div>"));
+		BusStationStyle.hasHint = true;
+		YMaps.Styles.add("1bus#BusStation", BusStationStyle);
+
+		TrolStationStyle = new YMaps.Style();
+		TrolStationStyle.iconStyle = new YMaps.IconStyle();
+		TrolStationStyle.iconStyle.href = "/s/images/only_trol_small.png";
+		TrolStationStyle.iconStyle.size = new YMaps.Point(20, 14);
+		TrolStationStyle.iconStyle.offset = new YMaps.Point(-10, -7);
+		TrolStationStyle.hintContentStyle = new YMaps.HintContentStyle(new YMaps.Template("<b>$[name]</b><div>$[description]</div>"));
+		TrolStationStyle.hasHint = true;
+		YMaps.Styles.add("1bus#TrolStation", TrolStationStyle);
+
+
+		MetroStationStyle = new YMaps.Style();
+		MetroStationStyle.iconStyle = new YMaps.IconStyle();
+		MetroStationStyle.iconStyle.href = "/s/images/only_metro_small.png";
+		MetroStationStyle.iconStyle.size = new YMaps.Point(14, 14);
+		MetroStationStyle.iconStyle.offset = new YMaps.Point(-10, -7);
+		MetroStationStyle.hintContentStyle = new YMaps.HintContentStyle(new YMaps.Template("<b>$[name]</b><div>$[description]</div>"));
+		MetroStationStyle.hasHint = true;
+		YMaps.Styles.add("1bus#MetroStation", MetroStationStyle);
 		
 		style = new YMaps.Style();
 		style.polygonStyle = new YMaps.PolygonStyle();
@@ -178,7 +220,7 @@ YMaps.jQuery(function()
 			if (http_request.readyState == 4) 
 			{
 				Transports = JSON.parse(http_request.responseText);
-				oldid = -1;
+			        oldid = -1;
 				var tstyle;
 				var tline;
 				for (var i in Transports)
@@ -201,16 +243,31 @@ YMaps.jQuery(function()
 						TransportMenuItem.add(tline);
 						tline.setStyle(tstyle);
 					}
-					pm = new YMaps.Placemark(new YMaps.GeoPoint(Transports[i].coordinate_x,Transports[i].coordinate_y),{draggable: false, style:TramvayStationStyle});
+				        if(Transports[i].route__transport_type == 1)
+					    {
+						pm = new YMaps.Placemark(new YMaps.GeoPoint(Transports[i].coordinate_x,Transports[i].coordinate_y),{draggable: false, style:TramvayStationStyle});
+					    }
+				        else {
+					    if(Transports[i].route__transport_type == 2)
+						pm = new YMaps.Placemark(new YMaps.GeoPoint(Transports[i].coordinate_x,Transports[i].coordinate_y),{draggable: false, style:MetroStationStyle});
+					    else {
+						if(Transports[i].route__transport_type == 3)
+						    pm = new YMaps.Placemark(new YMaps.GeoPoint(Transports[i].coordinate_x,Transports[i].coordinate_y),{draggable: false, style:BusStationStyle});
+						else {
+						pm = new YMaps.Placemark(new YMaps.GeoPoint(Transports[i].coordinate_x,Transports[i].coordinate_y),{draggable: false, style:TrolStationStyle});
+					    }}}	
 					pm.name = Transports[i].name;
 					pm.description = Transports[i].route__route;
 					TransportMenuItem.add(pm);
 					tline.addPoint(new YMaps.GeoPoint(Transports[i].coordinate_x, Transports[i].coordinate_y));											
 					oldid = Transports[i].route__id;
 				}
+
 			} 
+
 		};
-		http_request.open("GET", "/transport_list/", true);
+	        http_request.open("GET", "/transport_list/", true);
 		http_request.send(null);		
+
 	}
 })

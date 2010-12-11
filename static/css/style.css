@@ -1,0 +1,74 @@
+﻿* {
+	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+  font-size: 12px;
+}
+
+#masthead {
+}
+
+#top_nav {
+}
+
+#container {
+	position: relative;
+	width: 100%;
+}
+
+#page_content {
+	margin-right: 300px;
+}
+
+#right_col {
+	width: 300px;
+	position: absolute;
+	right: 0px;
+	top: 0px;
+}
+
+#right_col ul {
+/*	list-style-image: url(../images/bullet.png);*/
+	list-style-position: outside;
+	list-style-type: disc;
+	margin-left: 0;
+	padding-left: 1em;
+}
+
+#right_col li {
+	margin-top: 2px;
+}
+
+#right_col a {
+	color: black;
+}
+
+#footer {
+}
+
+.inplace-edit {
+	background-color: yellow;
+	padding: 5px;
+}
+
+.save-button {
+	border: 0px;
+	cursor: pointer;
+	vertical-align: top;
+	margin-top: 2px;
+}
+
+.cancel-button {
+	border: 0px;
+	cursor: pointer;
+	vertical-align: top;
+	margin-top: 2px;
+}
+
+.button {
+	border: 0px;
+	vertical-align: -3px;
+}
+
+.save_button {
+	border: 0px;
+	vertical-align: -4px;
+}

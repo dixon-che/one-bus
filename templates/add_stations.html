@@ -1,0 +1,303 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=7" />
+	<title>Yandex Maps</title>
+	<link rel="stylesheet" type="text/css" href="/s/css/style.css" />
+	<link rel="stylesheet" type="text/css" href="/s/css/impromptu.css" />
+	<script type="text/javascript" src="/s/js/jquery.js"></script>
+	<script type="text/javascript" src="/s/js/json2.js"></script>
+	<script type="text/javascript" src="/s/js/jquery_ipe.js"></script>
+	<script type="text/javascript" src="/s/js/jquery_rs.js"></script>
+	<script type="text/javascript" src="/s/js/jquery_impromptu.js"></script>
+	<script type="text/javascript" src="http://api-maps.yandex.ru/1.0/?key=ADeQTkwBAAAAuMr-NQIA8BfhPGjPxWuKOAPDJVBPAU6QyjkAAAAAAAAAAAB5fpcMwDw9jHcS4ciq3BK5Ks13Tw=="></script>
+	<script type="text/javascript">
+		// Массив выбранных точек
+		var points = [];
+		// Объект карты
+		var map;
+		// Начальные границы карты
+		var main_bounds;
+		var empty_list = true;
+		var point_index = 1;
+		var child_index = 1;
+		var points_collection;
+		var route_line;
+		var drag_index;
+	
+		$(document).ready(function(){
+			init_map();
+			init_page();
+		});
+		
+		function init_page()
+		{
+			$('#add_point').bind('click', add_point_handler);
+		}
+		
+		function init_map()
+    {
+      var geocoder = new YMaps.Geocoder('Украина, г. Харьков');
+      points_collection = new YMaps.GeoObjectCollection();
+      map = new YMaps.Map(document.getElementById('main_map'));
+      YMaps.Events.observe(geocoder, geocoder.Events.Load, function (){
+      	if (this.length())
+      	{
+      		main_bounds = this.get(0).getBounds();
+      		map.setBounds(this.get(0).getBounds());
+      	}
+      });
+      map.setZoom(12);
+      map.setType(YMaps.MapType.MAP);
+      map.addControl(new YMaps.Zoom(), new YMaps.ControlPosition(YMaps.ControlPosition.TOP_LEFT, new YMaps.Size(5, 5)));
+      // Отключаем масштабирование двойным щелчком мыши
+      map.disableDblClickZoom();
+    }
+		
+		function add_point_handler(event)
+		{
+			var geocoder = new YMaps.Geocoder('Украина, г. Харьков, ' + $('#new_point').val(), {results: 1});
+      YMaps.Events.observe(geocoder, geocoder.Events.Load, pointFound);
+      YMaps.Events.observe(geocoder, geocoder.Events.Fault, pointFoundError);
+		}
+		
+		function pointFound()
+    {
+      if(this.length())
+      {
+      	var new_point = this.get(0);
+      	if(new_point.kind == 'house')
+      	{
+	        if(confirm('Добавить найденную точку в список?'))
+					{
+	          points[points.length] = [new_point.getGeoPoint(), new_point.text.replace('Украина, Харьков, ', ''), 'point_' + point_index, 'main'];
+	          if(empty_list)
+	          {
+	          	empty_list = false;
+	          	$('#points').html('<ol id="points_list"> </ol><br /><a title="Сохранить маршрут" class="thickbox" href="javascript:save_route()">Сохранить маршрут</a>');
+	          }
+	          $('#points_list').append('<li id="point_' + point_index + '"><span id="point_' + point_index + '_value">' + points[points.length - 1][1] +'</span>&nbsp;<span id="point_' + point_index + '_options"><a href="javascript:delete_point(\'point_' + point_index + '\')"><img src="/s/images/delete.png" class="button" /></a>&nbsp;<a href="javascript:child_point(\'point_' + point_index + '\')"><img src="/s/images/child.png" class="button" /></a></span></li><ol id="point_' + point_index + '_child"> </ol>');
+	          point_index++;
+	          $("span:regex(id, ^point\\_([0-9]+)\\_value$)").inPlaceEdit({submit : ok_handler, cancel : cancel_handler});
+	          draw_route();
+	        }
+	      }
+	      else
+	      {
+	      	alert("Точка не найдена!");
+	      }
+      }
+      else
+      {
+        alert("Точка не найдена!");
+      }
+    }
+    
+    function pointFoundError(e)
+    {
+      alert('Error: ' + e.message);
+    }
+    
+    function draw_route()
+    {
+	    points_collection.removeAll();
+	    map.removeOverlay(route_line);
+    	if(points.length > 0)
+    	{
+	    	for(i = 0; i < points.length; i++)
+	    	{
+	    		var options;
+	    		if(points[i][2].indexOf('child_point') == 0)
+	    		{
+	    			options = {draggable: true, hasBalloon: false}
+	    		}
+	    		else
+	    		{
+	    			options = {draggable: true}
+	    		}
+	        var placemark = new YMaps.Placemark(points[i][0], options);
+	        placemark.setIconContent(points[i][1]);
+	        placemark.setBalloonContent(points[i][1]);
+	        points_collection.add(placemark);
+	        YMaps.Events.observe(placemark, placemark.Events.DragStart, function () {
+					});
+	        YMaps.Events.observe(placemark, placemark.Events.Drag, function (mEvent) {
+		        var text = mEvent.getBalloonContent().textContent;
+				    drag_index = -1;
+			    	for(i = 0; i < points.length; i++)
+			    	{
+			    		if(points[i][1] == text)
+			    		{
+			    			drag_index = i;
+			    			break;
+			    		}
+			    	}
+	        	if(drag_index != -1)
+	        	{
+		        	points[drag_index][0] = mEvent.getGeoPoint();
+		        }
+	        });
+	        YMaps.Events.observe(placemark, placemark.Events.DragEnd, function () {
+						drag_index = -1;
+						draw_route();
+					});
+				}
+				map.addOverlay(points_collection);
+	    	if(points.length > 1)
+	    	{
+		    	var route_points = [];
+		    	for(i = 0; i < points.length; i++)
+		    	{
+		    		route_points[i] = points[i][0];
+		    	}
+		      route_line = new YMaps.Polyline(route_points);
+					map.addOverlay(route_line);
+				}
+			}
+    }
+    
+    function delete_point(id)
+    {
+    	$('#' + id).remove();
+    	var index = -1;
+    	for(i = 0; i < points.length; i++)
+    	{
+    		if(points[i][2] == id)
+    		{
+    			index = i;
+    			break;
+    		}
+    	}
+    	if(index != -1)
+    	{
+    		points.splice(index, 1);
+    	}
+    	draw_route();
+    }
+    
+    function child_point(id)
+    {
+    	var index = -1;
+    	for(i = 0; i < points.length; i++)
+    	{
+    		if(points[i][2] == id)
+    		{
+    			index = i;
+    			break;
+    		}
+    	}
+    	if(index != -1)
+    	{
+    		if(index != (points.length - 1))
+    		{
+	    		var child_id = '#' + id + '_child';
+	    		var x1 = points[index][0].getLng();
+    			var x2 = points[index + 1][0].getLng();
+    			var y1 = points[index][0].getLat();
+    			var y2 = points[index + 1][0].getLat();
+    			points.splice(index + 1, 0, [new YMaps.GeoPoint((Math.max(x1, x2) + Math.min(x1, x2)) / 2, (Math.max(y1, y2) + Math.min(y1, y2)) / 2), '#' + child_index, 'child_point_' + child_index, 'child']);
+    			$(child_id).append('<li id="child_point_' + child_index + '"><span id="child_point_' + child_index + '_value">' + points[index + 1][1] +'</span>&nbsp;<span id="child_point_' + child_index + '_options"><a href="javascript:delete_point(\'child_point_' + child_index + '\')"><img src="/s/images/delete.png" class="button" /></a></span></li>');
+    			child_index++;
+    		}
+    		else
+    		{
+    			
+    		}
+    		draw_route();
+    	}
+    }
+    
+    function ok_handler(element, id, value)
+    {
+    	var index = -1;
+    	for(i = 0; i < points.length; i++)
+    	{
+    		if((points[i][2] + '_value') == id)
+    		{
+    			index = i;
+    			break;
+    		}
+    	}
+    	if(index != -1)
+    	{
+    		points[index][1] = value;
+    	}
+    	draw_route();
+    	return true;
+    }
+    
+    function cancel_handler(element)
+    {
+    	return true;
+    }
+    
+    function save_route()
+    {
+	    var msg = 'Укажите тип и название маршрута:<br /><input type="text" id="routeName" name="routeName" value="" />&nbsp;<select id="routeType" name="routeType"><option value="bus">автобус</option><option value="trolley">троллейбус</option><option value="tram">трамвай</option></select>';
+			$.prompt(msg, {callback: save_callback, buttons: {Сохранить: true, Отмена: false}});
+    }
+    
+    function save_callback(v, m, f)
+    {
+    	if(v == true)
+    	{
+	   		var points_count = points.length;
+	    	if(points_count > 0)
+	    	{
+	    		var prepared_str = ''; //f.routeName + ',' + f.routeType;
+		        var pr_list = {};
+	    		for(i = 0; i < points_count; i++)
+	    		{
+	    			var x = points[i][0].getLng();
+	    			var y = points[i][0].getLat();
+	    			var title = (points[i][3] == 'child') ? 'temporary' : points[i][1];
+				   pr_list[i] = [title, y, x];    
+	    			prepared_str += (((prepared_str.length > 0) ? ',' : '') + title + ',' + y + ',' + x);
+	    		}
+	    		if(prepared_str.length > 0)
+	    		{
+		       // in string
+		       var stroka = JSON.stringify(pr_list);
+	    	       $.post('/stations/route_save/', {
+		       //route: prepared_str,
+		       route: stroka,
+		       routeName: f.routeName,
+		       routeType: f.routeType
+		       },
+		       function(data){$.prompt(data);if(data=='Данные успешно сохранены.'){document.location.href='/stations/add/'}});
+	    		}
+	    		else
+	    		{
+		    		$.prompt('Нет данных для сохранения');
+	    		}
+	    	}
+	    	else
+	    	{
+	    		$.prompt('Нет данных для сохранения');
+	    	}
+	    }
+    }
+	</script>
+</head>
+<body>
+	<div id="masthead"></div>
+	<div id="top_nav"></div>
+	<div id="container">
+		<div id="page_content">
+			<div id="main_map" style="height:480px; width:640px"></div>
+		</div>
+		<div id="right_col">
+			Добавить точку:<br />
+			<input type="text" id="new_point" value="пр. Ленина, 9" style="width: 200px" />&nbsp;<input type="button" id="add_point" value="Добавить" /><br />
+			<div id="points" style="margin-top: 20px">
+				Ни одна точка еще не добавлена
+			</div>
+		</div>
+	</div>
+	<div id="footer"></div>
+	<div id="save_form" style="display:none">
+		Название: <input type="text">
+	</div>
+</body>
+</html>

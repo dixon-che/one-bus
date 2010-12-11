@@ -1,0 +1,53 @@
+
+        var YMaps = {};
+        YMaps.__MapData = {
+            userKey: "AI_BXEkBAAAAoHqzZgIAGRcsBKHR-WZo8NqYyhOdmaXGTpEAAAAAAAAAAAAi92I0YZTZn2tgEgjwvp5gw9UbSA==",
+            versionPath: "http://api-maps.yandex.ru/1.0.7/",
+            tileUrlTemplates:{
+                map: 'http://kiev-vec0%d.maps.yandex.ru/tiles?l=map&%c&region=20544',
+                sat: 'http://kiev-sat0%d.maps.yandex.net/tiles?l=sat&%c&region=20544',
+                skl: 'http://kiev-vec0%d.maps.yandex.ru/tiles?l=skl&%c&region=20544'
+            },
+            printerHost: 'http:\/\/print.maps.yandex.net\/1.x\/'
+        }
+
+        new function () {
+            var scriptsToLoad = [
+                    YMaps.__MapData.versionPath + 'xml/data.xml?v=' + '1.49.3',
+                    YMaps.__MapData.versionPath + '_YMaps.js'
+                ],
+                cssToLoad = [
+                    YMaps.__MapData.versionPath + '_YMaps.css',
+                    YMaps.__MapData.versionPath + '_YMaps-ie.css'
+                ],
+                i = 0, l = scriptsToLoad.length;
+            // Добавляем включение VML для IE
+            document.write(
+                '<!--[if IE]><style type="text/css">vml\\:shape,vml\\:group{behavior: url(#default#VML);display:inline-block;}</style><![endif]-->'
+            );
+            
+                var include = function include (src) {
+                    document.write("<script src='" + src + "' type='text/javascript' charset='utf-8'></script>");
+                };
+
+                var userAgent = window.navigator.userAgent.toLowerCase(),
+                    isIe = userAgent.indexOf('opera') == -1 && userAgent.indexOf('msie') != -1;
+
+                if (isIe && (!document.documentMode || document.documentMode < 8)) {
+                    document.write('<link rel="stylesheet" href="' + cssToLoad[1] + '"/>');
+                } else {
+                    document.write('<link rel="stylesheet" href="' + cssToLoad[0] + '"/>');
+                }
+
+                for (; i < l; i++) {
+                    include(scriptsToLoad[i]);
+                }
+
+                YMaps.load = function (callback) {
+                    if (typeof callback == 'function') {
+                        callback();
+                    }
+                }
+            
+        }
+    
