@@ -5,7 +5,7 @@ import os
 
 rel = lambda *x: os.path.abspath(os.path.join(os.path.abspath(os.path.dirname(__file__)), *x))
 
-sys.path.insert(0, rel("../libs"))
+sys.path.insert(0, rel("libs"))
 
 from django.core.management import execute_manager
 try:
