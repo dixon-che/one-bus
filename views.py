@@ -5,7 +5,7 @@ from django.shortcuts import render_to_response
 from django.http import HttpResponse
 from apps.point.models import Route, Station, Metastation, Transport
 from math import *
-from utils import len_witput_points, get_speed_matrix, get_border_points, get_lenth_finish, get_lenth_start, get_all_x, get_points_in_radius_start, get_points_in_radius_finish, get_metastations_stations_list
+from utils import len_witput_points, get_speed_matrix, get_border_points, get_border_points2, get_lenth_finish, get_lenth_start, get_all_x, get_points_in_radius_start, get_points_in_radius_finish, get_metastations_stations_list, new_Metastation, new_speed_matrix
 import json
 
 
@@ -92,7 +92,7 @@ def transport_list(request):
 
 def route(request):
     closed_points_list, border_in_radius = list(), list()
-    KoeRad = 0.005
+    KoeRad = 0.004
     R = 6376 # радиус земли
     speed_matrix = get_speed_matrix()
 
@@ -154,10 +154,11 @@ def route(request):
     while next_points_list:
         p = [[next_key, points_price[str(next_key)][0]] for next_key in next_points_list]
         active_point = min(p, key=lambda x: x[1])[0]
+        print active_point
         active_point_price = points_price[str(active_point)][0]
         active_point_P = points_price[str(active_point)][1]
         active_point_Pe = points_price[str(active_point)][2]
-        border_points = get_border_points(active_point, closed_points_list, metastations_stations_list)
+        border_points = get_border_points2(active_point, closed_points_list, metastations_stations_list)
         for item_point_index in border_points:
             go_price = speed_matrix[active_point][item_point_index]
             if str(item_point_index) not in points_price:

@@ -7,16 +7,6 @@ from django.db.models import Max
 import os
 import datetime
 
-speed_Pesh = 3.0
-
-#ф-ия построения нулевой speed_matrix
-def S_M():
-    points_list = Station.objects.values_list('coordinate_x', 'coordinate_y').order_by('id')
-    len_points = len(points_list)
-    speed_matrix = [[0] * len_points  for i in range(len_points)]
-    return speed_matrix
-
-speed_matrix = S_M
 
 # функция нахождения растояния по шаровым координатам
 def len_witput_points(start_point, end_point):
@@ -76,10 +66,6 @@ def get_border_points(points_price_min, closed_points_list, metastations_station
 
 # функция создания speed_matrix
 def get_speed_matrix():
-    wating_index = 1/2.0
-    points_list = Station.objects.values_list('coordinate_x', 'coordinate_y').order_by('id')
-    len_points = len(points_list)
-    speed_matrix = [[0] * len_points  for i in range(len_points)]
     max_station_timestamp = Station.objects.all().aggregate(Max('timestamp'))
     max_route_timestamp = Route.objects.all().aggregate(Max('timestamp'))
     max_transport_timestamp = Transport.objects.all().aggregate(Max('timestamp'))
@@ -90,46 +76,10 @@ def get_speed_matrix():
     stat = os.stat('speed_matrix.txt')
     file_size = stat.st_size
     timestamp = datetime.datetime.fromtimestamp(sm_file)
+
     if timestamp < max_timestamp or file_size == 0:
+        speed_matrix = new_speed_matrix()
 
-               # заполняем routes_dict, routes_speeds, routes_intevals
-        routes_dict, routes_intevals, routes_speeds = dict(), dict(), dict()
-        for route_item in Route.objects.all():
-            routes_dict[route_item.id] = list(route_item.station_set.values_list('matrix_index', flat=True))
-            routes_speeds[route_item.id] = route_item.speed
-            routes_intevals[route_item.id] = route_item.interval
-
-        for route_id in routes_dict:
-            route_item_list = routes_dict[route_id]
-            route_speed = float(routes_speeds[route_id]) 
-        
-            for item_index in range(len(route_item_list)):
-                next_item_index = item_index + 1
-                if next_item_index == len(route_item_list):
-                    break
-
-                from_matrix_index = route_item_list[item_index]
-                to_matrix_index = route_item_list[next_item_index]
-            
-                speed_matrix[to_matrix_index][from_matrix_index] = \
-                    speed_matrix[from_matrix_index][to_matrix_index] = len_witput_points(points_list[from_matrix_index],
-                                                                                 points_list[to_matrix_index]) / route_speed
-
-                # заполняем список точек пересадок metastations_stations_list
-        metastations_stations_list = list()
-        for metastation_item in Metastation.objects.all():
-            metastation_station_set = list(metastation_item.station_set.values_list('matrix_index', flat=True))
-            metastations_stations_list += [metastation_station_set]
-
-                # добавление в speed_matrix переходов по метастанциям
-        for item_metastation_stations_list in metastations_stations_list:
-            for item_station_from in item_metastation_stations_list:
-                for item_station_to in item_metastation_stations_list:
-                    route_interval_time = routes_intevals[Station.objects.get(matrix_index=item_station_to).route_id]
-                    speed_matrix[item_station_from][item_station_to] = route_interval_time * wating_index
-        fp = open('speed_matrix.txt', 'r+')
-        fp.write(repr(speed_matrix))
-        fp.close()
     else:
         fp = open('speed_matrix.txt', 'r')
         read_file = fp.read()
@@ -140,6 +90,7 @@ def get_speed_matrix():
 
 # функция создания списка растояний от start
 def get_lenth_start(start_y_rad, start_x_rad):
+    speed_Pesh = 3.0
     R = 6376 # радиус земли
     all_station_list = Station.objects.values('coordinate_x', 'coordinate_y').order_by('matrix_index')
     lenth_start = list()
@@ -152,6 +103,7 @@ def get_lenth_start(start_y_rad, start_x_rad):
 
 # функция создания списка растояний от finish
 def get_lenth_finish(finish_y_rad, finish_x_rad):
+    speed_Pesh = 3.0
     R = 6376 # радиус земли
     all_station_list = Station.objects.values('coordinate_x', 'coordinate_y').order_by('matrix_index')
     lenth_finish = list()
@@ -199,10 +151,7 @@ def get_points_in_radius_finish(fx2, fx1, fy1, fy2, all_station_x):
 
 #ф-ия добавления переходов от точек старта и финиша до точек их радиуса
 def get_metastations_stations_list(points_in_radius_finish, points_in_radius_start, start_point, end_point):
-    metastations_stations_list = list()
-    for metastation_item in Metastation.objects.all():
-        metastation_station_set = list(metastation_item.station_set.values_list('matrix_index', flat=True))
-        metastations_stations_list += [metastation_station_set]
+    metastations_stations_list = new_Metastation()
 
     for point_in_radius in points_in_radius_start:
         that = list()
@@ -215,4 +164,118 @@ def get_metastations_stations_list(points_in_radius_finish, points_in_radius_sta
         thet += [end_point]
         thet += [point_in_radius]
         metastations_stations_list += [thet]
+
     return metastations_stations_list
+
+def new_Metastation():
+    Metastat = list()
+    Radius = 0.004
+    for station in Station.objects.values_list('matrix_index', flat=True).order_by('id'):
+        station_x = Station.objects.get(matrix_index=station).coordinate_x
+        station_y = Station.objects.get(matrix_index=station).coordinate_y
+        x1 = station_x - Radius
+        x2 = station_x + Radius
+        y1 = station_y - Radius
+        y2 = station_y + Radius
+        all_x = get_all_x()
+        radius_x, points_in_radius = list(), list()
+        for xs in all_x:
+            if x1< xs < x2:
+                radius_x += [xs]
+        for x_st in radius_x:
+            station_for_y = Station.objects.filter(coordinate_x=x_st).values_list('coordinate_y', 'matrix_index')
+            for sy in station_for_y:
+                if y1 < sy[0] < y2:
+                    points_in_radius += [sy[1]]
+        points_in_radius = list(set(points_in_radius))
+        for point in points_in_radius:
+            if point != station:
+                para_point = list()
+                para_point += [station]
+                para_point += [point]
+                if len(para_point) == 2:
+                    Metastat += [para_point]
+    return Metastat
+
+def new_speed_matrix():
+    Metastation = new_Metastation()
+    wating_index = 1/2.0
+    speed_Pesh = 3.0
+    points_list = Station.objects.values_list('coordinate_x', 'coordinate_y').order_by('id')
+    len_points = len(points_list)
+    speed_matrix = [[0] * len_points  for i in range(len_points)]
+
+    routes_dict, routes_intevals, routes_speeds = dict(), dict(), dict()
+    for route_item in Route.objects.all():
+        routes_dict[route_item.id] = list(route_item.station_set.values_list('matrix_index', flat=True))
+        routes_speeds[route_item.id] = route_item.speed
+        routes_intevals[route_item.id] = route_item.interval
+
+    for para in Metastation:
+        route_interval_time = routes_intevals[Station.objects.get(matrix_index=para[1]).route_id]
+        wait_interval = route_interval_time * wating_index
+        stationx1 = Station.objects.get(matrix_index=para[0]).coordinate_x
+        stationy1 = Station.objects.get(matrix_index=para[0]).coordinate_y
+        stationx2 = Station.objects.get(matrix_index=para[1]).coordinate_x
+        stationy2 = Station.objects.get(matrix_index=para[1]).coordinate_y
+        if stationy1 != stationy2 and stationx1 != stationx2:
+            station0 = [stationx1, stationy1]
+            station1 = [stationx2, stationy2]
+            speed_matrix[para[0]][para[1]] = len_witput_points(station0, station1) * speed_Pesh + wait_interval
+        else:
+            speed_matrix[para[0]][para[1]] = wait_interval
+
+    for route_id in routes_dict:
+        route_item_list = routes_dict[route_id]
+        route_speed = float(routes_speeds[route_id]) 
+        
+        for item_index in range(len(route_item_list)):
+            next_item_index = item_index + 1
+            if next_item_index == len(route_item_list):
+                break
+            
+            from_matrix_index = route_item_list[item_index]
+            to_matrix_index = route_item_list[next_item_index]
+            
+            speed_matrix[to_matrix_index][from_matrix_index] = \
+                speed_matrix[from_matrix_index][to_matrix_index] = len_witput_points(points_list[from_matrix_index],
+                                                                                     points_list[to_matrix_index]) / route_speed + 0.01
+
+    fp = open('speed_matrix.txt', 'r+')
+    fp.write(repr(speed_matrix))
+    fp.close()
+
+    return speed_matrix
+
+#функция нахождения соседних точек
+def get_border_points2(points_price_min, closed_points_list, metastations_stations_list):
+
+         # заполняем routes_dict, routes_speeds, routes_intevals
+    routes_dict = dict()
+    for route_item in Route.objects.all():
+        routes_dict[route_item.id] = list(route_item.station_set.values_list('matrix_index', flat=True))
+
+    points_list = []
+    for route_id in routes_dict:
+        points_list_item = routes_dict[route_id]
+        len_points_list_item = len(points_list_item)
+        if points_price_min in points_list_item:
+            index_in_list = points_list_item.index(points_price_min)
+            if index_in_list < len_points_list_item - 1:
+                right_border_index = points_list_item[index_in_list + 1]
+                if right_border_index not in closed_points_list:
+                    points_list += [right_border_index]
+            if index_in_list > 0:
+                left_border_index = points_list_item[index_in_list - 1]
+                if left_border_index not in closed_points_list:
+                    points_list += [left_border_index]
+
+            for metastation in metastations_stations_list:
+                if points_price_min == metastation[0] and metastation[1] not in closed_points_list:
+                        points_list += [metastation[1]]
+
+    for metastation in metastations_stations_list:
+        if points_price_min == metastation[0] and metastation[1] not in closed_points_list:
+            points_list += [metastation[1]]
+
+    return list(set(points_list))
