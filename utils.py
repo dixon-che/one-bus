@@ -279,3 +279,55 @@ def get_border_points2(points_price_min, closed_points_list, metastations_statio
             points_list += [metastation[1]]
 
     return list(set(points_list))
+
+                                        #функция нахождения соседних точек
+
+def points_list(points_in_radius_finish, points_in_radius_start, start_point, end_point):
+             # заполняем routes_dict, routes_speeds, routes_intevals
+    routes_dict = dict()
+    points_list_item = list()
+    for route_item in Route.objects.all():
+        routes_dict[route_item.id] = list(route_item.station_set.values_list('matrix_index', flat=True))
+        for route_id in routes_dict:
+            list2 = routes_dict[route_id]
+            points_list_item += [list2]
+
+    for point_in_radius in points_in_radius_start:
+        that = list()
+        that += [start_point]
+        that += [point_in_radius]
+        points_list_item += [that]
+
+    for point_in_radius in points_in_radius_finish:
+        thet = list()
+        thet += [end_point]
+        thet += [point_in_radius]
+        points_list_item += [thet]
+
+    return points_list_item
+
+#функция нахождения соседних точек
+def get_border_points3(points_price_min, closed_points_list, points_list_item, metastations_stations_list):
+    points_list = list()
+    for list_item in points_list_item:
+        len_list_item = len(list_item)
+        if points_price_min in list_item:
+            index_in_list = list_item.index(points_price_min)
+            if index_in_list < len_list_item - 1:
+                right_border_index = list_item[index_in_list + 1]
+                if right_border_index not in closed_points_list:
+                    points_list += [right_border_index]
+            if index_in_list > 0:
+                left_border_index = list_item[index_in_list - 1]
+                if left_border_index not in closed_points_list:
+                    points_list += [left_border_index]
+
+            for metastation in metastations_stations_list:
+                if points_price_min == metastation[0] and metastation[1] not in closed_points_list:
+                        points_list += [metastation[1]]
+
+    for metastation in metastations_stations_list:
+        if points_price_min == metastation[0] and metastation[1] not in closed_points_list:
+            points_list += [metastation[1]]
+
+    return list(set(points_list))
