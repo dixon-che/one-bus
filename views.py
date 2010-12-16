@@ -139,28 +139,27 @@ def route(request):
 
     points_in_radius_finish = get_points_in_radius_finish(fx2, fx1, fy1, fy2, all_station_x)    
     points_in_radius_start = get_points_in_radius_start(sx2, sx1, sy1, sy2, all_station_x)
-    metastations_stations_list = get_metastations_stations_list(points_in_radius_finish, points_in_radius_start, start_point, end_point)
-    point_list_item = points_list(points_in_radius_finish, points_in_radius_start, start_point, end_point)
-    if points_in_radius_finish == []:
-        end_point = tend_point
-    if points_in_radius_start == []:
-        start_point = tstart_point
-        points_price = {str(start_point): [lenth_start_min, [start_point], [lenth_start_min]]}
-    else:
-        points_price = {str(start_point): [0, [start_point], [0]]}
 
+    if points_in_radius_finish == []:
+        points_in_radius_finish = [tend_point]
+    if points_in_radius_start == []:
+        points_in_radius_start = [tstart_point]
+
+    points_price = {str(start_point): [0, [start_point], [0]]}
+    point_list_item = points_list(points_in_radius_finish, points_in_radius_start, start_point, end_point)
+    metastations_stations_list = new_Metastation()
     next_points_list = [start_point]
     while next_points_list:
         p = [[next_key, points_price[str(next_key)][0]] for next_key in next_points_list]
         active_point = min(p, key=lambda x: x[1])[0]
-#        print active_point
+#        print active_point, next_points_list
         active_point_price = points_price[str(active_point)][0]
         active_point_P = points_price[str(active_point)][1]
         active_point_Pe = points_price[str(active_point)][2]
         border_points = get_border_points3(active_point, closed_points_list, point_list_item, metastations_stations_list)
-#        print border_points
         for item_point_index in border_points:
             go_price = speed_matrix[active_point][item_point_index]
+#            print item_point_index, '--', go_price
             if str(item_point_index) not in points_price:
                 curent_point_index = [item_point_index]
                 go_price_time = active_point_price + go_price
@@ -182,16 +181,9 @@ def route(request):
         print "Your way is:", points_price[str(end_point)][1]
         print "Your time is:", points_price[str(end_point)][2]
         final_time = round((points_price[str(end_point)][2][-1])*60, 2)
-
-        if points_in_radius_start != []:
-            points_price[str(end_point)][1].remove(start_point)
-            points_price[str(end_point)][2] = points_price[str(end_point)][2][1:]
-
-        if points_in_radius_finish != []:
-            points_price[str(end_point)][1].remove(end_point)
-            points_price[str(end_point)][2] = points_price[str(end_point)][2][0:-1]
-        else:
-            final_time = round(((final_time / 60)+ lenth_finish_min)*60, 2)
+        points_price[str(end_point)][1].remove(start_point)
+        points_price[str(end_point)][1].remove(end_point)
+        points_price[str(end_point)][2] = points_price[str(end_point)][2][1:-1]
 
     final_views = [{'x': start_x, 'y': start_y, 'idRoute':"-1", 'transportName':"", 'stopName':"Start", 't':'0', 'TransportsType':'', 'routeName':''}]
 

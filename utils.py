@@ -221,7 +221,7 @@ def new_speed_matrix():
         if stationy1 != stationy2 and stationx1 != stationx2:
             station0 = [stationx1, stationy1]
             station1 = [stationx2, stationy2]
-            speed_matrix[para[0]][para[1]] = len_witput_points(station0, station1) * speed_Pesh + wait_interval
+            speed_matrix[para[0]][para[1]] = len_witput_points(station0, station1) / speed_Pesh + wait_interval
         else:
             speed_matrix[para[0]][para[1]] = wait_interval
 
@@ -246,39 +246,6 @@ def new_speed_matrix():
     fp.close()
 
     return speed_matrix
-
-#функция нахождения соседних точек
-def get_border_points2(points_price_min, closed_points_list, metastations_stations_list):
-
-         # заполняем routes_dict, routes_speeds, routes_intevals
-    routes_dict = dict()
-    for route_item in Route.objects.all():
-        routes_dict[route_item.id] = list(route_item.station_set.values_list('matrix_index', flat=True))
-
-    points_list = []
-    for route_id in routes_dict:
-        points_list_item = routes_dict[route_id]
-        len_points_list_item = len(points_list_item)
-        if points_price_min in points_list_item:
-            index_in_list = points_list_item.index(points_price_min)
-            if index_in_list < len_points_list_item - 1:
-                right_border_index = points_list_item[index_in_list + 1]
-                if right_border_index not in closed_points_list:
-                    points_list += [right_border_index]
-            if index_in_list > 0:
-                left_border_index = points_list_item[index_in_list - 1]
-                if left_border_index not in closed_points_list:
-                    points_list += [left_border_index]
-
-            for metastation in metastations_stations_list:
-                if points_price_min == metastation[0] and metastation[1] not in closed_points_list:
-                        points_list += [metastation[1]]
-
-    for metastation in metastations_stations_list:
-        if points_price_min == metastation[0] and metastation[1] not in closed_points_list:
-            points_list += [metastation[1]]
-
-    return list(set(points_list))
 
                                         #функция нахождения соседних точек
 
@@ -317,6 +284,7 @@ def get_border_points3(points_price_min, closed_points_list, points_list_item, m
                 right_border_index = list_item[index_in_list + 1]
                 if right_border_index not in closed_points_list:
                     points_list += [right_border_index]
+
             if index_in_list > 0:
                 left_border_index = list_item[index_in_list - 1]
                 if left_border_index not in closed_points_list:
@@ -324,10 +292,8 @@ def get_border_points3(points_price_min, closed_points_list, points_list_item, m
 
             for metastation in metastations_stations_list:
                 if points_price_min == metastation[0] and metastation[1] not in closed_points_list:
-                        points_list += [metastation[1]]
-
-    for metastation in metastations_stations_list:
-        if points_price_min == metastation[0] and metastation[1] not in closed_points_list:
-            points_list += [metastation[1]]
+                    points_list += [metastation[1]]
+                if points_price_min == metastation[1] and metastation[0] not in closed_points_list:
+                    points_list += [metastation[0]]
 
     return list(set(points_list))
