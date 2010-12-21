@@ -15,14 +15,14 @@ class RouteAdmin(admin.ModelAdmin):
 admin.site.register(Route, RouteAdmin)
 
 class StationAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'coordinate_x', 'coordinate_y', 'route', 'order', 'meta_station', 'matrix_index')
-    list_filter = ('route', 'meta_station', 'name')
-    list_editable = ('coordinate_x', 'coordinate_y', 'order', 'meta_station', 'matrix_index')
+    list_display = ('id', 'name', 'coordinate_x', 'coordinate_y', 'route', 'order', 'matrix_index')
+    list_filter = ('route', 'name')
+    list_editable = ('coordinate_x', 'coordinate_y', 'order', 'matrix_index')
 
 
 admin.site.register(Station, StationAdmin)
 
-class MetastationAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'address')
+#class MetastationAdmin(admin.ModelAdmin):
+#    list_display = ('id', 'name', 'address')
 
-admin.site.register(Metastation, MetastationAdmin)
+#admin.site.register(Metastation, MetastationAdmin)
