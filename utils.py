@@ -64,7 +64,7 @@ def get_border_points(points_price_min, closed_points_list, metastations_station
                     points_list += [next_item]
     return list(set(points_list))
 
-# функция создания speed_matrix
+# функция создания speed_matrix "с кешем"
 def get_speed_matrix():
     max_station_timestamp = Station.objects.all().aggregate(Max('timestamp'))
     max_route_timestamp = Route.objects.all().aggregate(Max('timestamp'))
@@ -114,13 +114,35 @@ def get_lenth_finish(finish_y_rad, finish_x_rad):
         lenth_finish += [l_s]
     return lenth_finish
 
-#ф-ия нахождения х(иксов) всех станций
+#ф-ия нахождения х(иксов) всех станций "с кешем"
 def get_all_x():
-    all_station_list = Station.objects.values('coordinate_x').order_by('matrix_index')
-    all_station_x = list()
-    for station_item in all_station_list:
-        coordinate_x = float(station_item['coordinate_x'])
-        all_station_x += [coordinate_x]
+    max_station_timestamp = Station.objects.all().aggregate(Max('timestamp'))
+    max_route_timestamp = Route.objects.all().aggregate(Max('timestamp'))
+    max_transport_timestamp = Transport.objects.all().aggregate(Max('timestamp'))
+    max_metastation_timestamp = Metastation.objects.all().aggregate(Max('timestamp'))
+    max_timestamp = max(max_metastation_timestamp, max_station_timestamp, max_route_timestamp, max_transport_timestamp)
+    max_timestamp = max_timestamp['timestamp__max']
+    sm_file = os.path.getmtime('all_x.txt')
+    stat = os.stat('all_x.txt')
+    file_size = stat.st_size
+    timestamp = datetime.datetime.fromtimestamp(sm_file)
+
+    if timestamp < max_timestamp or file_size == 0:
+        all_station_list = Station.objects.values('coordinate_x').order_by('matrix_index')
+        all_station_x = list()
+        for station_item in all_station_list:
+            coordinate_x = float(station_item['coordinate_x'])
+            all_station_x += [coordinate_x]
+
+        fp = open('all_x.txt', 'r+')
+        fp.write(repr(all_station_x))
+        fp.close()
+    else:
+        fp = open('all_x.txt', 'r')
+        read_file = fp.read()
+        all_station_x = eval(read_file)
+        fp.close()            
+
     return all_station_x
 
 # нахождение точек в радиусе старта
@@ -168,33 +190,54 @@ def get_metastations_stations_list(points_in_radius_finish, points_in_radius_sta
     return metastations_stations_list
 
 def new_Metastation():
-    Metastat = list()
-    Radius = 0.004
-    for station in Station.objects.values_list('matrix_index', flat=True).order_by('id'):
-        station_x = Station.objects.get(matrix_index=station).coordinate_x
-        station_y = Station.objects.get(matrix_index=station).coordinate_y
-        x1 = station_x - Radius
-        x2 = station_x + Radius
-        y1 = station_y - Radius
-        y2 = station_y + Radius
-        all_x = get_all_x()
-        radius_x, points_in_radius = list(), list()
-        for xs in all_x:
-            if x1< xs < x2:
-                radius_x += [xs]
-        for x_st in radius_x:
-            station_for_y = Station.objects.filter(coordinate_x=x_st).values_list('coordinate_y', 'matrix_index')
-            for sy in station_for_y:
-                if y1 < sy[0] < y2:
-                    points_in_radius += [sy[1]]
-        points_in_radius = list(set(points_in_radius))
-        for point in points_in_radius:
-            if point != station:
-                para_point = list()
-                para_point += [station]
-                para_point += [point]
-                if len(para_point) == 2:
-                    Metastat += [para_point]
+    max_station_timestamp = Station.objects.all().aggregate(Max('timestamp'))
+    max_route_timestamp = Route.objects.all().aggregate(Max('timestamp'))
+    max_transport_timestamp = Transport.objects.all().aggregate(Max('timestamp'))
+    max_metastation_timestamp = Metastation.objects.all().aggregate(Max('timestamp'))
+    max_timestamp = max(max_metastation_timestamp, max_station_timestamp, max_route_timestamp, max_transport_timestamp)
+    max_timestamp = max_timestamp['timestamp__max']
+    sm_file = os.path.getmtime('metastation.txt')
+    stat = os.stat('metastation.txt')
+    file_size = stat.st_size
+    timestamp = datetime.datetime.fromtimestamp(sm_file)
+
+    if timestamp < max_timestamp or file_size == 0:
+        Metastat = list()
+        Radius = 0.004
+        for station in Station.objects.values_list('matrix_index', flat=True).order_by('id'):
+            station_x = Station.objects.get(matrix_index=station).coordinate_x
+            station_y = Station.objects.get(matrix_index=station).coordinate_y
+            x1 = station_x - Radius
+            x2 = station_x + Radius
+            y1 = station_y - Radius
+            y2 = station_y + Radius
+            all_x = get_all_x()
+            radius_x, points_in_radius = list(), list()
+            for xs in all_x:
+                if x1< xs < x2:
+                    radius_x += [xs]
+            for x_st in radius_x:
+                station_for_y = Station.objects.filter(coordinate_x=x_st).values_list('coordinate_y', 'matrix_index')
+                for sy in station_for_y:
+                    if y1 < sy[0] < y2:
+                        points_in_radius += [sy[1]]
+            points_in_radius = list(set(points_in_radius))
+            for point in points_in_radius:
+                if point != station:
+                    para_point = list()
+                    para_point += [station]
+                    para_point += [point]
+                    if len(para_point) == 2:
+                        Metastat += [para_point]
+        fp = open('metastation.txt', 'r+')
+        fp.write(repr(Metastat))
+        fp.close()
+    else:
+        fp = open('metastation.txt', 'r')
+        read_file = fp.read()
+        Metastat = eval(read_file)
+        fp.close()            
+
     return Metastat
 
 def new_speed_matrix():
