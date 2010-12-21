@@ -86,7 +86,7 @@ def hello(request):
 def transport_list(request):
     stations = list(Station.objects.all().values('route__id', 'route__route',
                                                  'route__color', 'route__transport_type', 'name',
-                                                 'coordinate_x', 'coordinate_y'))
+                                                 'coordinate_x', 'coordinate_y').order_by('route__id', 'matrix_index'))
     return HttpResponse(json.dumps(stations), 'application/javascript')
 
 
