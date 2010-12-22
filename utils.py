@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
+from settings import PROJECT_ROOT
 from math import *
 from apps.point.models import Route, Station, Metastation, Transport
 from django.db.models import Max
@@ -66,14 +66,15 @@ def get_border_points2(points_price_min, closed_points_list, metastations_statio
 
 # функция создания speed_matrix "с кешем"
 def get_speed_matrix():
+    s_m__txt = os.path.join(PROJECT_ROOT, 'speed_matrix.txt')
     max_station_timestamp = Station.objects.all().aggregate(Max('timestamp'))
     max_route_timestamp = Route.objects.all().aggregate(Max('timestamp'))
     max_transport_timestamp = Transport.objects.all().aggregate(Max('timestamp'))
     max_metastation_timestamp = Metastation.objects.all().aggregate(Max('timestamp'))
     max_timestamp = max(max_metastation_timestamp, max_station_timestamp, max_route_timestamp, max_transport_timestamp)
     max_timestamp = max_timestamp['timestamp__max']
-    sm_file = os.path.getmtime('speed_matrix.txt')
-    stat = os.stat('speed_matrix.txt')
+    sm_file = os.path.getmtime(s_m__txt)
+    stat = os.stat(s_m__txt)
     file_size = stat.st_size
     timestamp = datetime.datetime.fromtimestamp(sm_file)
 
@@ -81,7 +82,7 @@ def get_speed_matrix():
         speed_matrix = new_speed_matrix()
 
     else:
-        fp = open('speed_matrix.txt', 'r')
+        fp = open(s_m__txt, 'r')
         read_file = fp.read()
         speed_matrix = eval(read_file)
         fp.close()            
@@ -116,14 +117,15 @@ def get_lenth_finish(finish_y_rad, finish_x_rad):
 
 #ф-ия нахождения х(иксов) всех станций "с кешем"
 def get_all_x():
+    x_txt = os.path.join(PROJECT_ROOT, 'all_x.txt')
     max_station_timestamp = Station.objects.all().aggregate(Max('timestamp'))
     max_route_timestamp = Route.objects.all().aggregate(Max('timestamp'))
     max_transport_timestamp = Transport.objects.all().aggregate(Max('timestamp'))
     max_metastation_timestamp = Metastation.objects.all().aggregate(Max('timestamp'))
     max_timestamp = max(max_metastation_timestamp, max_station_timestamp, max_route_timestamp, max_transport_timestamp)
     max_timestamp = max_timestamp['timestamp__max']
-    sm_file = os.path.getmtime('all_x.txt')
-    stat = os.stat('all_x.txt')
+    sm_file = os.path.getmtime('x_txt')
+    stat = os.stat('x_txt')
     file_size = stat.st_size
     timestamp = datetime.datetime.fromtimestamp(sm_file)
 
@@ -134,11 +136,11 @@ def get_all_x():
             coordinate_x = float(station_item['coordinate_x'])
             all_station_x += [coordinate_x]
 
-        fp = open('all_x.txt', 'r+')
+        fp = open('x_txt', 'r+')
         fp.write(repr(all_station_x))
         fp.close()
     else:
-        fp = open('all_x.txt', 'r')
+        fp = open('x_txt', 'r')
         read_file = fp.read()
         all_station_x = eval(read_file)
         fp.close()            
@@ -190,14 +192,15 @@ def get_metastations_stations_list(points_in_radius_finish, points_in_radius_sta
     return metastations_stations_list
 
 def new_Metastation():
+    metastation_txt = os.path.join(PROJECT_ROOT, 'all_x.txt')
     max_station_timestamp = Station.objects.all().aggregate(Max('timestamp'))
     max_route_timestamp = Route.objects.all().aggregate(Max('timestamp'))
     max_transport_timestamp = Transport.objects.all().aggregate(Max('timestamp'))
     max_metastation_timestamp = Metastation.objects.all().aggregate(Max('timestamp'))
     max_timestamp = max(max_metastation_timestamp, max_station_timestamp, max_route_timestamp, max_transport_timestamp)
     max_timestamp = max_timestamp['timestamp__max']
-    sm_file = os.path.getmtime('metastation.txt')
-    stat = os.stat('metastation.txt')
+    sm_file = os.path.getmtime('metastation_txt')
+    stat = os.stat('metastation_txt')
     file_size = stat.st_size
     timestamp = datetime.datetime.fromtimestamp(sm_file)
 
@@ -229,11 +232,11 @@ def new_Metastation():
                     para_point += [point]
                     if len(para_point) == 2:
                         Metastat += [para_point]
-        fp = open('metastation.txt', 'r+')
+        fp = open('metastation_txt', 'r+')
         fp.write(repr(Metastat))
         fp.close()
     else:
-        fp = open('metastation.txt', 'r')
+        fp = open('metastation_txt', 'r')
         read_file = fp.read()
         Metastat = eval(read_file)
         fp.close()            
@@ -284,7 +287,7 @@ def new_speed_matrix():
                 speed_matrix[from_matrix_index][to_matrix_index] = len_witput_points(points_list[from_matrix_index],
                                                                                      points_list[to_matrix_index]) / route_speed + 0.01
 
-    fp = open('speed_matrix.txt', 'r+')
+    fp = open(os.path.join(PROJECT_ROOT, 'speed_matrix.txt'), 'r+')
     fp.write(repr(speed_matrix))
     fp.close()
 
