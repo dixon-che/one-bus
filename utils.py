@@ -207,7 +207,7 @@ def new_Metastation():
     if timestamp < max_timestamp or file_size == 0:
         Metastat = list()
         Radius = 0.004
-        for station in Station.objects.values_list('matrix_index', flat=True).order_by('id'):
+        for station in Station.objects.values_list('matrix_index', flat=True).order_by('matrix_index'):
             station_x = Station.objects.get(matrix_index=station).coordinate_x
             station_y = Station.objects.get(matrix_index=station).coordinate_y
             x1 = station_x - Radius
@@ -252,7 +252,7 @@ def new_speed_matrix():
     speed_matrix = [[0] * len_points  for i in range(len_points)]
 
     routes_dict, routes_intevals, routes_speeds = dict(), dict(), dict()
-    for route_item in Route.objects.all():
+    for route_item in Route.objects.all().order_by('id'):
         routes_dict[route_item.id] = list(route_item.station_set.values_list('matrix_index', flat=True).order_by('matrix_index'))
         routes_speeds[route_item.id] = route_item.speed
         routes_intevals[route_item.id] = route_item.interval
@@ -299,7 +299,7 @@ def points_list(points_in_radius_finish, points_in_radius_start, start_point, en
              # заполняем routes_dict, routes_speeds, routes_intevals
     routes_dict = dict()
     points_list_item = list()
-    for route_item in Route.objects.all():
+    for route_item in Route.objects.all().order_by('id'):
         routes_dict[route_item.id] = list(route_item.station_set.values_list('matrix_index', flat=True).order_by('matrix_index'))
         for route_id in routes_dict:
             list2 = routes_dict[route_id]
