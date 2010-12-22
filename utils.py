@@ -124,8 +124,8 @@ def get_all_x():
     max_metastation_timestamp = Metastation.objects.all().aggregate(Max('timestamp'))
     max_timestamp = max(max_metastation_timestamp, max_station_timestamp, max_route_timestamp, max_transport_timestamp)
     max_timestamp = max_timestamp['timestamp__max']
-    sm_file = os.path.getmtime('x_txt')
-    stat = os.stat('x_txt')
+    sm_file = os.path.getmtime(x_txt)
+    stat = os.stat(x_txt)
     file_size = stat.st_size
     timestamp = datetime.datetime.fromtimestamp(sm_file)
 
@@ -136,11 +136,11 @@ def get_all_x():
             coordinate_x = float(station_item['coordinate_x'])
             all_station_x += [coordinate_x]
 
-        fp = open('x_txt', 'r+')
+        fp = open(x_txt, 'r+')
         fp.write(repr(all_station_x))
         fp.close()
     else:
-        fp = open('x_txt', 'r')
+        fp = open(x_txt, 'r')
         read_file = fp.read()
         all_station_x = eval(read_file)
         fp.close()            
@@ -192,15 +192,15 @@ def get_metastations_stations_list(points_in_radius_finish, points_in_radius_sta
     return metastations_stations_list
 
 def new_Metastation():
-    metastation_txt = os.path.join(PROJECT_ROOT, 'all_x.txt')
+    metastation_txt = os.path.join(PROJECT_ROOT, 'metastation.txt')
     max_station_timestamp = Station.objects.all().aggregate(Max('timestamp'))
     max_route_timestamp = Route.objects.all().aggregate(Max('timestamp'))
     max_transport_timestamp = Transport.objects.all().aggregate(Max('timestamp'))
     max_metastation_timestamp = Metastation.objects.all().aggregate(Max('timestamp'))
     max_timestamp = max(max_metastation_timestamp, max_station_timestamp, max_route_timestamp, max_transport_timestamp)
     max_timestamp = max_timestamp['timestamp__max']
-    sm_file = os.path.getmtime('metastation_txt')
-    stat = os.stat('metastation_txt')
+    sm_file = os.path.getmtime(metastation_txt)
+    stat = os.stat(metastation_txt)
     file_size = stat.st_size
     timestamp = datetime.datetime.fromtimestamp(sm_file)
 
@@ -232,11 +232,11 @@ def new_Metastation():
                     para_point += [point]
                     if len(para_point) == 2:
                         Metastat += [para_point]
-        fp = open('metastation_txt', 'r+')
+        fp = open(metastation_txt, 'r+')
         fp.write(repr(Metastat))
         fp.close()
     else:
-        fp = open('metastation_txt', 'r')
+        fp = open(metastation_txt, 'r')
         read_file = fp.read()
         Metastat = eval(read_file)
         fp.close()            
