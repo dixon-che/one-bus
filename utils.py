@@ -19,7 +19,7 @@ def len_witput_points(start_point, end_point):
     return lenth
 
 #функция нахождения соседних точек
-def get_border_points(points_price_min, closed_points_list, metastations_stations_list):
+def get_border_points2(points_price_min, closed_points_list, metastations_stations_list):
 
          # заполняем routes_dict, routes_speeds, routes_intevals
     routes_dict = dict()
@@ -317,7 +317,7 @@ def points_list(points_in_radius_finish, points_in_radius_start, start_point, en
     return points_list_item
 
 #функция нахождения соседних точек
-def get_border_points3(points_price_min, closed_points_list, points_list_item, metastations_stations_list):
+def get_border_points(points_price_min, closed_points_list, points_list_item, metastations_stations_list):
     points_list = list()
     for list_item in points_list_item:
         len_list_item = len(list_item)

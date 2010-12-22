@@ -19,7 +19,6 @@ class StationAdmin(admin.ModelAdmin):
     list_filter = ('route', 'name')
     list_editable = ('coordinate_x', 'coordinate_y', 'order', 'matrix_index')
 
-
 admin.site.register(Station, StationAdmin)
 
 #class MetastationAdmin(admin.ModelAdmin):

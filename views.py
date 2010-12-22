@@ -5,7 +5,7 @@ from django.shortcuts import render_to_response
 from django.http import HttpResponse
 from apps.point.models import Route, Station, Metastation, Transport
 from math import *
-from utils import len_witput_points, get_speed_matrix, get_border_points, get_border_points3, get_lenth_finish, get_lenth_start, get_all_x, get_points_in_radius_start, get_points_in_radius_finish, get_metastations_stations_list, new_Metastation, new_speed_matrix, points_list
+from utils import len_witput_points, get_speed_matrix, get_border_points, get_lenth_finish, get_lenth_start, get_all_x, get_points_in_radius_start, get_points_in_radius_finish, get_metastations_stations_list, new_Metastation, new_speed_matrix, points_list
 import json
 
 
@@ -92,10 +92,10 @@ def transport_list(request):
 
 def route(request):
     closed_points_list, border_in_radius = list(), list()
-    KoeRad = 0.004
+    KoeRad = 0.05
     R = 6376 # радиус земли
     speed_matrix = get_speed_matrix()
-    print speed_matrix[13][426], speed_matrix[426][13]
+
     start_x = float(request.GET['x1'])
     start_x_rad = start_x*pi/180 
     sx1 = start_x + KoeRad
@@ -149,20 +149,13 @@ def route(request):
     point_list_item = points_list(points_in_radius_finish, points_in_radius_start, start_point, end_point)
     metastations_stations_list = new_Metastation()
     next_points_list = [start_point]
-    all_closed = list()
-    q = 0
     while next_points_list:
-        all_price = list()
-        slovar = dict()
         p = [[next_key, points_price[str(next_key)][0]] for next_key in next_points_list]
         active_point = min(p, key=lambda x: x[1])[0]
         active_point_price = points_price[str(active_point)][0]
         active_point_P = points_price[str(active_point)][1]
         active_point_Pe = points_price[str(active_point)][2]
-        border_points = get_border_points3(active_point, closed_points_list, point_list_item, metastations_stations_list)
-        slovar['active_point'] = active_point
-        slovar['next_points_list'] = next_points_list
-        slovar['border_points'] = border_points
+        border_points = get_border_points(active_point, closed_points_list, point_list_item, metastations_stations_list)
         for item_point_index in border_points:
             go_price = speed_matrix[active_point][item_point_index]
             if str(item_point_index) not in points_price:
@@ -170,26 +163,19 @@ def route(request):
                 go_price_time = active_point_price + go_price
                 time = [go_price_time]
                 points_price[str(item_point_index)] = [go_price_time, active_point_P + curent_point_index, active_point_Pe + time]
-                all_price += points_price[str(item_point_index)]
-                slovar['points_price'] = all_price
             else:
                 item_point_price = points_price[str(active_point)][0] + go_price
                 if item_point_price < points_price[str(item_point_index)][0]:
                     points_price[str(item_point_index)][0] = item_point_price
+                    points_price[str(item_point_index)][1] = points_price[str(active_point)][1] + [item_point_index]
+                    points_price[str(item_point_index)][2] = points_price[str(active_point)][2] + [item_point_price]
 
         closed_points_list.append(active_point)
-        slovar['q'] = q
-        all_closed += [slovar]
-        q += 1
         next_points_list.remove(active_point)
         next_points_list += border_points
         next_points_list = list(set(next_points_list))
         if end_point in closed_points_list:
             break
-
-#    fp = open('border_points.txt', 'r+')
-#    fp.write(repr(all_closed))
-#    fp.close()
 
     if str(end_point) in points_price:
         print "Your way is:", points_price[str(end_point)][1]
@@ -200,8 +186,6 @@ def route(request):
         points_price[str(end_point)][2] = points_price[str(end_point)][2][1:-1]
 
     final_views = [{'x': start_x, 'y': start_y, 'idRoute':"-1", 'transportName':"", 'stopName':"Start", 't':'0', 'TransportsType':'', 'routeName':''}]
-    all_route = list()
-    qaw = list()
     i = 0
     for q in points_price[str(end_point)][1]:
         item_dict = {}
