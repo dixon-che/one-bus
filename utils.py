@@ -207,7 +207,7 @@ def new_Metastation():
     if timestamp < max_timestamp or file_size == 0:
         Metastat = list()
         Radius = 0.004
-        for station in Station.objects.values_list('matrix_index', flat=True).order_by('id'):
+        for station in Station.objects.values_list('matrix_index', flat=True):
             station_x = Station.objects.get(matrix_index=station).coordinate_x
             station_y = Station.objects.get(matrix_index=station).coordinate_y
             x1 = station_x - Radius
