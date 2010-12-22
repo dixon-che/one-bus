@@ -154,7 +154,7 @@ def get_points_in_radius_start(sx2, sx1, sy1, sy2, all_station_x):
         if sx2 < station_x < sx1:
             radius_x_start += [station_x]
     for x_start in radius_x_start:
-        station_for_y = Station.objects.filter(coordinate_x=x_start).values_list('coordinate_y', 'matrix_index')
+        station_for_y = Station.objects.filter(coordinate_x=x_start).values_list('coordinate_y', 'matrix_index').order_by('matrix_index')
         for station_y in station_for_y:
             if sy2 < station_y[0] < sy1:
                 points_in_radius_start += [station_y[1]]
@@ -167,7 +167,7 @@ def get_points_in_radius_finish(fx2, fx1, fy1, fy2, all_station_x):
         if fx2 < station_x < fx1:
             radius_x_finish += [station_x]
     for x_finish in radius_x_finish:
-        station_for_y = Station.objects.filter(coordinate_x=x_finish).values_list('coordinate_y', 'matrix_index')
+        station_for_y = Station.objects.filter(coordinate_x=x_finish).values_list('coordinate_y', 'matrix_index').order_by('matrix_index')
         for station_y in station_for_y:
             if fy2 < station_y[0] < fy1:
                 points_in_radius_finish += [station_y[1]]
@@ -220,7 +220,7 @@ def new_Metastation():
                 if x1< xs < x2:
                     radius_x += [xs]
             for x_st in radius_x:
-                station_for_y = Station.objects.filter(coordinate_x=x_st).values_list('coordinate_y', 'matrix_index')
+                station_for_y = Station.objects.filter(coordinate_x=x_st).values_list('coordinate_y', 'matrix_index').order_by('matrix_index')
                 for sy in station_for_y:
                     if y1 < sy[0] < y2:
                         points_in_radius += [sy[1]]
@@ -247,13 +247,13 @@ def new_speed_matrix():
     Metastation = new_Metastation()
     wating_index = 1/2.0
     speed_Pesh = 3.0
-    points_list = Station.objects.values_list('coordinate_x', 'coordinate_y').order_by('id')
+    points_list = Station.objects.values_list('coordinate_x', 'coordinate_y').order_by('matrix_index')
     len_points = len(points_list)
     speed_matrix = [[0] * len_points  for i in range(len_points)]
 
     routes_dict, routes_intevals, routes_speeds = dict(), dict(), dict()
     for route_item in Route.objects.all():
-        routes_dict[route_item.id] = list(route_item.station_set.values_list('matrix_index', flat=True))
+        routes_dict[route_item.id] = list(route_item.station_set.values_list('matrix_index', flat=True).order_by('matrix_index'))
         routes_speeds[route_item.id] = route_item.speed
         routes_intevals[route_item.id] = route_item.interval
 
@@ -299,8 +299,8 @@ def points_list(points_in_radius_finish, points_in_radius_start, start_point, en
              # заполняем routes_dict, routes_speeds, routes_intevals
     routes_dict = dict()
     points_list_item = list()
-    for route_item in Route.objects.all():
-        routes_dict[route_item.id] = list(route_item.station_set.values_list('matrix_index', flat=True))
+    for route_item in Route.objects.all().order_by('id'):
+        routes_dict[route_item.id] = list(route_item.station_set.values_list('matrix_index', flat=True).order_by('matrix_index'))
         for route_id in routes_dict:
             list2 = routes_dict[route_id]
             points_list_item += [list2]
