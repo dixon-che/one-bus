@@ -136,7 +136,7 @@ def get_all_x():
             coordinate_x = float(station_item['coordinate_x'])
             all_station_x += [coordinate_x]
 
-        fp = open(x_txt, 'r+')
+        fp = open(x_txt, 'w')
         fp.write(repr(all_station_x))
         fp.close()
     else:
@@ -232,7 +232,7 @@ def new_Metastation():
                     para_point += [point]
                     if len(para_point) == 2:
                         Metastat += [para_point]
-        fp = open(metastation_txt, 'r+')
+        fp = open(metastation_txt, 'w')
         fp.write(repr(Metastat))
         fp.close()
     else:
@@ -287,7 +287,7 @@ def new_speed_matrix():
                 speed_matrix[from_matrix_index][to_matrix_index] = len_witput_points(points_list[from_matrix_index],
                                                                                      points_list[to_matrix_index]) / route_speed + 0.01
 
-    fp = open(os.path.join(PROJECT_ROOT, 'speed_matrix.txt'), 'r+')
+    fp = open(os.path.join(PROJECT_ROOT, 'speed_matrix.txt'), 'w')
     fp.write(repr(speed_matrix))
     fp.close()
 
