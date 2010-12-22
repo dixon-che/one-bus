@@ -300,7 +300,7 @@ def points_list(points_in_radius_finish, points_in_radius_start, start_point, en
     routes_dict = dict()
     points_list_item = list()
     for route_item in Route.objects.all():
-        routes_dict[route_item.id] = list(route_item.station_set.values_list('matrix_index', flat=True).order_by('matrix_index'))
+        routes_dict[route_item.id] = list(route_item.station_set.values_list('matrix_index', flat=True))
         for route_id in routes_dict:
             list2 = routes_dict[route_id]
             points_list_item += [list2]
