@@ -220,7 +220,7 @@ def new_Metastation():
                 if x1< xs < x2:
                     radius_x += [xs]
             for x_st in radius_x:
-                station_for_y = Station.objects.filter(coordinate_x=x_st).values_list('coordinate_y', 'matrix_index').order_by('matrix_index')
+                station_for_y = Station.objects.filter(coordinate_x=x_st).values_list('coordinate_y', 'matrix_index')#.order_by('matrix_index')
                 for sy in station_for_y:
                     if y1 < sy[0] < y2:
                         points_in_radius += [sy[1]]
@@ -252,7 +252,7 @@ def new_speed_matrix():
     speed_matrix = [[0] * len_points  for i in range(len_points)]
 
     routes_dict, routes_intevals, routes_speeds = dict(), dict(), dict()
-    for route_item in Route.objects.all().order_by('id'):
+    for route_item in Route.objects.all():
         routes_dict[route_item.id] = list(route_item.station_set.values_list('matrix_index', flat=True).order_by('matrix_index'))
         routes_speeds[route_item.id] = route_item.speed
         routes_intevals[route_item.id] = route_item.interval
