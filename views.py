@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
+from django.db.models import Max
+from settings import PROJECT_ROOT
 from django.shortcuts import render_to_response
 from django.http import HttpResponse
 from apps.point.models import Route, Station, Metastation, Transport
 from math import *
-from utils import len_witput_points, get_speed_matrix, get_border_points, get_lenth_finish, get_lenth_start, get_all_x, get_points_in_radius_start, get_points_in_radius_finish, get_metastations_stations_list, new_Metastation, new_speed_matrix, points_list
-import json
+from utils import len_witput_points, get_speed_matrix, get_border_points, get_lenth_finish, get_lenth_start, get_all_x, get_points_in_radius_start, get_points_in_radius_finish, get_metastations_stations_list, new_Metastation, new_speed_matrix, points_list, transport_types
+import json, os, datetime
 
 
 def new_station_save_in_route(request):
@@ -84,9 +85,32 @@ def hello(request):
 
 
 def transport_list(request):
-    stations = list(Station.objects.all().values('route__id', 'route__route',
-                                                 'route__color', 'route__transport_type', 'name',
-                                                 'coordinate_x', 'coordinate_y').order_by('route__id', 'matrix_index'))
+    transport_list_txt = os.path.join(PROJECT_ROOT, 'kesh/transport_list.txt')
+    max_station_timestamp = Station.objects.all().aggregate(Max('timestamp'))
+    max_route_timestamp = Route.objects.all().aggregate(Max('timestamp'))
+    max_transport_timestamp = Transport.objects.all().aggregate(Max('timestamp'))
+    max_metastation_timestamp = Metastation.objects.all().aggregate(Max('timestamp'))
+    max_timestamp = max(max_metastation_timestamp, max_station_timestamp, max_route_timestamp, max_transport_timestamp)
+    max_timestamp = max_timestamp['timestamp__max']
+    sm_file = os.path.getmtime(transport_list_txt)
+    stat = os.stat(transport_list_txt)
+    file_size = stat.st_size
+    timestamp = datetime.datetime.fromtimestamp(sm_file)
+
+    if timestamp < max_timestamp or file_size == 0:
+        stations = list(Station.objects.all().values('route__id', 'route__route',
+                                                     'route__color', 'route__transport_type', 'name',
+                                                     'coordinate_x', 'coordinate_y').order_by('route__id', 'matrix_index'))
+
+        fp = open(transport_list_txt, 'w')
+        fp.write(repr(stations))
+        fp.close()
+    else:
+        fp = open(transport_list_txt, 'r')
+        read_file = fp.read()
+        stations = eval(read_file)
+        fp.close()            
+
     return HttpResponse(json.dumps(stations), 'application/javascript')
 
 
@@ -94,8 +118,10 @@ def route(request):
     closed_points_list, border_in_radius = list(), list()
     KoeRad = 0.05
     R = 6376 # радиус земли
-    speed_matrix = get_speed_matrix()
-
+    Transport0 = Transport1 = Transport2 = Transport3 = Transport4 = 0
+#    Transport1 = 1
+#    Transport2 = 1
+    speed_matrix = get_speed_matrix(Transport1, Transport2, Transport3, Transport4)
     start_x = float(request.GET['x1'])
     start_x_rad = start_x*pi/180 
     sx1 = start_x + KoeRad
@@ -120,7 +146,7 @@ def route(request):
     lenth_start_min = min(lenth_start)
     tstart_point = lenth_start.index(lenth_start_min)
     tend_point = lenth_finish.index(lenth_finish_min)
-
+    transports = transport_types()
     start_point = len(all_station_x)
     end_point = start_point + 1
 
@@ -138,7 +164,7 @@ def route(request):
     speed_matrix.append(lenth_finish)
 
     points_in_radius_finish = get_points_in_radius_finish(fx2, fx1, fy1, fy2, all_station_x)    
-    points_in_radius_start = get_points_in_radius_start(sx2, sx1, sy1, sy2, all_station_x)
+    points_in_radius_start = get_points_in_radius_start(sx2, sx1, sy1, sy2, all_station_x, Transport1, Transport2, Transport3, Transport4)
 
     if points_in_radius_finish == []:
         points_in_radius_finish = [tend_point]
@@ -147,7 +173,7 @@ def route(request):
 
     points_price = {str(start_point): [0, [start_point], [0]]}
     point_list_item = points_list(points_in_radius_finish, points_in_radius_start, start_point, end_point)
-    metastations_stations_list = new_Metastation()
+    metastations_stations_list = new_Metastation(Transport1, Transport2, Transport3, Transport4)
     next_points_list = [start_point]
     while next_points_list:
         p = [[next_key, points_price[str(next_key)][0]] for next_key in next_points_list]

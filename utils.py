@@ -4,8 +4,7 @@ from settings import PROJECT_ROOT
 from math import *
 from apps.point.models import Route, Station, Metastation, Transport
 from django.db.models import Max
-import os
-import datetime
+import os, datetime
 
 
 # функция нахождения растояния по шаровым координатам
@@ -65,8 +64,8 @@ def get_border_points2(points_price_min, closed_points_list, metastations_statio
     return list(set(points_list))
 
 # функция создания speed_matrix "с кешем"
-def get_speed_matrix():
-    s_m__txt = os.path.join(PROJECT_ROOT, 'speed_matrix.txt')
+def get_speed_matrix(Transport1, Transport2, Transport3, Transport4):
+    s_m__txt = os.path.join(PROJECT_ROOT, 'kesh/speed_matrix.txt')
     max_station_timestamp = Station.objects.all().aggregate(Max('timestamp'))
     max_route_timestamp = Route.objects.all().aggregate(Max('timestamp'))
     max_transport_timestamp = Transport.objects.all().aggregate(Max('timestamp'))
@@ -79,7 +78,10 @@ def get_speed_matrix():
     timestamp = datetime.datetime.fromtimestamp(sm_file)
 
     if timestamp < max_timestamp or file_size == 0:
-        speed_matrix = new_speed_matrix()
+        speed_matrix = new_speed_matrix(Transport1, Transport2, Transport3, Transport4)
+        fp = open(s_m__txt, 'w')
+        fp.write(repr(speed_matrix))
+        fp.close()
 
     else:
         fp = open(s_m__txt, 'r')
@@ -89,162 +91,8 @@ def get_speed_matrix():
 
     return speed_matrix
 
-# функция создания списка растояний от start
-def get_lenth_start(start_y_rad, start_x_rad):
-    speed_Pesh = 3.0
-    R = 6376 # радиус земли
-    all_station_list = Station.objects.values('coordinate_x', 'coordinate_y').order_by('matrix_index')
-    lenth_start = list()
-    for station_item in all_station_list:
-        coordinate_x = float(station_item['coordinate_x'])*pi/180
-        coordinate_y = float(station_item['coordinate_y'])*pi/180
-        l_s = acos(sin(start_y_rad)*sin(coordinate_y) + cos(start_y_rad)*cos(coordinate_y)*cos(coordinate_x-start_x_rad))*R / speed_Pesh
-        lenth_start += [l_s]
-    return lenth_start
-
-# функция создания списка растояний от finish
-def get_lenth_finish(finish_y_rad, finish_x_rad):
-    speed_Pesh = 3.0
-    R = 6376 # радиус земли
-    all_station_list = Station.objects.values('coordinate_x', 'coordinate_y').order_by('matrix_index')
-    lenth_finish = list()
-    for station_item in all_station_list:
-        coordinate_x = float(station_item['coordinate_x'])*pi/180
-        coordinate_y = float(station_item['coordinate_y'])*pi/180
-        l_s = acos(sin(finish_y_rad)*sin(coordinate_y) + cos(finish_y_rad)*cos(coordinate_y)*cos(coordinate_x-finish_x_rad))*R / speed_Pesh
-        lenth_finish += [l_s]
-    return lenth_finish
-
-#ф-ия нахождения х(иксов) всех станций "с кешем"
-def get_all_x():
-    x_txt = os.path.join(PROJECT_ROOT, 'all_x.txt')
-    max_station_timestamp = Station.objects.all().aggregate(Max('timestamp'))
-    max_route_timestamp = Route.objects.all().aggregate(Max('timestamp'))
-    max_transport_timestamp = Transport.objects.all().aggregate(Max('timestamp'))
-    max_metastation_timestamp = Metastation.objects.all().aggregate(Max('timestamp'))
-    max_timestamp = max(max_metastation_timestamp, max_station_timestamp, max_route_timestamp, max_transport_timestamp)
-    max_timestamp = max_timestamp['timestamp__max']
-    sm_file = os.path.getmtime(x_txt)
-    stat = os.stat(x_txt)
-    file_size = stat.st_size
-    timestamp = datetime.datetime.fromtimestamp(sm_file)
-
-    if timestamp < max_timestamp or file_size == 0:
-        all_station_list = Station.objects.values('coordinate_x').order_by('matrix_index')
-        all_station_x = list()
-        for station_item in all_station_list:
-            coordinate_x = float(station_item['coordinate_x'])
-            all_station_x += [coordinate_x]
-
-        fp = open(x_txt, 'w')
-        fp.write(repr(all_station_x))
-        fp.close()
-    else:
-        fp = open(x_txt, 'r')
-        read_file = fp.read()
-        all_station_x = eval(read_file)
-        fp.close()            
-
-    return all_station_x
-
-# нахождение точек в радиусе старта
-def get_points_in_radius_start(sx2, sx1, sy1, sy2, all_station_x):
-    radius_x_start, points_in_radius_start = list(), list()
-    for station_x in all_station_x:
-        if sx2 < station_x < sx1:
-            radius_x_start += [station_x]
-    for x_start in radius_x_start:
-        station_for_y = Station.objects.filter(coordinate_x=x_start).values_list('coordinate_y', 'matrix_index')
-        for station_y in station_for_y:
-            if sy2 < station_y[0] < sy1:
-                points_in_radius_start += [station_y[1]]
-    return list(set(points_in_radius_start))
-
-# нахождение точек в радиусе финиша
-def get_points_in_radius_finish(fx2, fx1, fy1, fy2, all_station_x):
-    radius_x_finish, points_in_radius_finish = list(), list()
-    for station_x in all_station_x:
-        if fx2 < station_x < fx1:
-            radius_x_finish += [station_x]
-    for x_finish in radius_x_finish:
-        station_for_y = Station.objects.filter(coordinate_x=x_finish).values_list('coordinate_y', 'matrix_index')
-        for station_y in station_for_y:
-            if fy2 < station_y[0] < fy1:
-                points_in_radius_finish += [station_y[1]]
-    return list(set(points_in_radius_finish))
-
-#ф-ия добавления переходов от точек старта и финиша до точек их радиуса
-def get_metastations_stations_list(points_in_radius_finish, points_in_radius_start, start_point, end_point):
-    metastations_stations_list = new_Metastation()
-
-    for point_in_radius in points_in_radius_start:
-        that = list()
-        that += [start_point]
-        that += [point_in_radius]
-        metastations_stations_list += [that]
-
-    for point_in_radius in points_in_radius_finish:
-        thet = list()
-        thet += [end_point]
-        thet += [point_in_radius]
-        metastations_stations_list += [thet]
-
-    return metastations_stations_list
-
-def new_Metastation():
-    metastation_txt = os.path.join(PROJECT_ROOT, 'metastation.txt')
-    max_station_timestamp = Station.objects.all().aggregate(Max('timestamp'))
-    max_route_timestamp = Route.objects.all().aggregate(Max('timestamp'))
-    max_transport_timestamp = Transport.objects.all().aggregate(Max('timestamp'))
-    max_metastation_timestamp = Metastation.objects.all().aggregate(Max('timestamp'))
-    max_timestamp = max(max_metastation_timestamp, max_station_timestamp, max_route_timestamp, max_transport_timestamp)
-    max_timestamp = max_timestamp['timestamp__max']
-    sm_file = os.path.getmtime(metastation_txt)
-    stat = os.stat(metastation_txt)
-    file_size = stat.st_size
-    timestamp = datetime.datetime.fromtimestamp(sm_file)
-
-    if timestamp < max_timestamp or file_size == 0:
-        Metastat = list()
-        Radius = 0.004
-        for station in Station.objects.values_list('matrix_index', flat=True):
-            station_x = Station.objects.get(matrix_index=station).coordinate_x
-            station_y = Station.objects.get(matrix_index=station).coordinate_y
-            x1 = station_x - Radius
-            x2 = station_x + Radius
-            y1 = station_y - Radius
-            y2 = station_y + Radius
-            all_x = get_all_x()
-            radius_x, points_in_radius = list(), list()
-            for xs in all_x:
-                if x1< xs < x2:
-                    radius_x += [xs]
-            for x_st in radius_x:
-                station_for_y = Station.objects.filter(coordinate_x=x_st).values_list('coordinate_y', 'matrix_index')#.order_by('matrix_index')
-                for sy in station_for_y:
-                    if y1 < sy[0] < y2:
-                        points_in_radius += [sy[1]]
-            points_in_radius = list(set(points_in_radius))
-            for point in points_in_radius:
-                if point != station:
-                    para_point = list()
-                    para_point += [station]
-                    para_point += [point]
-                    if len(para_point) == 2:
-                        Metastat += [para_point]
-        fp = open(metastation_txt, 'w')
-        fp.write(repr(Metastat))
-        fp.close()
-    else:
-        fp = open(metastation_txt, 'r')
-        read_file = fp.read()
-        Metastat = eval(read_file)
-        fp.close()            
-
-    return Metastat
-
-def new_speed_matrix():
-    Metastation = new_Metastation()
+def new_speed_matrix(Transport1, Transport2, Transport3, Transport4):
+    Metastation = new_Metastation(Transport1, Transport2, Transport3, Transport4)
     wating_index = 1/2.0
     speed_Pesh = 3.0
     points_list = Station.objects.values_list('coordinate_x', 'coordinate_y').order_by('matrix_index')
@@ -287,11 +135,338 @@ def new_speed_matrix():
                 speed_matrix[from_matrix_index][to_matrix_index] = len_witput_points(points_list[from_matrix_index],
                                                                                      points_list[to_matrix_index]) / route_speed + 0.01
 
-    fp = open(os.path.join(PROJECT_ROOT, 'speed_matrix.txt'), 'w')
-    fp.write(repr(speed_matrix))
-    fp.close()
-
     return speed_matrix
+
+
+# функция создания списка растояний от start
+def get_lenth_start(start_y_rad, start_x_rad):
+    speed_Pesh = 3.0
+    R = 6376 # радиус земли
+    all_station_list = Station.objects.values('coordinate_x', 'coordinate_y').order_by('matrix_index')
+    lenth_start = list()
+    for station_item in all_station_list:
+        coordinate_x = float(station_item['coordinate_x'])*pi/180
+        coordinate_y = float(station_item['coordinate_y'])*pi/180
+        l_s = acos(sin(start_y_rad)*sin(coordinate_y) + cos(start_y_rad)*cos(coordinate_y)*cos(coordinate_x-start_x_rad))*R / speed_Pesh
+        lenth_start += [l_s]
+    return lenth_start
+
+# функция создания списка растояний от finish
+def get_lenth_finish(finish_y_rad, finish_x_rad):
+    speed_Pesh = 3.0
+    R = 6376 # радиус земли
+    all_station_list = Station.objects.values('coordinate_x', 'coordinate_y').order_by('matrix_index')
+    lenth_finish = list()
+    for station_item in all_station_list:
+        coordinate_x = float(station_item['coordinate_x'])*pi/180
+        coordinate_y = float(station_item['coordinate_y'])*pi/180
+        l_s = acos(sin(finish_y_rad)*sin(coordinate_y) + cos(finish_y_rad)*cos(coordinate_y)*cos(coordinate_x-finish_x_rad))*R / speed_Pesh
+        lenth_finish += [l_s]
+    return lenth_finish
+
+#ф-ия нахождения х(иксов) всех станций "с кешем"
+def get_all_x():
+    x_txt = os.path.join(PROJECT_ROOT, 'kesh/all_x.txt')
+    max_station_timestamp = Station.objects.all().aggregate(Max('timestamp'))
+    max_route_timestamp = Route.objects.all().aggregate(Max('timestamp'))
+    max_transport_timestamp = Transport.objects.all().aggregate(Max('timestamp'))
+    max_metastation_timestamp = Metastation.objects.all().aggregate(Max('timestamp'))
+    max_timestamp = max(max_metastation_timestamp, max_station_timestamp, max_route_timestamp, max_transport_timestamp)
+    max_timestamp = max_timestamp['timestamp__max']
+    sm_file = os.path.getmtime(x_txt)
+    stat = os.stat(x_txt)
+    file_size = stat.st_size
+    timestamp = datetime.datetime.fromtimestamp(sm_file)
+
+    if timestamp < max_timestamp or file_size == 0:
+        all_station_list = Station.objects.values('coordinate_x').order_by('matrix_index')
+        all_station_x = list()
+        for station_item in all_station_list:
+            coordinate_x = float(station_item['coordinate_x'])
+            all_station_x += [coordinate_x]
+
+        fp = open(x_txt, 'w')
+        fp.write(repr(all_station_x))
+        fp.close()
+    else:
+        fp = open(x_txt, 'r')
+        read_file = fp.read()
+        all_station_x = eval(read_file)
+        fp.close()            
+
+    return all_station_x
+
+# нахождение точек в радиусе старта
+def get_points_in_radius_start(sx2, sx1, sy1, sy2, all_station_x, Transport1, Transport2, Transport3, Transport4):
+    radius_x_start, points_in_radius_start = list(), list()
+    for station_x in all_station_x:
+        if sx2 < station_x < sx1:
+            radius_x_start += [station_x]
+    for x_start in radius_x_start:
+        station_for_y = Station.objects.filter(coordinate_x=x_start).values_list('coordinate_y', 'matrix_index')
+        for station_y in station_for_y:
+            if sy2 < station_y[0] < sy1:
+                points_in_radius_start += [station_y[1]]
+    set(points_in_radius_start)
+    for points_in in points_in_radius_start:
+        transport = Station.objects.get(matrix_index=points_in).route.transport_type_id
+        if Transport1 == 1 and transport == 1:
+            points_in_radius_start.remove(points_in)
+        if Transport2 == 1 and transport == 2:
+            points_in_radius_start.remove(points_in)
+        if Transport3 == 1 and transport == 3:
+            points_in_radius_start.remove(points_in)
+        if Transport4 == 1 and transport == 4:
+            points_in_radius_start.remove(points_in)
+
+    return list(set(points_in_radius_start))
+
+# нахождение точек в радиусе финиша
+def get_points_in_radius_finish(fx2, fx1, fy1, fy2, all_station_x):
+    radius_x_finish, points_in_radius_finish = list(), list()
+    for station_x in all_station_x:
+        if fx2 < station_x < fx1:
+            radius_x_finish += [station_x]
+    for x_finish in radius_x_finish:
+        station_for_y = Station.objects.filter(coordinate_x=x_finish).values_list('coordinate_y', 'matrix_index')
+        for station_y in station_for_y:
+            if fy2 < station_y[0] < fy1:
+                points_in_radius_finish += [station_y[1]]
+    return list(set(points_in_radius_finish))
+
+#ф-ия добавления переходов от точек старта и финиша до точек их радиуса
+def get_metastations_stations_list(points_in_radius_finish, points_in_radius_start, start_point, end_point):
+    metastations_stations_list = new_Metastation()
+
+    for point_in_radius in points_in_radius_start:
+        that = list()
+        that += [start_point]
+        that += [point_in_radius]
+        metastations_stations_list += [that]
+
+    for point_in_radius in points_in_radius_finish:
+        thet = list()
+        thet += [end_point]
+        thet += [point_in_radius]
+        metastations_stations_list += [thet]
+
+    return metastations_stations_list
+
+def new_Metastation(Transport1, Transport2, Transport3, Transport4):
+    metastation_txt = os.path.join(PROJECT_ROOT, 'kesh/metastation.txt')
+    metastation1_txt = os.path.join(PROJECT_ROOT, 'kesh/metastation1.txt')
+    metastation2_txt = os.path.join(PROJECT_ROOT, 'kesh/metastation2.txt')
+    metastation3_txt = os.path.join(PROJECT_ROOT, 'kesh/metastation3.txt')
+    metastation4_txt = os.path.join(PROJECT_ROOT, 'kesh/metastation4.txt')
+    metastation124_txt = os.path.join(PROJECT_ROOT, 'kesh/metastation124.txt')
+    metastation134_txt = os.path.join(PROJECT_ROOT, 'kesh/metastation134.txt')
+    metastation234_txt = os.path.join(PROJECT_ROOT, 'kesh/metastation234.txt')
+    metastation123_txt = os.path.join(PROJECT_ROOT, 'kesh/metastation123.txt')
+    metastation12_txt = os.path.join(PROJECT_ROOT, 'kesh/metastation12.txt')
+    metastation13_txt = os.path.join(PROJECT_ROOT, 'kesh/metastation13.txt')
+    metastation14_txt = os.path.join(PROJECT_ROOT, 'kesh/metastation14.txt')
+    metastation23_txt = os.path.join(PROJECT_ROOT, 'kesh/metastation23.txt')
+    metastation24_txt = os.path.join(PROJECT_ROOT, 'kesh/metastation24.txt')
+    metastation34_txt = os.path.join(PROJECT_ROOT, 'kesh/metastation34.txt')
+    max_station_timestamp = Station.objects.all().aggregate(Max('timestamp'))
+    max_route_timestamp = Route.objects.all().aggregate(Max('timestamp'))
+    max_transport_timestamp = Transport.objects.all().aggregate(Max('timestamp'))
+    max_metastation_timestamp = Metastation.objects.all().aggregate(Max('timestamp'))
+    max_timestamp = max(max_metastation_timestamp, max_station_timestamp, max_route_timestamp, max_transport_timestamp)
+    max_timestamp = max_timestamp['timestamp__max']
+    sm_file = os.path.getmtime(metastation_txt)
+    stat = os.stat(metastation_txt)
+    file_size = stat.st_size
+    timestamp = datetime.datetime.fromtimestamp(sm_file)
+
+    if timestamp < max_timestamp or file_size == 0:
+        Metastat, Metastat1, Metastat2, Metastat3, Metastat4 = list(), list(), list(), list(), list()
+        Metastat123, Metastat234, Metastat134, Metastat124 = list(), list(), list(), list()
+        Metastat12, Metastat23, Metastat34, Metastat24, Metastat14, Metastat13 = list(), list(), list(), list(), list(), list()
+        Radius = 0.004
+        for station in Station.objects.values_list('matrix_index', flat=True):
+            transport = Station.objects.get(matrix_index=station).route.transport_type_id
+            station_x = Station.objects.get(matrix_index=station).coordinate_x
+            station_y = Station.objects.get(matrix_index=station).coordinate_y
+            x1 = station_x - Radius
+            x2 = station_x + Radius
+            y1 = station_y - Radius
+            y2 = station_y + Radius
+            all_x = get_all_x()
+            radius_x, points_in_radius = list(), list()
+            for xs in all_x:
+                if x1< xs < x2:
+                    radius_x += [xs]
+            for x_st in radius_x:
+                station_for_y = Station.objects.filter(coordinate_x=x_st).values_list('coordinate_y', 'matrix_index')
+                for sy in station_for_y:
+                    if y1 < sy[0] < y2:
+                        points_in_radius += [sy[1]]
+            points_in_radius = list(set(points_in_radius))
+            for point in points_in_radius:
+                transport2 = Station.objects.get(matrix_index=point).route.transport_type_id
+                if point != station:
+                    para_point = list()
+                    para_point += [station]
+                    para_point += [point]
+                    if len(para_point) == 2:
+                        Metastat += [para_point]
+                        if transport == 1 and transport2 == 1:
+                            Metastat1 += [para_point]
+                        elif transport == 2 and transport2 == 2:
+                            Metastat2 += [para_point]
+                        elif transport == 3 and transport2 == 3:
+                            Metastat3 += [para_point]
+                        elif transport == 4 and transport2 == 4:
+                            Metastat4 += [para_point]
+                        if transport != 1 and transport2 != 1:
+                            Metastat234 += [para_point]
+                            if transport != 2 and transport2 != 2:
+                                Metastat34 += [para_point]
+                            if transport != 3 and transport2 != 3:
+                                Metastat24 += [para_point]
+                            if transport != 4 and transport2 != 4:
+                                Metastat23 += [para_point]
+
+                        if transport != 2 and transport2 != 2:
+                            Metastat134 += [para_point]
+                            if transport != 4 and transport2 != 4:
+                                Metastat14 += [para_point]
+                            if transport != 3 and transport2 != 3:
+                                Metastat13 += [para_point]
+
+                        if transport != 3 and transport2 != 3:
+                            Metastat124 += [para_point]
+                            if transport != 4 and transport2 != 4:
+                                Metastat12 += [para_point]
+
+                        if transport != 4 and transport2 != 4:
+                            Metastat123 += [para_point]
+
+        fp = open(metastation_txt, 'w')
+        fp.write(repr(Metastat))
+        fp.close()
+        fp1 = open(metastation1_txt, 'w')
+        fp1.write(repr(Metastat1))
+        fp1.close()
+        fp2 = open(metastation2_txt, 'w')
+        fp2.write(repr(Metastat2))
+        fp2.close()
+        fp3 = open(metastation3_txt, 'w')
+        fp3.write(repr(Metastat3))
+        fp3.close()
+        fp4 = open(metastation4_txt, 'w')
+        fp4.write(repr(Metastat4))
+        fp4.close()
+        fp124 = open(metastation124_txt, 'w')
+        fp124.write(repr(Metastat124))
+        fp124.close()
+        fp134 = open(metastation134_txt, 'w')
+        fp134.write(repr(Metastat134))
+        fp134.close()
+        fp234 = open(metastation234_txt, 'w')
+        fp234.write(repr(Metastat234))
+        fp234.close()
+        fp123 = open(metastation123_txt, 'w')
+        fp123.write(repr(Metastat123))
+        fp123.close()
+        fp12 = open(metastation12_txt, 'w')
+        fp12.write(repr(Metastat12))
+        fp12.close()
+        fp13 = open(metastation13_txt, 'w')
+        fp13.write(repr(Metastat13))
+        fp13.close()
+        fp14 = open(metastation14_txt, 'w')
+        fp14.write(repr(Metastat14))
+        fp14.close()
+        fp23 = open(metastation23_txt, 'w')
+        fp23.write(repr(Metastat23))
+        fp23.close()
+        fp24 = open(metastation24_txt, 'w')
+        fp24.write(repr(Metastat24))
+        fp24.close()
+        fp34 = open(metastation34_txt, 'w')
+        fp34.write(repr(Metastat34))
+        fp34.close()
+
+    else:
+        if Transport1 == 1 and Transport2 == 0 and Transport3 == 0 and Transport4 == 0:
+            fp = open(metastation234_txt, 'r')
+            read_file = fp.read()
+            Metastat = eval(read_file)
+            fp.close()            
+        if Transport1 == 0 and Transport2 == 1 and Transport3 == 0 and Transport4 == 0:
+            fp = open(metastation134_txt, 'r')
+            read_file = fp.read()
+            Metastat = eval(read_file)
+            fp.close()            
+        if Transport1 == 0 and Transport2 == 0 and Transport3 == 1 and Transport4 == 0:
+            fp = open(metastation124_txt, 'r')
+            read_file = fp.read()
+            Metastat = eval(read_file)
+            fp.close()            
+        if Transport1 == 0 and Transport2 == 0 and Transport3 == 0 and Transport4 == 1:
+            fp = open(metastation123_txt, 'r')
+            read_file = fp.read()
+            Metastat = eval(read_file)
+            fp.close()            
+        if Transport1 == 1 and Transport2 == 1 and Transport3 == 0 and Transport4 == 0:
+            fp = open(metastation34_txt, 'r')
+            read_file = fp.read()
+            Metastat = eval(read_file)
+            fp.close()            
+        if Transport1 == 1 and Transport2 == 0 and Transport3 == 1 and Transport4 == 0:
+            fp = open(metastation24_txt, 'r')
+            read_file = fp.read()
+            Metastat = eval(read_file)
+            fp.close()            
+        if Transport1 == 1 and Transport2 == 0 and Transport3 == 0 and Transport4 == 1:
+            fp = open(metastation23_txt, 'r')
+            read_file = fp.read()
+            Metastat = eval(read_file)
+            fp.close()            
+        if Transport1 == 0 and Transport2 == 1 and Transport3 == 1 and Transport4 == 0:
+            fp = open(metastation14_txt, 'r')
+            read_file = fp.read()
+            Metastat = eval(read_file)
+            fp.close()            
+        if Transport1 == 0 and Transport2 == 1 and Transport3 == 0 and Transport4 == 1:
+            fp = open(metastation13_txt, 'r')
+            read_file = fp.read()
+            Metastat = eval(read_file)
+            fp.close()            
+        if Transport1 == 0 and Transport2 == 0 and Transport3 == 1 and Transport4 == 1:
+            fp = open(metastation12_txt, 'r')
+            read_file = fp.read()
+            Metastat = eval(read_file)
+            fp.close()
+        if Transport1 == 1 and Transport2 == 1 and Transport3 == 1 and Transport4 == 0:
+            fp = open(metastation4_txt, 'r')
+            read_file = fp.read()
+            Metastat = eval(read_file)
+            fp.close()            
+        if Transport1 == 1 and Transport2 == 1 and Transport3 == 0 and Transport4 == 1:
+            fp = open(metastation3_txt, 'r')
+            read_file = fp.read()
+            Metastat = eval(read_file)
+            fp.close()            
+        if Transport1 == 1 and Transport2 == 0 and Transport3 == 1 and Transport4 == 1:
+            fp = open(metastation2_txt, 'r')
+            read_file = fp.read()
+            Metastat = eval(read_file)
+            fp.close()            
+        if Transport1 == 0 and Transport2 == 1 and Transport3 == 1 and Transport4 == 1:
+            fp = open(metastation1_txt, 'r')
+            read_file = fp.read()
+            Metastat = eval(read_file)
+            fp.close()            
+        if Transport1 == 0 and Transport2 == 0 and Transport3 == 0 and Transport4 == 0:
+            fp = open(metastation_txt, 'r')
+            read_file = fp.read()
+            Metastat = eval(read_file)
+            fp.close()            
+
+    return Metastat
 
                                         #функция нахождения соседних точек
 
@@ -343,3 +518,90 @@ def get_border_points(points_price_min, closed_points_list, points_list_item, me
                     points_list += [metastation[0]]
 
     return list(set(points_list))
+
+def transport_types():
+    transport_txt = os.path.join(PROJECT_ROOT, 'kesh/transport.txt')
+    max_station_timestamp = Station.objects.all().aggregate(Max('timestamp'))
+    max_route_timestamp = Route.objects.all().aggregate(Max('timestamp'))
+    max_transport_timestamp = Transport.objects.all().aggregate(Max('timestamp'))
+    max_metastation_timestamp = Metastation.objects.all().aggregate(Max('timestamp'))
+    max_timestamp = max(max_metastation_timestamp, max_station_timestamp, max_route_timestamp, max_transport_timestamp)
+    max_timestamp = max_timestamp['timestamp__max']
+    sm_file = os.path.getmtime(transport_txt)
+    stat = os.stat(transport_txt)
+    file_size = stat.st_size
+    timestamp = datetime.datetime.fromtimestamp(sm_file)
+
+    if timestamp < max_timestamp or file_size == 0:
+        transports = list()
+        for station in Station.objects.values_list('matrix_index', flat=True):
+            para = list()
+            transport = Station.objects.get(matrix_index=station).route.transport_type_id
+            para += [station]
+            para += [transport]
+            transports += [para]
+
+        fp = open(transport_txt, 'w')
+        fp.write(repr(transports))
+        fp.close()
+    else:
+        fp = open(transport_txt, 'r')
+        read_file = fp.read()
+        transports = eval(read_file)
+        fp.close()            
+
+    return transports
+
+def new_Metastation2(Transport1, Transport2, Transport3, Transport4):
+    metastation_txt = os.path.join(PROJECT_ROOT, 'kesh/metastation.txt')
+    max_station_timestamp = Station.objects.all().aggregate(Max('timestamp'))
+    max_route_timestamp = Route.objects.all().aggregate(Max('timestamp'))
+    max_transport_timestamp = Transport.objects.all().aggregate(Max('timestamp'))
+    max_metastation_timestamp = Metastation.objects.all().aggregate(Max('timestamp'))
+    max_timestamp = max(max_metastation_timestamp, max_station_timestamp, max_route_timestamp, max_transport_timestamp)
+    max_timestamp = max_timestamp['timestamp__max']
+    sm_file = os.path.getmtime(metastation_txt)
+    stat = os.stat(metastation_txt)
+    file_size = stat.st_size
+    timestamp = datetime.datetime.fromtimestamp(sm_file)
+
+    if timestamp < max_timestamp or file_size == 0:
+        Metastat = list()
+        Radius = 0.004
+        for station in Station.objects.values_list('matrix_index', flat=True):
+            transport = Station.objects.get(matrix_index=station).route.transport_type_id
+            station_x = Station.objects.get(matrix_index=station).coordinate_x
+            station_y = Station.objects.get(matrix_index=station).coordinate_y
+            x1 = station_x - Radius
+            x2 = station_x + Radius
+            y1 = station_y - Radius
+            y2 = station_y + Radius
+            all_x = get_all_x()
+            radius_x, points_in_radius = list(), list()
+            for xs in all_x:
+                if x1< xs < x2:
+                    radius_x += [xs]
+            for x_st in radius_x:
+                station_for_y = Station.objects.filter(coordinate_x=x_st).values_list('coordinate_y', 'matrix_index')
+                for sy in station_for_y:
+                    if y1 < sy[0] < y2:
+                        points_in_radius += [sy[1]]
+            points_in_radius = list(set(points_in_radius))
+            for point in points_in_radius:
+                if point != station:
+                    para_point = list()
+                    para_point += [station]
+                    para_point += [point]
+                    if len(para_point) == 2:
+                        Metastat += [para_point]
+
+        fp = open(metastation_txt, 'w')
+        fp.write(repr(Metastat))
+        fp.close()
+    else:
+        fp = open(metastation_txt, 'r')
+        read_file = fp.read()
+        Metastat = eval(read_file)
+        fp.close()            
+
+    return Metastat
