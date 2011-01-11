@@ -44,7 +44,7 @@ YMaps.jQuery(function()
 					Lines = new YMaps.GeoObjectCollection();
 					var Line;
 				
-					p = JSON.parse(http_request.responseText);
+				        p = JSON.parse(http_request.responseText);
 				    
 				    oldRouteid = 0;
 				    var human_readable = '';
@@ -82,9 +82,12 @@ YMaps.jQuery(function()
 							else {
 							    if (p[i].route__transport_type == 3)
 								pm = new YMaps.Placemark(new YMaps.GeoPoint(p[i].x,p[i].y),{draggable: false, style:"1bus#BusStation"});
-							    else
-								pm = new YMaps.Placemark(new YMaps.GeoPoint(p[i].x,p[i].y),{draggable: false, style:"1bus#TrolStation"});
-						}}}						
+							    else {
+								if (p[i].route__transport_type == 4)
+								    pm = new YMaps.Placemark(new YMaps.GeoPoint(p[i].x,p[i].y),{draggable: false, style:"1bus#TrolStation"});
+								else
+								    pm = new YMaps.Placemark(new YMaps.GeoPoint(p[i].x,p[i].y),{draggable: false, style:"1bus#PovorotStation"});
+							    }}}}
 						pm.name = p[i].stopName;
 						pm.description = p[i].transportName + " t=" + p[i].t;
 						Marks.add(pm);
@@ -205,6 +208,16 @@ human_readable = '(' + p[i].TransportsType + '-' + p[i].routeName + ' : ' + p[i]
 		MetroStationStyle.hintContentStyle = new YMaps.HintContentStyle(new YMaps.Template("<b>$[name]</b><div>$[description]</div>"));
 		MetroStationStyle.hasHint = true;
 		YMaps.Styles.add("1bus#MetroStation", MetroStationStyle);
+
+		PovorotStationStyle = new YMaps.Style();
+		PovorotStationStyle.iconStyle = new YMaps.IconStyle();
+		PovorotStationStyle.iconStyle.href = "/s/images/stop.png";
+		PovorotStationStyle.iconStyle.size = new YMaps.Point(10, 10);
+		PovorotStationStyle.iconStyle.offset = new YMaps.Point(-5, -5);
+		PovorotStationStyle.hintContentStyle = new YMaps.HintContentStyle(new YMaps.Template("<b>$[name]</b><div>$[description]</div>"));
+		PovorotStationStyle.hasHint = true;
+		YMaps.Styles.add("1bus#PovorotStation", PovorotStationStyle);
+
 		
 		style = new YMaps.Style();
 		style.polygonStyle = new YMaps.PolygonStyle();

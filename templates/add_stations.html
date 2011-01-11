@@ -6,7 +6,10 @@
 	<title>Yandex Maps</title>
 	<link rel="stylesheet" type="text/css" href="/s/css/style.css" />
 	<link rel="stylesheet" type="text/css" href="/s/css/impromptu.css" />
+	<link rel="stylesheet" type="text/css" href="/s/css/jquery-ui-1.8.7.custom.css" />
 	<script type="text/javascript" src="/s/js/jquery.js"></script>
+	<script type="text/javascript" src="/s/js/jquery-1.4.4.min.js"></script>
+	<script type="text/javascript" src="/s/js/jquery-ui-1.8.7.custom.min.js"></script>
 	<script type="text/javascript" src="/s/js/json2.js"></script>
 	<script type="text/javascript" src="/s/js/jquery_ipe.js"></script>
 	<script type="text/javascript" src="/s/js/jquery_rs.js"></script>
@@ -279,6 +282,25 @@
 	    }
     }
 	</script>
+        <script>
+	$(function() {
+		function log( message ) {
+			$( "<div/>" ).text( message ).prependTo( "#log" );
+			$( "#log" ).attr( "scrollTop", 0 );
+		}
+
+		$( "#new_point" ).autocomplete({
+			source: "/stations/autocomplete/",
+			minLength: 2,
+			select: function( event, ui ) {
+				log( ui.item ?
+					"Selected: " + ui.item.value + " aka " + ui.item.id :
+					"Nothing selected, input was " + this.value );
+			}
+		});
+	});
+	</script>
+
 </head>
 <body>
 	<div id="masthead"></div>

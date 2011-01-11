@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from settings import PROJECT_ROOT
 from math import *
-from apps.point.models import Route, Station, Metastation, Transport
+from apps.point.models import Route, Station, Transport, Onestation
 from django.db.models import Max
 import os, datetime
 
@@ -69,8 +69,8 @@ def get_speed_matrix(Transport1, Transport2, Transport3, Transport4):
     max_station_timestamp = Station.objects.all().aggregate(Max('timestamp'))
     max_route_timestamp = Route.objects.all().aggregate(Max('timestamp'))
     max_transport_timestamp = Transport.objects.all().aggregate(Max('timestamp'))
-    max_metastation_timestamp = Metastation.objects.all().aggregate(Max('timestamp'))
-    max_timestamp = max(max_metastation_timestamp, max_station_timestamp, max_route_timestamp, max_transport_timestamp)
+    max_onestation_timestamp = Onestation.objects.all().aggregate(Max('timestamp'))
+    max_timestamp = max(max_onestation_timestamp, max_station_timestamp, max_route_timestamp, max_transport_timestamp)
     max_timestamp = max_timestamp['timestamp__max']
     sm_file = os.path.getmtime(s_m__txt)
     stat = os.stat(s_m__txt)
@@ -95,13 +95,13 @@ def new_speed_matrix(Transport1, Transport2, Transport3, Transport4):
     Metastation = new_Metastation(Transport1, Transport2, Transport3, Transport4)
     wating_index = 1/2.0
     speed_Pesh = 3.0
-    points_list = Station.objects.values_list('coordinate_x', 'coordinate_y').order_by('matrix_index')
+    points_list = Station.objects.filter(notstations=True).values_list('coordinate_x', 'coordinate_y').order_by('matrix_index')
     len_points = len(points_list)
     speed_matrix = [[0] * len_points  for i in range(len_points)]
 
     routes_dict, routes_intevals, routes_speeds = dict(), dict(), dict()
     for route_item in Route.objects.all():
-        routes_dict[route_item.id] = list(route_item.station_set.values_list('matrix_index', flat=True).order_by('matrix_index'))
+        routes_dict[route_item.id] = list(route_item.station_set.values_list('matrix_index', flat=True).order_by('order'))
         routes_speeds[route_item.id] = route_item.speed
         routes_intevals[route_item.id] = route_item.interval
 
@@ -121,8 +121,10 @@ def new_speed_matrix(Transport1, Transport2, Transport3, Transport4):
 
     for route_id in routes_dict:
         route_item_list = routes_dict[route_id]
+        langs_traector = 0
+        traector_list_to = list()
+        traector_list_from = list()
         route_speed = float(routes_speeds[route_id]) 
-        
         for item_index in range(len(route_item_list)):
             next_item_index = item_index + 1
             if next_item_index == len(route_item_list):
@@ -130,10 +132,28 @@ def new_speed_matrix(Transport1, Transport2, Transport3, Transport4):
             
             from_matrix_index = route_item_list[item_index]
             to_matrix_index = route_item_list[next_item_index]
-            
-            speed_matrix[to_matrix_index][from_matrix_index] = \
-                speed_matrix[from_matrix_index][to_matrix_index] = len_witput_points(points_list[from_matrix_index],
-                                                                                     points_list[to_matrix_index]) / route_speed + 0.01
+            if langs_traector != 0 and from_matrix_index != -1:
+                langs_traector = 0
+                traector_list_to = list()
+                traector_list_from = list()
+            if to_matrix_index == -1 or from_matrix_index == -1:
+                q = Station.objects.filter(route=route_id, order=next_item_index).values_list('coordinate_x', 'coordinate_y')
+                a = Station.objects.filter(route=route_id, order=item_index).values_list('coordinate_x', 'coordinate_y')
+                qa = len_witput_points(q[0], a[0]) / route_speed
+                langs_traector += qa
+                traector_list_to += [to_matrix_index] 
+                traector_list_from += [from_matrix_index]
+#                print qa, item_index, from_matrix_index, next_item_index, to_matrix_index, langs_traector
+#                print traector_list_from, traector_list_to
+                if to_matrix_index != -1:
+                    speed_matrix[traector_list_to[-1]][traector_list_from[0]] = \
+                        speed_matrix[traector_list_from[0]][traector_list_to[-1]] = langs_traector + 0.01
+#                    print speed_matrix[traector_list_to[-1]][traector_list_from[0]], traector_list_from[0], traector_list_to[-1]
+
+            if  to_matrix_index != -1 and from_matrix_index != -1:
+                speed_matrix[to_matrix_index][from_matrix_index] = \
+                    speed_matrix[from_matrix_index][to_matrix_index] = len_witput_points(points_list[from_matrix_index],
+                                                                                         points_list[to_matrix_index]) / route_speed + 0.01
 
     return speed_matrix
 
@@ -142,7 +162,7 @@ def new_speed_matrix(Transport1, Transport2, Transport3, Transport4):
 def get_lenth_start(start_y_rad, start_x_rad):
     speed_Pesh = 3.0
     R = 6376 # радиус земли
-    all_station_list = Station.objects.values('coordinate_x', 'coordinate_y').order_by('matrix_index')
+    all_station_list = Station.objects.filter(notstations=True).values('coordinate_x', 'coordinate_y').order_by('matrix_index')
     lenth_start = list()
     for station_item in all_station_list:
         coordinate_x = float(station_item['coordinate_x'])*pi/180
@@ -155,7 +175,7 @@ def get_lenth_start(start_y_rad, start_x_rad):
 def get_lenth_finish(finish_y_rad, finish_x_rad):
     speed_Pesh = 3.0
     R = 6376 # радиус земли
-    all_station_list = Station.objects.values('coordinate_x', 'coordinate_y').order_by('matrix_index')
+    all_station_list = Station.objects.filter(notstations=True).values('coordinate_x', 'coordinate_y').order_by('matrix_index')
     lenth_finish = list()
     for station_item in all_station_list:
         coordinate_x = float(station_item['coordinate_x'])*pi/180
@@ -170,8 +190,8 @@ def get_all_x():
     max_station_timestamp = Station.objects.all().aggregate(Max('timestamp'))
     max_route_timestamp = Route.objects.all().aggregate(Max('timestamp'))
     max_transport_timestamp = Transport.objects.all().aggregate(Max('timestamp'))
-    max_metastation_timestamp = Metastation.objects.all().aggregate(Max('timestamp'))
-    max_timestamp = max(max_metastation_timestamp, max_station_timestamp, max_route_timestamp, max_transport_timestamp)
+    max_onestation_timestamp = Onestation.objects.all().aggregate(Max('timestamp'))
+    max_timestamp = max(max_onestation_timestamp, max_station_timestamp, max_route_timestamp, max_transport_timestamp)
     max_timestamp = max_timestamp['timestamp__max']
     sm_file = os.path.getmtime(x_txt)
     stat = os.stat(x_txt)
@@ -179,7 +199,7 @@ def get_all_x():
     timestamp = datetime.datetime.fromtimestamp(sm_file)
 
     if timestamp < max_timestamp or file_size == 0:
-        all_station_list = Station.objects.values('coordinate_x').order_by('matrix_index')
+        all_station_list = Station.objects.filter(notstations=True).values('coordinate_x').order_by('id')
         all_station_x = list()
         for station_item in all_station_list:
             coordinate_x = float(station_item['coordinate_x'])
@@ -203,7 +223,7 @@ def get_points_in_radius_start(sx2, sx1, sy1, sy2, all_station_x, Transport1, Tr
         if sx2 < station_x < sx1:
             radius_x_start += [station_x]
     for x_start in radius_x_start:
-        station_for_y = Station.objects.filter(coordinate_x=x_start).values_list('coordinate_y', 'matrix_index')
+        station_for_y = Station.objects.filter(coordinate_x=x_start, notstations=True).values_list('coordinate_y', 'matrix_index')
         for station_y in station_for_y:
             if sy2 < station_y[0] < sy1:
                 points_in_radius_start += [station_y[1]]
@@ -228,7 +248,7 @@ def get_points_in_radius_finish(fx2, fx1, fy1, fy2, all_station_x):
         if fx2 < station_x < fx1:
             radius_x_finish += [station_x]
     for x_finish in radius_x_finish:
-        station_for_y = Station.objects.filter(coordinate_x=x_finish).values_list('coordinate_y', 'matrix_index')
+        station_for_y = Station.objects.filter(coordinate_x=x_finish, notstations=True).values_list('coordinate_y', 'matrix_index')
         for station_y in station_for_y:
             if fy2 < station_y[0] < fy1:
                 points_in_radius_finish += [station_y[1]]
@@ -271,8 +291,8 @@ def new_Metastation(Transport1, Transport2, Transport3, Transport4):
     max_station_timestamp = Station.objects.all().aggregate(Max('timestamp'))
     max_route_timestamp = Route.objects.all().aggregate(Max('timestamp'))
     max_transport_timestamp = Transport.objects.all().aggregate(Max('timestamp'))
-    max_metastation_timestamp = Metastation.objects.all().aggregate(Max('timestamp'))
-    max_timestamp = max(max_metastation_timestamp, max_station_timestamp, max_route_timestamp, max_transport_timestamp)
+    max_onestation_timestamp = Onestation.objects.all().aggregate(Max('timestamp'))
+    max_timestamp = max(max_onestation_timestamp, max_station_timestamp, max_route_timestamp, max_transport_timestamp)
     max_timestamp = max_timestamp['timestamp__max']
     sm_file = os.path.getmtime(metastation_txt)
     stat = os.stat(metastation_txt)
@@ -284,7 +304,7 @@ def new_Metastation(Transport1, Transport2, Transport3, Transport4):
         Metastat123, Metastat234, Metastat134, Metastat124 = list(), list(), list(), list()
         Metastat12, Metastat23, Metastat34, Metastat24, Metastat14, Metastat13 = list(), list(), list(), list(), list(), list()
         Radius = 0.004
-        for station in Station.objects.values_list('matrix_index', flat=True):
+        for station in Station.objects.filter(notstations=True).values_list('matrix_index', flat=True):
             transport = Station.objects.get(matrix_index=station).route.transport_type_id
             station_x = Station.objects.get(matrix_index=station).coordinate_x
             station_y = Station.objects.get(matrix_index=station).coordinate_y
@@ -298,7 +318,7 @@ def new_Metastation(Transport1, Transport2, Transport3, Transport4):
                 if x1< xs < x2:
                     radius_x += [xs]
             for x_st in radius_x:
-                station_for_y = Station.objects.filter(coordinate_x=x_st).values_list('coordinate_y', 'matrix_index')
+                station_for_y = Station.objects.filter(coordinate_x=x_st, notstations=True).values_list('coordinate_y', 'matrix_index')
                 for sy in station_for_y:
                     if y1 < sy[0] < y2:
                         points_in_radius += [sy[1]]
@@ -471,11 +491,10 @@ def new_Metastation(Transport1, Transport2, Transport3, Transport4):
                                         #функция нахождения соседних точек
 
 def points_list(points_in_radius_finish, points_in_radius_start, start_point, end_point):
-             # заполняем routes_dict, routes_speeds, routes_intevals
     routes_dict = dict()
     points_list_item = list()
     for route_item in Route.objects.all():
-        routes_dict[route_item.id] = list(route_item.station_set.values_list('matrix_index', flat=True).order_by('matrix_index'))
+        routes_dict[route_item.id] = list(route_item.station_set.filter(notstations=True).values_list('matrix_index', flat=True).order_by('matrix_index'))
         for route_id in routes_dict:
             list2 = routes_dict[route_id]
             points_list_item += [list2]
@@ -524,8 +543,8 @@ def transport_types():
     max_station_timestamp = Station.objects.all().aggregate(Max('timestamp'))
     max_route_timestamp = Route.objects.all().aggregate(Max('timestamp'))
     max_transport_timestamp = Transport.objects.all().aggregate(Max('timestamp'))
-    max_metastation_timestamp = Metastation.objects.all().aggregate(Max('timestamp'))
-    max_timestamp = max(max_metastation_timestamp, max_station_timestamp, max_route_timestamp, max_transport_timestamp)
+    max_onestation_timestamp = Onestation.objects.all().aggregate(Max('timestamp'))
+    max_timestamp = max(max_onestation_timestamp, max_station_timestamp, max_route_timestamp, max_transport_timestamp)
     max_timestamp = max_timestamp['timestamp__max']
     sm_file = os.path.getmtime(transport_txt)
     stat = os.stat(transport_txt)
@@ -534,7 +553,7 @@ def transport_types():
 
     if timestamp < max_timestamp or file_size == 0:
         transports = list()
-        for station in Station.objects.values_list('matrix_index', flat=True):
+        for station in Station.objects.filter(notstations=True).values_list('matrix_index', flat=True):
             para = list()
             transport = Station.objects.get(matrix_index=station).route.transport_type_id
             para += [station]
@@ -557,8 +576,8 @@ def new_Metastation2(Transport1, Transport2, Transport3, Transport4):
     max_station_timestamp = Station.objects.all().aggregate(Max('timestamp'))
     max_route_timestamp = Route.objects.all().aggregate(Max('timestamp'))
     max_transport_timestamp = Transport.objects.all().aggregate(Max('timestamp'))
-    max_metastation_timestamp = Metastation.objects.all().aggregate(Max('timestamp'))
-    max_timestamp = max(max_metastation_timestamp, max_station_timestamp, max_route_timestamp, max_transport_timestamp)
+    max_onestation_timestamp = Onestation.objects.all().aggregate(Max('timestamp'))
+    max_timestamp = max(max_onestation_timestamp, max_station_timestamp, max_route_timestamp, max_transport_timestamp)
     max_timestamp = max_timestamp['timestamp__max']
     sm_file = os.path.getmtime(metastation_txt)
     stat = os.stat(metastation_txt)

@@ -4,7 +4,7 @@ from django.db.models import Max
 from settings import PROJECT_ROOT
 from django.shortcuts import render_to_response
 from django.http import HttpResponse
-from apps.point.models import Route, Station, Metastation, Transport
+from apps.point.models import Route, Station, Transport, Onestation
 from math import *
 from utils import len_witput_points, get_speed_matrix, get_border_points, get_lenth_finish, get_lenth_start, get_all_x, get_points_in_radius_start, get_points_in_radius_finish, get_metastations_stations_list, new_Metastation, new_speed_matrix, points_list, transport_types
 import json, os, datetime
@@ -52,7 +52,7 @@ def station_save(request):
     routeName = str(routeName)
     transportType = str(transportType)
     transport = Transport.objects.get(name=transportType)
-    new_route = Route(route = routeName, transport_type = transport, interval = 12, speed = 12, color = "FFFFFFFF", price = 1)
+    new_route = Route(route = routeName, transport_type = transport, interval = 0.12, speed = 12, color = "FFFFFFFF", price = 1)
     new_route.save()
     for index in range(len(route)):
         station_1 = route[str(index)]
@@ -63,14 +63,31 @@ def station_save(request):
         for station_out_bd in Station.objects.all():
             matrix_index += [station_out_bd.matrix_index]
         matrix_index_max = max(matrix_index) + 1
-        station_in_bd = Station(route = new_route, name = station_name, coordinate_x = station_x, coordinate_y = station_y, matrix_index = matrix_index_max)
+        station_in_bd = Station(route = new_route, name = station_name, coordinate_x = station_x, coordinate_y = station_y, matrix_index = matrix_index_max, notstations = True, order = index)
+        if station_name == "temporary":
+            station_in_bd = Station(route = new_route, name = station_name, coordinate_x = station_x, coordinate_y = station_y, matrix_index = -1, notstations = False, order = index)
+
         station_in_bd.save()
     return HttpResponse('ok')
 
 
 def station_add(request):
-    text2 = 'Welcome to "Transplants do not"'
-    return render_to_response('add_stations.html', {"text2": text2})
+    onestation = "onestation"
+    return render_to_response('add_stations.html', {"onestation": onestation})
+
+
+def station_autocomplete(request):
+    name = request.GET['term']
+    json_list = list()
+    for station in Onestation.objects.filter(name__contains=name):
+        stat_dict = dict()
+        stat_dict['id'] = station.name
+        stat_dict['value'] = station.name
+        stat_dict['label'] = station.name
+        json_list += [stat_dict]
+    print json_list
+    return  HttpResponse(json.dumps(json_list), 'application/javascript')
+
 
 
 def station_edit(request, route_id):
@@ -80,6 +97,18 @@ def station_edit(request, route_id):
 
 
 def hello(request):
+#    qw = Onestation.objects.all()
+#    for q in qw:
+#        qa = Station.objects.filter(name=q.name)
+#        for a in qa:
+#            a.one_station = q
+#            a.save()
+
+#    qw =set(Station.objects.all().values_list('name', flat=True))
+#    for q in qw:
+#        a = Station.objects.filter(name=q).values_list('coordinate_x', flat=True)
+#        z = Station.objects.filter(name=q).values_list('coordinate_y', flat=True)
+#        Onestation.objects.create(name=q, coordinate_x=a[0], coordinate_y=z[0])
     text = 'Welcome to "Transplants do not"'
     return render_to_response('base.html', {"text": text})
 
@@ -89,8 +118,8 @@ def transport_list(request):
     max_station_timestamp = Station.objects.all().aggregate(Max('timestamp'))
     max_route_timestamp = Route.objects.all().aggregate(Max('timestamp'))
     max_transport_timestamp = Transport.objects.all().aggregate(Max('timestamp'))
-    max_metastation_timestamp = Metastation.objects.all().aggregate(Max('timestamp'))
-    max_timestamp = max(max_metastation_timestamp, max_station_timestamp, max_route_timestamp, max_transport_timestamp)
+    max_onestation_timestamp = Onestation.objects.all().aggregate(Max('timestamp'))
+    max_timestamp = max(max_onestation_timestamp, max_station_timestamp, max_route_timestamp, max_transport_timestamp)
     max_timestamp = max_timestamp['timestamp__max']
     sm_file = os.path.getmtime(transport_list_txt)
     stat = os.stat(transport_list_txt)
@@ -100,7 +129,7 @@ def transport_list(request):
     if timestamp < max_timestamp or file_size == 0:
         stations = list(Station.objects.all().values('route__id', 'route__route',
                                                      'route__color', 'route__transport_type', 'name',
-                                                     'coordinate_x', 'coordinate_y').order_by('route__id', 'matrix_index'))
+                                                     'coordinate_x', 'coordinate_y').order_by('route__id', 'order'))
 
         fp = open(transport_list_txt, 'w')
         fp.write(repr(stations))
@@ -165,7 +194,6 @@ def route(request):
 
     points_in_radius_finish = get_points_in_radius_finish(fx2, fx1, fy1, fy2, all_station_x)    
     points_in_radius_start = get_points_in_radius_start(sx2, sx1, sy1, sy2, all_station_x, Transport1, Transport2, Transport3, Transport4)
-
     if points_in_radius_finish == []:
         points_in_radius_finish = [tend_point]
     if points_in_radius_start == []:
@@ -213,7 +241,9 @@ def route(request):
 
     final_views = [{'x': start_x, 'y': start_y, 'idRoute':"-1", 'transportName':"", 'stopName':"Start", 't':'0', 'TransportsType':'', 'routeName':''}]
     i = 0
+    q_list = list()
     for q in points_price[str(end_point)][1]:
+        q_list += [q]
         item_dict = {}
         point = Station.objects.get(matrix_index=q)
         item_dict['stopName'] = point.name
@@ -225,7 +255,42 @@ def route(request):
         item_dict['x'] = point.coordinate_x
         item_dict['y'] = point.coordinate_y
         item_dict['t'] = round(points_price[str(end_point)][2][i]*60, 2)
-        final_views += [item_dict]
+        final_views += [item_dict]            
+        orde = point.order
+        long_route = len(Station.objects.filter(route=point.route_id).values_list('order', flat=True)) - 1
+        next_orde = orde + 1
+        prev_orde = orde - 1
+        prev_q = q - 1
+        next_q = q + 1
+        if long_route >= next_orde and Station.objects.get(order=next_orde, route=point.route_id).matrix_index == -1 and next_q not in q_list:
+            end_orde = range(Station.objects.get(matrix_index=next_q).order)
+            order_list = end_orde[next_orde:]
+            for element in order_list:
+                item_dict = {}
+                point2 = Station.objects.get(order=element, route=point.route_id)
+                item_dict['route__transport_type'] = 10
+                item_dict['idRoute'] = point.route_id
+                item_dict['x'] = point2.coordinate_x
+                item_dict['y'] = point2.coordinate_y
+                item_dict['stopName'] = element
+                item_dict['t'] = round(points_price[str(end_point)][2][i]*60, 2)
+                final_views += [item_dict]
+        elif prev_orde >= 1 and Station.objects.get(order=prev_orde, route=point.route_id).matrix_index == -1 and prev_q not in q_list:
+            end_orde = range(Station.objects.get(matrix_index=q).order)
+            end_orde2 = len(range(Station.objects.get(matrix_index=prev_q).order + 1))
+            order_list = end_orde[end_orde2:orde] 
+            order_list.reverse()
+            for element in order_list:
+                item_dict = {}
+                point2 = Station.objects.get(order=element, route=point.route_id)
+                item_dict['route__transport_type'] = 10
+                item_dict['idRoute'] = point.route_id
+                item_dict['x'] = point2.coordinate_x
+                item_dict['y'] = point2.coordinate_y
+                item_dict['stopName'] = element
+                item_dict['t'] = round(points_price[str(end_point)][2][i]*60, 2)
+                final_views += [item_dict]
+            print order_list
         i += 1
     final_views.append({'x': finish_x, 'y': finish_y, 'idRoute': "-1", 'transportName': "", 'stopName': "Finish", 't': final_time, 'TransportsType':'', 'routeName':''})
     final_views.reverse()

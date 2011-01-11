@@ -1,4 +1,4 @@
-from apps.point.models import Transport, Route, Station, Metastation
+from apps.point.models import Transport, Route, Station, Onestation
 from django.contrib import admin
 
 
@@ -14,10 +14,16 @@ class RouteAdmin(admin.ModelAdmin):
 
 admin.site.register(Route, RouteAdmin)
 
+class OnestationAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'coordinate_x', 'coordinate_y')
+    list_editable = ('coordinate_x', 'coordinate_y')
+
+admin.site.register(Onestation, OnestationAdmin)
+
 class StationAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'coordinate_x', 'coordinate_y', 'route', 'order', 'matrix_index')
+    list_display = ('id', 'name', 'coordinate_x', 'coordinate_y', 'route', 'order', 'matrix_index', 'notstations', 'one_station')
     list_filter = ('route', 'name')
-    list_editable = ('coordinate_x', 'coordinate_y', 'order', 'matrix_index')
+    list_editable = ('coordinate_x', 'coordinate_y', 'order', 'matrix_index', 'notstations')
 
 admin.site.register(Station, StationAdmin)
 

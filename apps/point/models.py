@@ -33,9 +33,10 @@ class Route(models.Model):
         return self.route
 
 
-class Metastation(models.Model):
-    name = models.CharField(max_length=55)
-    address = models.CharField(max_length=255)
+class Onestation(models.Model):
+    name = models.CharField(max_length=155)
+    coordinate_x = models.FloatField()
+    coordinate_y = models.FloatField()
     timestamp = models.DateTimeField(auto_now=True, blank=True, null=True)
 
     def __unicode__(self):
@@ -48,9 +49,10 @@ class Station(models.Model):
     coordinate_x = models.FloatField()
     coordinate_y = models.FloatField()
     order = models.IntegerField(blank=True, null=True)
-    meta_station = models.ForeignKey(Metastation, blank=True, null=True)
-    matrix_index = models.IntegerField(unique=True)
+    one_station = models.ForeignKey(Onestation, blank=True, null=True)
+    matrix_index = models.IntegerField(blank=True, null=True)
     timestamp = models.DateTimeField(auto_now=True, blank=True, null=True)
+    notstations = models.BooleanField()
 
     class Meta:
         ordering = ['order']
