@@ -71,6 +71,7 @@ def station_save(request):
         matrix_index_max = max(matrix_index) + 1
         station_in_bd = Station(route=new_route, name=station_name, coordinate_x=station_x, coordinate_y=station_y, matrix_index=matrix_index_max, notstations=True, order=index, one_station=one_station)
         if station_name == "temporary":
+            station_name = "temporary" + str(index)
             station_in_bd = Station(route=new_route, name=station_name, coordinate_x=station_x, coordinate_y=station_y, matrix_index=-1, notstations=False, order=index)
 
         station_in_bd.save()

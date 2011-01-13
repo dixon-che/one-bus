@@ -205,7 +205,7 @@ def get_all_x():
             coordinate_x = float(station_item['coordinate_x'])
             all_station_x += [coordinate_x]
 
-        fp = open(x_txt, 'w')
+        fp = open(x_txt, "w+")
         fp.write(repr(all_station_x))
         fp.close()
     else:
