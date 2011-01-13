@@ -72,6 +72,8 @@ def get_speed_matrix(Transport1, Transport2, Transport3, Transport4):
     max_onestation_timestamp = Onestation.objects.all().aggregate(Max('timestamp'))
     max_timestamp = max(max_onestation_timestamp, max_station_timestamp, max_route_timestamp, max_transport_timestamp)
     max_timestamp = max_timestamp['timestamp__max']
+    if os.path.isfile(s_m__txt) == False:
+        open(s_m__txt, 'w')
     sm_file = os.path.getmtime(s_m__txt)
     stat = os.stat(s_m__txt)
     file_size = stat.st_size
@@ -193,6 +195,8 @@ def get_all_x():
     max_onestation_timestamp = Onestation.objects.all().aggregate(Max('timestamp'))
     max_timestamp = max(max_onestation_timestamp, max_station_timestamp, max_route_timestamp, max_transport_timestamp)
     max_timestamp = max_timestamp['timestamp__max']
+    if os.path.isfile(x_txt) == False:
+        open(x_txt, 'w')
     sm_file = os.path.getmtime(x_txt)
     stat = os.stat(x_txt)
     file_size = stat.st_size
@@ -205,7 +209,7 @@ def get_all_x():
             coordinate_x = float(station_item['coordinate_x'])
             all_station_x += [coordinate_x]
 
-        fp = open(x_txt, "w+")
+        fp = open(x_txt, "w")
         fp.write(repr(all_station_x))
         fp.close()
     else:
@@ -294,6 +298,36 @@ def new_Metastation(Transport1, Transport2, Transport3, Transport4):
     max_onestation_timestamp = Onestation.objects.all().aggregate(Max('timestamp'))
     max_timestamp = max(max_onestation_timestamp, max_station_timestamp, max_route_timestamp, max_transport_timestamp)
     max_timestamp = max_timestamp['timestamp__max']
+    if os.path.isfile(metastation_txt) == False:
+        open(metastation_txt, 'w')
+    if os.path.isfile(metastation1_txt) == False:
+        open(metastation1_txt, 'w')
+    if os.path.isfile(metastation2_txt) == False:
+        open(metastation2_txt, 'w')
+    if os.path.isfile(metastation3_txt) == False:
+        open(metastation3_txt, 'w')
+    if os.path.isfile(metastation4_txt) == False:
+        open(metastation4_txt, 'w')
+    if os.path.isfile(metastation124_txt) == False:
+        open(metastation124_txt, 'w')
+    if os.path.isfile(metastation134_txt) == False:
+        open(metastation134_txt, 'w')
+    if os.path.isfile(metastation234_txt) == False:
+        open(metastation234_txt, 'w')
+    if os.path.isfile(metastation123_txt) == False:
+        open(metastation123_txt, 'w')
+    if os.path.isfile(metastation12_txt) == False:
+        open(metastation12_txt, 'w')
+    if os.path.isfile(metastation13_txt) == False:
+        open(metastation13_txt, 'w')
+    if os.path.isfile(metastation14_txt) == False:
+        open(metastation14_txt, 'w')
+    if os.path.isfile(metastation23_txt) == False:
+        open(metastation23_txt, 'w')
+    if os.path.isfile(metastation24_txt) == False:
+        open(metastation24_txt, 'w')
+    if os.path.isfile(metastation34_txt) == False:
+        open(metastation34_txt, 'w')
     sm_file = os.path.getmtime(metastation_txt)
     stat = os.stat(metastation_txt)
     file_size = stat.st_size
@@ -546,6 +580,8 @@ def transport_types():
     max_onestation_timestamp = Onestation.objects.all().aggregate(Max('timestamp'))
     max_timestamp = max(max_onestation_timestamp, max_station_timestamp, max_route_timestamp, max_transport_timestamp)
     max_timestamp = max_timestamp['timestamp__max']
+    if os.path.isfile(transport_txt) == False:
+        open(transport_txt, 'w')
     sm_file = os.path.getmtime(transport_txt)
     stat = os.stat(transport_txt)
     file_size = stat.st_size
@@ -579,6 +615,8 @@ def new_Metastation2(Transport1, Transport2, Transport3, Transport4):
     max_onestation_timestamp = Onestation.objects.all().aggregate(Max('timestamp'))
     max_timestamp = max(max_onestation_timestamp, max_station_timestamp, max_route_timestamp, max_transport_timestamp)
     max_timestamp = max_timestamp['timestamp__max']
+    if os.path.isfile(metastation_txt) == False:
+        open(metastation_txt, 'w')
     sm_file = os.path.getmtime(metastation_txt)
     stat = os.stat(metastation_txt)
     file_size = stat.st_size

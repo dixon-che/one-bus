@@ -128,6 +128,8 @@ def transport_list(request):
     max_onestation_timestamp = Onestation.objects.all().aggregate(Max('timestamp'))
     max_timestamp = max(max_onestation_timestamp, max_station_timestamp, max_route_timestamp, max_transport_timestamp)
     max_timestamp = max_timestamp['timestamp__max']
+    if os.path.isfile(transport_list_txt) == False:
+        open(transport_list_txt, 'w')
     sm_file = os.path.getmtime(transport_list_txt)
     stat = os.stat(transport_list_txt)
     file_size = stat.st_size
@@ -138,7 +140,7 @@ def transport_list(request):
                                                      'route__color', 'route__transport_type', 'name',
                                                      'coordinate_x', 'coordinate_y').order_by('route__id', 'order'))
 
-        fp = open(transport_list_txt, 'w')
+        fp = open(transport_list_txt, 'w+')
         fp.write(repr(stations))
         fp.close()
     else:
