@@ -59,13 +59,19 @@ def station_save(request):
         station_name = station_1[0].decode('utf8')
         station_y = station_1[1]
         station_x = station_1[2]
+        station_list = list()
+        one_station_list_with_name = Onestation.objects.filter(name=station_name)
+        if not one_station_list_with_name:
+            one_station = Onestation.objects.create(name=station_name, coordinate_x=station_x, coordinate_y=station_y)
+        else:
+            one_station = one_station_list_with_name[0]
         matrix_index = list()
         for station_out_bd in Station.objects.all():
             matrix_index += [station_out_bd.matrix_index]
         matrix_index_max = max(matrix_index) + 1
-        station_in_bd = Station(route = new_route, name = station_name, coordinate_x = station_x, coordinate_y = station_y, matrix_index = matrix_index_max, notstations = True, order = index)
+        station_in_bd = Station(route=new_route, name=station_name, coordinate_x=station_x, coordinate_y=station_y, matrix_index=matrix_index_max, notstations=True, order=index, one_station=one_station)
         if station_name == "temporary":
-            station_in_bd = Station(route = new_route, name = station_name, coordinate_x = station_x, coordinate_y = station_y, matrix_index = -1, notstations = False, order = index)
+            station_in_bd = Station(route=new_route, name=station_name, coordinate_x=station_x, coordinate_y=station_y, matrix_index=-1, notstations=False, order=index)
 
         station_in_bd.save()
     return HttpResponse('ok')
@@ -81,13 +87,13 @@ def station_autocomplete(request):
     json_list = list()
     for station in Onestation.objects.filter(name__contains=name):
         stat_dict = dict()
-        stat_dict['id'] = station.name
-        stat_dict['value'] = station.name
         stat_dict['label'] = station.name
+        stat_dict['value'] = station.name
+        stat_dict['id'] = station.name
+        stat_dict['x'] = station.coordinate_x
+        stat_dict['y'] = station.coordinate_y
         json_list += [stat_dict]
-    print json_list
     return  HttpResponse(json.dumps(json_list), 'application/javascript')
-
 
 
 def station_edit(request, route_id):

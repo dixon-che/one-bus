@@ -28,7 +28,7 @@
 		var points_collection;
 		var route_line;
 		var drag_index;
-	
+
 		$(document).ready(function(){
 			init_map();
 			init_page();
@@ -60,9 +60,16 @@
 		
 		function add_point_handler(event)
 		{
-			var geocoder = new YMaps.Geocoder('Украина, г. Харьков, ' + $('#new_point').val(), {results: 1});
-      YMaps.Events.observe(geocoder, geocoder.Events.Load, pointFound);
-      YMaps.Events.observe(geocoder, geocoder.Events.Fault, pointFoundError);
+		if ($('#name').val() == 0)
+		{
+		var geocoder = new YMaps.Geocoder('Украина, г. Харьков, ' + $('#new_point').val(), {results: 1});
+		}
+		else
+		{
+		var geocoder = new YMaps.Geocoder(new YMaps.GeoPoint($('#x').val(), $('#y').val()), {results: 1});
+		}
+		YMaps.Events.observe(geocoder, geocoder.Events.Load, pointFound);
+		YMaps.Events.observe(geocoder, geocoder.Events.Fault, pointFoundError);
 		}
 		
 		function pointFound()
@@ -70,11 +77,27 @@
       if(this.length())
       {
       	var new_point = this.get(0);
-      	if(new_point.kind == 'house')
+	if($('#name').val() != 0)
+	    {
+	    var n_p_k = 'house'
+	    }
+	else
+	    {
+	    var n_p_k = new_point.kind
+  	    }
+      	if(n_p_k == 'house')
       	{
 	        if(confirm('Добавить найденную точку в список?'))
-					{
+		{
+		  if ($('#name').val() != 0)
+		     {
+	             points[points.length] = [new YMaps.GeoPoint($('#x').val(), $('#y').val()), $('#name').val(), 'point_' + point_index, 'main'];
+		     }
+		  if ($('#name').val() == 0)
+		     {
 	          points[points.length] = [new_point.getGeoPoint(), new_point.text.replace('Украина, Харьков, ', ''), 'point_' + point_index, 'main'];
+		     }
+
 	          if(empty_list)
 	          {
 	          	empty_list = false;
@@ -93,7 +116,7 @@
       }
       else
       {
-        alert("Точка не найдена!");
+        alert("Точка не найдена");
       }
     }
     
@@ -293,14 +316,18 @@
 			source: "/stations/autocomplete/",
 			minLength: 2,
 			select: function( event, ui ) {
-				log( ui.item ?
-					"Selected: " + ui.item.value + " aka " + ui.item.id :
-					"Nothing selected, input was " + this.value );
+	                        if (ui.item != 0)
+	                        { var y = ui.item.y
+	                          var x = ui.item.x
+	                          var name = ui.item.value
+	                            $("#x").val(x);	   
+                                    $("#y").val(y);	                   
+                                    $("#name").val(name);
+	                        }
 			}
 		});
 	});
 	</script>
-
 </head>
 <body>
 	<div id="masthead"></div>
@@ -311,11 +338,15 @@
 		</div>
 		<div id="right_col">
 			Добавить точку:<br />
+			<input type="hidden" id="x" value="" />
+			<input type="hidden" id="y" value="" />
+			<input type="hidden" id="name" value="" />
 			<input type="text" id="new_point" value="пр. Ленина, 9" style="width: 200px" />&nbsp;<input type="button" id="add_point" value="Добавить" /><br />
 			<div id="points" style="margin-top: 20px">
 				Ни одна точка еще не добавлена
 			</div>
 		</div>
+		<div id="log" style="height: 200px; width: 300px"></div>
 	</div>
 	<div id="footer"></div>
 	<div id="save_form" style="display:none">
