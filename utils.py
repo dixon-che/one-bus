@@ -65,7 +65,7 @@ def get_border_points2(points_price_min, closed_points_list, metastations_statio
 
 # функция создания speed_matrix "с кешем"
 def get_speed_matrix(Transport1, Transport2, Transport3, Transport4):
-    s_m__txt = os.path.join(PROJECT_ROOT, 'kesh/speed_matrix.txt')
+    s_m__txt = os.path.join(PROJECT_ROOT, '/kesh/speed_matrix.txt')
     max_station_timestamp = Station.objects.all().aggregate(Max('timestamp'))
     max_route_timestamp = Route.objects.all().aggregate(Max('timestamp'))
     max_transport_timestamp = Transport.objects.all().aggregate(Max('timestamp'))
@@ -186,7 +186,7 @@ def get_lenth_finish(finish_y_rad, finish_x_rad):
 
 #ф-ия нахождения х(иксов) всех станций "с кешем"
 def get_all_x():
-    x_txt = os.path.join(PROJECT_ROOT, 'kesh/all_x.txt')
+    x_txt = os.path.join(PROJECT_ROOT, '/kesh/all_x.txt')
     max_station_timestamp = Station.objects.all().aggregate(Max('timestamp'))
     max_route_timestamp = Route.objects.all().aggregate(Max('timestamp'))
     max_transport_timestamp = Transport.objects.all().aggregate(Max('timestamp'))
@@ -273,21 +273,21 @@ def get_metastations_stations_list(points_in_radius_finish, points_in_radius_sta
     return metastations_stations_list
 
 def new_Metastation(Transport1, Transport2, Transport3, Transport4):
-    metastation_txt = os.path.join(PROJECT_ROOT, 'kesh/metastation.txt')
-    metastation1_txt = os.path.join(PROJECT_ROOT, 'kesh/metastation1.txt')
-    metastation2_txt = os.path.join(PROJECT_ROOT, 'kesh/metastation2.txt')
-    metastation3_txt = os.path.join(PROJECT_ROOT, 'kesh/metastation3.txt')
-    metastation4_txt = os.path.join(PROJECT_ROOT, 'kesh/metastation4.txt')
-    metastation124_txt = os.path.join(PROJECT_ROOT, 'kesh/metastation124.txt')
-    metastation134_txt = os.path.join(PROJECT_ROOT, 'kesh/metastation134.txt')
-    metastation234_txt = os.path.join(PROJECT_ROOT, 'kesh/metastation234.txt')
-    metastation123_txt = os.path.join(PROJECT_ROOT, 'kesh/metastation123.txt')
-    metastation12_txt = os.path.join(PROJECT_ROOT, 'kesh/metastation12.txt')
-    metastation13_txt = os.path.join(PROJECT_ROOT, 'kesh/metastation13.txt')
-    metastation14_txt = os.path.join(PROJECT_ROOT, 'kesh/metastation14.txt')
-    metastation23_txt = os.path.join(PROJECT_ROOT, 'kesh/metastation23.txt')
-    metastation24_txt = os.path.join(PROJECT_ROOT, 'kesh/metastation24.txt')
-    metastation34_txt = os.path.join(PROJECT_ROOT, 'kesh/metastation34.txt')
+    metastation_txt = os.path.join(PROJECT_ROOT, '/kesh/metastation.txt')
+    metastation1_txt = os.path.join(PROJECT_ROOT, '/kesh/metastation1.txt')
+    metastation2_txt = os.path.join(PROJECT_ROOT, '/kesh/metastation2.txt')
+    metastation3_txt = os.path.join(PROJECT_ROOT, '/kesh/metastation3.txt')
+    metastation4_txt = os.path.join(PROJECT_ROOT, '/kesh/metastation4.txt')
+    metastation124_txt = os.path.join(PROJECT_ROOT, '/kesh/metastation124.txt')
+    metastation134_txt = os.path.join(PROJECT_ROOT, '/kesh/metastation134.txt')
+    metastation234_txt = os.path.join(PROJECT_ROOT, '/kesh/metastation234.txt')
+    metastation123_txt = os.path.join(PROJECT_ROOT, '/kesh/metastation123.txt')
+    metastation12_txt = os.path.join(PROJECT_ROOT, '/kesh/metastation12.txt')
+    metastation13_txt = os.path.join(PROJECT_ROOT, '/kesh/metastation13.txt')
+    metastation14_txt = os.path.join(PROJECT_ROOT, '/kesh/metastation14.txt')
+    metastation23_txt = os.path.join(PROJECT_ROOT, '/kesh/metastation23.txt')
+    metastation24_txt = os.path.join(PROJECT_ROOT, '/kesh/metastation24.txt')
+    metastation34_txt = os.path.join(PROJECT_ROOT, '/kesh/metastation34.txt')
     max_station_timestamp = Station.objects.all().aggregate(Max('timestamp'))
     max_route_timestamp = Route.objects.all().aggregate(Max('timestamp'))
     max_transport_timestamp = Transport.objects.all().aggregate(Max('timestamp'))
@@ -539,7 +539,7 @@ def get_border_points(points_price_min, closed_points_list, points_list_item, me
     return list(set(points_list))
 
 def transport_types():
-    transport_txt = os.path.join(PROJECT_ROOT, 'kesh/transport.txt')
+    transport_txt = os.path.join(PROJECT_ROOT, '/kesh/transport.txt')
     max_station_timestamp = Station.objects.all().aggregate(Max('timestamp'))
     max_route_timestamp = Route.objects.all().aggregate(Max('timestamp'))
     max_transport_timestamp = Transport.objects.all().aggregate(Max('timestamp'))
@@ -572,7 +572,7 @@ def transport_types():
     return transports
 
 def new_Metastation2(Transport1, Transport2, Transport3, Transport4):
-    metastation_txt = os.path.join(PROJECT_ROOT, 'kesh/metastation.txt')
+    metastation_txt = os.path.join(PROJECT_ROOT, '/kesh/metastation.txt')
     max_station_timestamp = Station.objects.all().aggregate(Max('timestamp'))
     max_route_timestamp = Route.objects.all().aggregate(Max('timestamp'))
     max_transport_timestamp = Transport.objects.all().aggregate(Max('timestamp'))

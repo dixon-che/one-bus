@@ -120,7 +120,7 @@ def hello(request):
 
 
 def transport_list(request):
-    transport_list_txt = os.path.join(PROJECT_ROOT, 'kesh/transport_list.txt')
+    transport_list_txt = os.path.join(PROJECT_ROOT, '/kesh/transport_list.txt')
     max_station_timestamp = Station.objects.all().aggregate(Max('timestamp'))
     max_route_timestamp = Route.objects.all().aggregate(Max('timestamp'))
     max_transport_timestamp = Transport.objects.all().aggregate(Max('timestamp'))
