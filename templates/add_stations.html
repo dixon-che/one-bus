@@ -60,6 +60,14 @@
 		
 		function add_point_handler(event)
 		{
+		if ($('#name').val() != $('#new_point').val())
+		{
+		$('#x').val(0);
+		$('#y').val(0);
+		$('#name').val(0);
+		alert('False');
+		}
+
 		if ($('#name').val() == 0)
 		{
 		var geocoder = new YMaps.Geocoder('Украина, г. Харьков, ' + $('#new_point').val(), {results: 1});
