@@ -162,15 +162,15 @@ def route(request):
     KoeRad = 0.05
     R = 6376 # радиус земли
     Transport0 = Transport1 = Transport2 = Transport3 = Transport4 = 0
-#    if request.GET['Transport1'] == 'on':
-#        Transport1 = 1
-#    if request.GET['Transport2'] == 'on':
-#        Transport2 = 1
-#    if request.GET['Transport3'] == True:
-#        Transport3 = 1
-#    if request.GET['Transport1'] == True:
-#        Transport4 = 1
-#    print request.GET['Transport1'], request.GET['Transport2']
+    if request.GET['Transport1'] == 'on':
+        Transport1 = 1
+    if request.GET['Transport2'] == 'on':
+        Transport2 = 1
+    if request.GET['Transport3'] == 'on':
+        Transport3 = 1
+    if request.GET['Transport1'] == 'on':
+        Transport4 = 1
+    print request.GET['Transport1'], request.GET['Transport2']
     speed_matrix = get_speed_matrix(Transport1, Transport2, Transport3, Transport4)
     start_x = float(request.GET['x1'])
     start_x_rad = start_x*pi/180 

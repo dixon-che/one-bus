@@ -106,10 +106,10 @@ human_readable = '(' + p[i].TransportsType + '-' + p[i].routeName + ' : ' + p[i]
 				+ "&y1=" + encodeURI(Start_y)
 				+ "&x2=" + encodeURI(Finish_x) 
 				+ "&y2=" + encodeURI(Finish_y)
-			        + "&Transport1=" + YMaps.jQuery('#Transport1').val()
-			        + "&Transport2=" + YMaps.jQuery('#Transport2').val()
-			        + "&Transport3=" + YMaps.jQuery('#Transport3').val()
-			        + "&Transport4=" + YMaps.jQuery('#Transport4').val();
+			        + "&Transport1=" + YMaps.jQuery('#Transport1:checked').val()
+			        + "&Transport2=" + YMaps.jQuery('#Transport2:checked').val()
+			        + "&Transport3=" + YMaps.jQuery('#Transport3:checked').val()
+			        + "&Transport4=" + YMaps.jQuery('#Transport4:checked').val();
 			http_request.open("GET", url, true);
 			http_request.send(null);
 		}
