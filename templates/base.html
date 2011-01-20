@@ -14,51 +14,52 @@
 
 	<div id="page" align="center">
 		<div id="toppage" align="center">
-			<div id="date">
-				<div class="smalltext" style="padding:13px;"><strong>1.12.2010</strong></div>
-			</div>
-			<div id="topbar">
+		  <div id="topbar">
 				<div align="right" style="padding:12px;" class="smallwhitetext"><a href="#">Home</a> | <a href="#">Sitemap</a> | <a href="#">Contact Us</a></div>
-			</div>
+		  </div>
 		</div>
 		<div id="header" align="center">
-			<div class="titletext" id="logo">
-				<div class="logotext" style="margin:30px">Ca<span class="orangelogotext">$</span>h</div> 
-			</div>
-			<div id="pagetitle">
-				<div id="title" class="titletext" align="right">Welcome to Peresadok.net</div>
+			<div id="pagetitle" align="right" margin-right="5px">
+				<div id="title" class="titletext" align="right"></div>
 			</div>
 		</div>
-		<div id="content" align="center">
-			<div id="menus" align="right">
-				<div align="right" style="width:189px; height:8px;"><img src="/s/images/mnu_topshadow.gif" width="189" height="8" alt="mnutopshadow" /></div>
-				<div id="linksmenu" align="center">
-					<a href="#" title="Home">Home</a>
-					<a href="#" title="About Us">About Us</a>
-					<a href="#" title="Products">Products</a>
-					<a href="#" title="Our Services">Our Services</a>
-					<a href="#" title="Contact Us">Contact Us</a>
-				</div>
-				<div align="right" style="width:189px; height:8px;"><img src="/s/images/mnu_bottomshadow.gif" width="189" height="8" alt="mnubottomshadow" /></div>
-			</div>
 
-		<div id="contenttext">
-		  <table>
+		<div id="contenttext" align="center">
+		  <table border=1 width="1184px"> 
         {% block content %}
 		    <tr>
+		      <td width="50px">qqqqq</td>
 		      <td><div id="YMapsID" style="width:800px;height:600px"></div></td>
-		      <td><ul id="menu"></ul></td>	  
+		      <td>
+			<div style="width:110px;height:20px">
+			<input type="checkbox" id="Transport1" name="Transport1" checked="checked">Трамвай</br>
+			</div>
+			<div style="width:110px;height:20px">
+			<input type="checkbox" id="Transport2" name="Transport2" checked="checked">Метро</br>
+			</div>
+			<div style="width:110px;height:20px">
+			<input type="checkbox" id="Transport3" name="Transport3" checked="checked">Тролейбус</br>
+			</div>
+			<div style="width:110px;height:20px">
+			<input type="checkbox" id="Transport4" name="Transport4" checked="checked">Автобус</br>
+			</div>
+			<ul id="menu"></ul>
+		      </td>	  
 		    </tr>
 	{% endblock %}
 	<tr>
-	  <td><div id='human_readable'></div></td>
+	  <td></td>
+	  <td height=40px><div id='human_readable'></div></td>
+	  <td></td>
 	</tr>
 	<tr>
+	  <td></td>
 	  <td><div id="footer" class="smallgraytext" align="center">
 	      <a href="#">Home</a> | <a href="#">About Us</a> | <a href="#">Products</a> | <a href="#">Our Services</a> | <a href="#">Contact Us</a><br />
 	      Your Company Name &copy; 2007<br />
 	      <a href="http://www.winkhosting.com" title="Hosting Colombia">Hosting Colombia</a><br />
 	    </div></td>
+	  <td></td>
 	</tr>
 		</div>
 	</div>

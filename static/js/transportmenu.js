@@ -105,7 +105,11 @@ human_readable = '(' + p[i].TransportsType + '-' + p[i].routeName + ' : ' + p[i]
 			var url = "/route/?x1=" + encodeURI(Start_x) 
 				+ "&y1=" + encodeURI(Start_y)
 				+ "&x2=" + encodeURI(Finish_x) 
-				+ "&y2=" + encodeURI(Finish_y);
+				+ "&y2=" + encodeURI(Finish_y)
+			        + "&Transport1=" + YMaps.jQuery('#Transport1').val()
+			        + "&Transport2=" + YMaps.jQuery('#Transport2').val()
+			        + "&Transport3=" + YMaps.jQuery('#Transport3').val()
+			        + "&Transport4=" + YMaps.jQuery('#Transport4').val();
 			http_request.open("GET", url, true);
 			http_request.send(null);
 		}

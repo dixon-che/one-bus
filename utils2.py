@@ -20,26 +20,12 @@ def len_witput_points(start_point, end_point):
 
 # функция создания speed_matrix "с кешем"
 def get_speed_matrix(Transport1, Transport2, Transport3, Transport4):
-    s_m__txt = os.path.join(PROJECT_ROOT, 'kesh/speed_matrix.txt')
-    max_station_timestamp = Station.objects.all().aggregate(Max('timestamp'))
-    max_route_timestamp = Route.objects.all().aggregate(Max('timestamp'))
-    max_transport_timestamp = Transport.objects.all().aggregate(Max('timestamp'))
-    max_onestation_timestamp = Onestation.objects.all().aggregate(Max('timestamp'))
-    max_timestamp = max(max_onestation_timestamp, max_station_timestamp, max_route_timestamp, max_transport_timestamp)
-    max_timestamp = max_timestamp['timestamp__max']
-    if os.path.isfile(s_m__txt) == False:
-        open(s_m__txt, 'w')
-    sm_file = os.path.getmtime(s_m__txt)
-    stat = os.stat(s_m__txt)
-    file_size = stat.st_size
-    timestamp = datetime.datetime.fromtimestamp(sm_file)
-
-    if timestamp < max_timestamp or file_size == 0:
+    s_m__txt = os.path.join(PROJECT_ROOT, 'kesh2/speed_matrix.txt')
+    if os.path.isfile(s_m__txt) == False or os.path.getmtime(s_m__txt) == 0:
         speed_matrix = new_speed_matrix(Transport1, Transport2, Transport3, Transport4)
         fp = open(s_m__txt, 'w')
         fp.write(repr(speed_matrix))
         fp.close()
-
     else:
         fp = open(s_m__txt, 'r')
         read_file = fp.read()
@@ -222,27 +208,14 @@ def get_lenth_finish2(finish_y_rad, finish_x_rad, Transport1, Transport2, Transp
 
 #ф-ия нахождения х(иксов) всех станций "с кешем"
 def get_all_x():
-    x_txt = os.path.join(PROJECT_ROOT, 'kesh/all_x.txt')
-    max_station_timestamp = Station.objects.all().aggregate(Max('timestamp'))
-    max_route_timestamp = Route.objects.all().aggregate(Max('timestamp'))
-    max_transport_timestamp = Transport.objects.all().aggregate(Max('timestamp'))
-    max_onestation_timestamp = Onestation.objects.all().aggregate(Max('timestamp'))
-    max_timestamp = max(max_onestation_timestamp, max_station_timestamp, max_route_timestamp, max_transport_timestamp)
-    max_timestamp = max_timestamp['timestamp__max']
-    if os.path.isfile(x_txt) == False:
-        open(x_txt, 'w')
-    sm_file = os.path.getmtime(x_txt)
-    stat = os.stat(x_txt)
-    file_size = stat.st_size
-    timestamp = datetime.datetime.fromtimestamp(sm_file)
-
-    if timestamp < max_timestamp or file_size == 0:
+    x_txt = os.path.join(PROJECT_ROOT, 'kesh2/all_x.txt')
+    if os.path.isfile(x_txt) == False or os.path.getmtime(x_txt) == 0:
         all_station_list = Station.objects.filter(notstations=True).values('coordinate_x').order_by('id')
         all_station_x = list()
         for station_item in all_station_list:
             coordinate_x = float(station_item['coordinate_x'])
             all_station_x += [coordinate_x]
-
+            
         fp = open(x_txt, "w")
         fp.write(repr(all_station_x))
         fp.close()
@@ -317,248 +290,96 @@ def get_metastations_stations_list(points_in_radius_finish, points_in_radius_sta
     return metastations_stations_list
 
 def new_Metastation(Transport1, Transport2, Transport3, Transport4):
-    metastation_txt = os.path.join(PROJECT_ROOT, 'kesh/metastation.txt')
-    metastation1_txt = os.path.join(PROJECT_ROOT, 'kesh/metastation1.txt')
-    metastation2_txt = os.path.join(PROJECT_ROOT, 'kesh/metastation2.txt')
-    metastation3_txt = os.path.join(PROJECT_ROOT, 'kesh/metastation3.txt')
-    metastation4_txt = os.path.join(PROJECT_ROOT, 'kesh/metastation4.txt')
-    metastation124_txt = os.path.join(PROJECT_ROOT, 'kesh/metastation124.txt')
-    metastation134_txt = os.path.join(PROJECT_ROOT, 'kesh/metastation134.txt')
-    metastation234_txt = os.path.join(PROJECT_ROOT, 'kesh/metastation234.txt')
-    metastation123_txt = os.path.join(PROJECT_ROOT, 'kesh/metastation123.txt')
-    metastation12_txt = os.path.join(PROJECT_ROOT, 'kesh/metastation12.txt')
-    metastation13_txt = os.path.join(PROJECT_ROOT, 'kesh/metastation13.txt')
-    metastation14_txt = os.path.join(PROJECT_ROOT, 'kesh/metastation14.txt')
-    metastation23_txt = os.path.join(PROJECT_ROOT, 'kesh/metastation23.txt')
-    metastation24_txt = os.path.join(PROJECT_ROOT, 'kesh/metastation24.txt')
-    metastation34_txt = os.path.join(PROJECT_ROOT, 'kesh/metastation34.txt')
-    max_station_timestamp = Station.objects.all().aggregate(Max('timestamp'))
-    max_route_timestamp = Route.objects.all().aggregate(Max('timestamp'))
-    max_transport_timestamp = Transport.objects.all().aggregate(Max('timestamp'))
-    max_onestation_timestamp = Onestation.objects.all().aggregate(Max('timestamp'))
-    max_timestamp = max(max_onestation_timestamp, max_station_timestamp, max_route_timestamp, max_transport_timestamp)
-    max_timestamp = max_timestamp['timestamp__max']
-    if os.path.isfile(metastation_txt) == False:
-        open(metastation_txt, 'w')
-    if os.path.isfile(metastation1_txt) == False:
-        open(metastation1_txt, 'w')
-    if os.path.isfile(metastation2_txt) == False:
-        open(metastation2_txt, 'w')
-    if os.path.isfile(metastation3_txt) == False:
-        open(metastation3_txt, 'w')
-    if os.path.isfile(metastation4_txt) == False:
-        open(metastation4_txt, 'w')
-    if os.path.isfile(metastation124_txt) == False:
-        open(metastation124_txt, 'w')
-    if os.path.isfile(metastation134_txt) == False:
-        open(metastation134_txt, 'w')
-    if os.path.isfile(metastation234_txt) == False:
-        open(metastation234_txt, 'w')
-    if os.path.isfile(metastation123_txt) == False:
-        open(metastation123_txt, 'w')
-    if os.path.isfile(metastation12_txt) == False:
-        open(metastation12_txt, 'w')
-    if os.path.isfile(metastation13_txt) == False:
-        open(metastation13_txt, 'w')
-    if os.path.isfile(metastation14_txt) == False:
-        open(metastation14_txt, 'w')
-    if os.path.isfile(metastation23_txt) == False:
-        open(metastation23_txt, 'w')
-    if os.path.isfile(metastation24_txt) == False:
-        open(metastation24_txt, 'w')
-    if os.path.isfile(metastation34_txt) == False:
-        open(metastation34_txt, 'w')
-    sm_file = os.path.getmtime(metastation_txt)
-    stat = os.stat(metastation_txt)
-    file_size = stat.st_size
-    timestamp = datetime.datetime.fromtimestamp(sm_file)
-
-    if timestamp < max_timestamp or file_size == 0:
-        Metastat, Metastat1, Metastat2, Metastat3, Metastat4 = list(), list(), list(), list(), list()
-        Metastat123, Metastat234, Metastat134, Metastat124 = list(), list(), list(), list()
-        Metastat12, Metastat23, Metastat34, Metastat24, Metastat14, Metastat13 = list(), list(), list(), list(), list(), list()
-        Radius = 0.004
-        for station in Station.objects.filter(notstations=True).values_list('matrix_index', flat=True):
-            transport = Station.objects.get(matrix_index=station).route.transport_type_id
-            station_x = Station.objects.get(matrix_index=station).coordinate_x
-            station_y = Station.objects.get(matrix_index=station).coordinate_y
-            x1 = station_x - Radius
-            x2 = station_x + Radius
-            y1 = station_y - Radius
-            y2 = station_y + Radius
-            all_x = get_all_x()
-            radius_x, points_in_radius = list(), list()
-            for xs in all_x:
-                if x1< xs < x2:
-                    radius_x += [xs]
-            for x_st in radius_x:
-                station_for_y = Station.objects.filter(coordinate_x=x_st, notstations=True).values_list('coordinate_y', 'matrix_index')
-                for sy in station_for_y:
-                    if y1 < sy[0] < y2:
-                        points_in_radius += [sy[1]]
-            points_in_radius = list(set(points_in_radius))
-            for point in points_in_radius:
-                transport2 = Station.objects.get(matrix_index=point).route.transport_type_id
-                if point != station:
-                    para_point = list()
-                    para_point += [station]
-                    para_point += [point]
-                    if len(para_point) == 2:
-                        Metastat += [para_point]
-                        if transport == 1 and transport2 == 1:
-                            Metastat1 += [para_point]
-                        elif transport == 2 and transport2 == 2:
-                            Metastat2 += [para_point]
-                        elif transport == 3 and transport2 == 3:
-                            Metastat3 += [para_point]
-                        elif transport == 4 and transport2 == 4:
-                            Metastat4 += [para_point]
-                        if transport != 1 and transport2 != 1:
-                            Metastat234 += [para_point]
-                            if transport != 2 and transport2 != 2:
-                                Metastat34 += [para_point]
-                            if transport != 3 and transport2 != 3:
-                                Metastat24 += [para_point]
-                            if transport != 4 and transport2 != 4:
-                                Metastat23 += [para_point]
-
-                        if transport != 2 and transport2 != 2:
-                            Metastat134 += [para_point]
-                            if transport != 4 and transport2 != 4:
-                                Metastat14 += [para_point]
-                            if transport != 3 and transport2 != 3:
-                                Metastat13 += [para_point]
-
-                        if transport != 3 and transport2 != 3:
-                            Metastat124 += [para_point]
-                            if transport != 4 and transport2 != 4:
-                                Metastat12 += [para_point]
-
-                        if transport != 4 and transport2 != 4:
-                            Metastat123 += [para_point]
-
-        fp = open(metastation_txt, 'w')
-        fp.write(repr(Metastat))
+    metastation_txt = os.path.join(PROJECT_ROOT, 'kesh2/metastation.txt')
+    metastation1_txt = os.path.join(PROJECT_ROOT, 'kesh2/metastation1.txt')
+    metastation2_txt = os.path.join(PROJECT_ROOT, 'kesh2/metastation2.txt')
+    metastation3_txt = os.path.join(PROJECT_ROOT, 'kesh2/metastation3.txt')
+    metastation4_txt = os.path.join(PROJECT_ROOT, 'kesh2/metastation4.txt')
+    metastation124_txt = os.path.join(PROJECT_ROOT, 'kesh2/metastation124.txt')
+    metastation134_txt = os.path.join(PROJECT_ROOT, 'kesh2/metastation134.txt')
+    metastation234_txt = os.path.join(PROJECT_ROOT, 'kesh2/metastation234.txt')
+    metastation123_txt = os.path.join(PROJECT_ROOT, 'kesh2/metastation123.txt')
+    metastation12_txt = os.path.join(PROJECT_ROOT, 'kesh2/metastation12.txt')
+    metastation13_txt = os.path.join(PROJECT_ROOT, 'kesh2/metastation13.txt')
+    metastation14_txt = os.path.join(PROJECT_ROOT, 'kesh2/metastation14.txt')
+    metastation23_txt = os.path.join(PROJECT_ROOT, 'kesh2/metastation23.txt')
+    metastation24_txt = os.path.join(PROJECT_ROOT, 'kesh2/metastation24.txt')
+    metastation34_txt = os.path.join(PROJECT_ROOT, 'kesh2/metastation34.txt')
+    if Transport1 == 1 and Transport2 == 0 and Transport3 == 0 and Transport4 == 0:
+        fp = open(metastation234_txt, 'r')
+        read_file = fp.read()
+        Metastat = eval(read_file)
+        fp.close()            
+    if Transport1 == 0 and Transport2 == 1 and Transport3 == 0 and Transport4 == 0:
+        fp = open(metastation134_txt, 'r')
+        read_file = fp.read()
+        Metastat = eval(read_file)
+        fp.close()            
+    if Transport1 == 0 and Transport2 == 0 and Transport3 == 1 and Transport4 == 0:
+        fp = open(metastation124_txt, 'r')
+        read_file = fp.read()
+        Metastat = eval(read_file)
+        fp.close()            
+    if Transport1 == 0 and Transport2 == 0 and Transport3 == 0 and Transport4 == 1:
+        fp = open(metastation123_txt, 'r')
+        read_file = fp.read()
+        Metastat = eval(read_file)
+        fp.close()            
+    if Transport1 == 1 and Transport2 == 1 and Transport3 == 0 and Transport4 == 0:
+        fp = open(metastation34_txt, 'r')
+        read_file = fp.read()
+        Metastat = eval(read_file)
+        fp.close()            
+    if Transport1 == 1 and Transport2 == 0 and Transport3 == 1 and Transport4 == 0:
+        fp = open(metastation24_txt, 'r')
+        read_file = fp.read()
+        Metastat = eval(read_file)
+        fp.close()            
+    if Transport1 == 1 and Transport2 == 0 and Transport3 == 0 and Transport4 == 1:
+        fp = open(metastation23_txt, 'r')
+        read_file = fp.read()
+        Metastat = eval(read_file)
+        fp.close()            
+    if Transport1 == 0 and Transport2 == 1 and Transport3 == 1 and Transport4 == 0:
+        fp = open(metastation14_txt, 'r')
+        read_file = fp.read()
+        Metastat = eval(read_file)
+        fp.close()            
+    if Transport1 == 0 and Transport2 == 1 and Transport3 == 0 and Transport4 == 1:
+        fp = open(metastation13_txt, 'r')
+        read_file = fp.read()
+        Metastat = eval(read_file)
+        fp.close()            
+    if Transport1 == 0 and Transport2 == 0 and Transport3 == 1 and Transport4 == 1:
+        fp = open(metastation12_txt, 'r')
+        read_file = fp.read()
+        Metastat = eval(read_file)
         fp.close()
-        fp1 = open(metastation1_txt, 'w')
-        fp1.write(repr(Metastat1))
-        fp1.close()
-        fp2 = open(metastation2_txt, 'w')
-        fp2.write(repr(Metastat2))
-        fp2.close()
-        fp3 = open(metastation3_txt, 'w')
-        fp3.write(repr(Metastat3))
-        fp3.close()
-        fp4 = open(metastation4_txt, 'w')
-        fp4.write(repr(Metastat4))
-        fp4.close()
-        fp124 = open(metastation124_txt, 'w')
-        fp124.write(repr(Metastat124))
-        fp124.close()
-        fp134 = open(metastation134_txt, 'w')
-        fp134.write(repr(Metastat134))
-        fp134.close()
-        fp234 = open(metastation234_txt, 'w')
-        fp234.write(repr(Metastat234))
-        fp234.close()
-        fp123 = open(metastation123_txt, 'w')
-        fp123.write(repr(Metastat123))
-        fp123.close()
-        fp12 = open(metastation12_txt, 'w')
-        fp12.write(repr(Metastat12))
-        fp12.close()
-        fp13 = open(metastation13_txt, 'w')
-        fp13.write(repr(Metastat13))
-        fp13.close()
-        fp14 = open(metastation14_txt, 'w')
-        fp14.write(repr(Metastat14))
-        fp14.close()
-        fp23 = open(metastation23_txt, 'w')
-        fp23.write(repr(Metastat23))
-        fp23.close()
-        fp24 = open(metastation24_txt, 'w')
-        fp24.write(repr(Metastat24))
-        fp24.close()
-        fp34 = open(metastation34_txt, 'w')
-        fp34.write(repr(Metastat34))
-        fp34.close()
-
-    else:
-        if Transport1 == 1 and Transport2 == 0 and Transport3 == 0 and Transport4 == 0:
-            fp = open(metastation234_txt, 'r')
-            read_file = fp.read()
-            Metastat = eval(read_file)
-            fp.close()            
-        if Transport1 == 0 and Transport2 == 1 and Transport3 == 0 and Transport4 == 0:
-            fp = open(metastation134_txt, 'r')
-            read_file = fp.read()
-            Metastat = eval(read_file)
-            fp.close()            
-        if Transport1 == 0 and Transport2 == 0 and Transport3 == 1 and Transport4 == 0:
-            fp = open(metastation124_txt, 'r')
-            read_file = fp.read()
-            Metastat = eval(read_file)
-            fp.close()            
-        if Transport1 == 0 and Transport2 == 0 and Transport3 == 0 and Transport4 == 1:
-            fp = open(metastation123_txt, 'r')
-            read_file = fp.read()
-            Metastat = eval(read_file)
-            fp.close()            
-        if Transport1 == 1 and Transport2 == 1 and Transport3 == 0 and Transport4 == 0:
-            fp = open(metastation34_txt, 'r')
-            read_file = fp.read()
-            Metastat = eval(read_file)
-            fp.close()            
-        if Transport1 == 1 and Transport2 == 0 and Transport3 == 1 and Transport4 == 0:
-            fp = open(metastation24_txt, 'r')
-            read_file = fp.read()
-            Metastat = eval(read_file)
-            fp.close()            
-        if Transport1 == 1 and Transport2 == 0 and Transport3 == 0 and Transport4 == 1:
-            fp = open(metastation23_txt, 'r')
-            read_file = fp.read()
-            Metastat = eval(read_file)
-            fp.close()            
-        if Transport1 == 0 and Transport2 == 1 and Transport3 == 1 and Transport4 == 0:
-            fp = open(metastation14_txt, 'r')
-            read_file = fp.read()
-            Metastat = eval(read_file)
-            fp.close()            
-        if Transport1 == 0 and Transport2 == 1 and Transport3 == 0 and Transport4 == 1:
-            fp = open(metastation13_txt, 'r')
-            read_file = fp.read()
-            Metastat = eval(read_file)
-            fp.close()            
-        if Transport1 == 0 and Transport2 == 0 and Transport3 == 1 and Transport4 == 1:
-            fp = open(metastation12_txt, 'r')
-            read_file = fp.read()
-            Metastat = eval(read_file)
-            fp.close()
-        if Transport1 == 1 and Transport2 == 1 and Transport3 == 1 and Transport4 == 0:
-            fp = open(metastation4_txt, 'r')
-            read_file = fp.read()
-            Metastat = eval(read_file)
-            fp.close()            
-        if Transport1 == 1 and Transport2 == 1 and Transport3 == 0 and Transport4 == 1:
-            fp = open(metastation3_txt, 'r')
-            read_file = fp.read()
-            Metastat = eval(read_file)
-            fp.close()            
-        if Transport1 == 1 and Transport2 == 0 and Transport3 == 1 and Transport4 == 1:
-            fp = open(metastation2_txt, 'r')
-            read_file = fp.read()
-            Metastat = eval(read_file)
-            fp.close()            
-        if Transport1 == 0 and Transport2 == 1 and Transport3 == 1 and Transport4 == 1:
-            fp = open(metastation1_txt, 'r')
-            read_file = fp.read()
-            Metastat = eval(read_file)
-            fp.close()            
-        if Transport1 == 0 and Transport2 == 0 and Transport3 == 0 and Transport4 == 0:
-            fp = open(metastation_txt, 'r')
-            read_file = fp.read()
-            Metastat = eval(read_file)
-            fp.close()            
+    if Transport1 == 1 and Transport2 == 1 and Transport3 == 1 and Transport4 == 0:
+        fp = open(metastation4_txt, 'r')
+        read_file = fp.read()
+        Metastat = eval(read_file)
+        fp.close()            
+    if Transport1 == 1 and Transport2 == 1 and Transport3 == 0 and Transport4 == 1:
+        fp = open(metastation3_txt, 'r')
+        read_file = fp.read()
+        Metastat = eval(read_file)
+        fp.close()            
+    if Transport1 == 1 and Transport2 == 0 and Transport3 == 1 and Transport4 == 1:
+        fp = open(metastation2_txt, 'r')
+        read_file = fp.read()
+        Metastat = eval(read_file)
+        fp.close()            
+    if Transport1 == 0 and Transport2 == 1 and Transport3 == 1 and Transport4 == 1:
+        fp = open(metastation1_txt, 'r')
+        read_file = fp.read()
+        Metastat = eval(read_file)
+        fp.close()            
+    if Transport1 == 0 and Transport2 == 0 and Transport3 == 0 and Transport4 == 0:
+        fp = open(metastation_txt, 'r')
+        read_file = fp.read()
+        Metastat = eval(read_file)
+        fp.close()            
 
     return Metastat
 

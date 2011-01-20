@@ -6,7 +6,7 @@ from django.shortcuts import render_to_response
 from django.http import HttpResponse
 from apps.point.models import Route, Station, Transport, Onestation
 from math import *
-from utils import len_witput_points, get_speed_matrix, get_border_points, get_lenth_finish, get_lenth_start, get_all_x, get_points_in_radius_start, get_points_in_radius_finish, get_metastations_stations_list, new_Metastation, new_speed_matrix, points_list, transport_types
+from utils2 import len_witput_points, get_speed_matrix, get_border_points, get_lenth_finish, get_lenth_start, get_all_x, get_points_in_radius_start, get_points_in_radius_finish, get_metastations_stations_list, new_Metastation, new_speed_matrix, points_list, transport_types, get_lenth_finish2, get_lenth_start2
 import json, os, datetime
 
 
@@ -104,6 +104,11 @@ def station_edit(request, route_id):
 
 
 def hello(request):
+#    i = 0
+#    for s in Station.objects.filter(notstations=True).order_by('id'):
+#        s.matrix_index=i
+#        s.save()
+#        i+=1
 #    qw = Onestation.objects.all()
 #    for q in qw:
 #        qa = Station.objects.filter(name=q.name)
@@ -157,8 +162,15 @@ def route(request):
     KoeRad = 0.05
     R = 6376 # радиус земли
     Transport0 = Transport1 = Transport2 = Transport3 = Transport4 = 0
-#    Transport1 = 1
-#    Transport2 = 1
+#    if request.GET['Transport1'] == 'on':
+#        Transport1 = 1
+#    if request.GET['Transport2'] == 'on':
+#        Transport2 = 1
+#    if request.GET['Transport3'] == True:
+#        Transport3 = 1
+#    if request.GET['Transport1'] == True:
+#        Transport4 = 1
+#    print request.GET['Transport1'], request.GET['Transport2']
     speed_matrix = get_speed_matrix(Transport1, Transport2, Transport3, Transport4)
     start_x = float(request.GET['x1'])
     start_x_rad = start_x*pi/180 
@@ -180,10 +192,8 @@ def route(request):
     all_station_x = get_all_x()
     lenth_start = get_lenth_start(start_y_rad, start_x_rad)
     lenth_finish = get_lenth_finish(finish_y_rad, finish_x_rad)
-    lenth_finish_min = min(lenth_finish)
-    lenth_start_min = min(lenth_start)
-    tstart_point = lenth_start.index(lenth_start_min)
-    tend_point = lenth_finish.index(lenth_finish_min)
+    tstart_point = get_lenth_start2(start_y_rad, start_x_rad, Transport1, Transport2, Transport3, Transport4)
+    tend_point = get_lenth_finish2(finish_y_rad, finish_x_rad, Transport1, Transport2, Transport3, Transport4)
     transports = transport_types()
     start_point = len(all_station_x)
     end_point = start_point + 1
@@ -201,13 +211,12 @@ def route(request):
     speed_matrix.append(lenth_start)
     speed_matrix.append(lenth_finish)
 
-    points_in_radius_finish = get_points_in_radius_finish(fx2, fx1, fy1, fy2, all_station_x)    
+    points_in_radius_finish = get_points_in_radius_finish(fx2, fx1, fy1, fy2, all_station_x, Transport1, Transport2, Transport3, Transport4)    
     points_in_radius_start = get_points_in_radius_start(sx2, sx1, sy1, sy2, all_station_x, Transport1, Transport2, Transport3, Transport4)
     if points_in_radius_finish == []:
         points_in_radius_finish = [tend_point]
     if points_in_radius_start == []:
         points_in_radius_start = [tstart_point]
-
     points_price = {str(start_point): [0, [start_point], [0]]}
     point_list_item = points_list(points_in_radius_finish, points_in_radius_start, start_point, end_point)
     metastations_stations_list = new_Metastation(Transport1, Transport2, Transport3, Transport4)
@@ -303,5 +312,12 @@ def route(request):
         i += 1
     final_views.append({'x': finish_x, 'y': finish_y, 'idRoute': "-1", 'transportName': "", 'stopName': "Finish", 't': final_time, 'TransportsType':'', 'routeName':''})
     final_views.reverse()
-
+    if final_time > round(s_f*60, 2):
+        a = final_views[0]
+        a['t'] = round(s_f*60, 2)
+        q = final_views[-1]
+        final_views = list()
+        final_views += [q]
+        final_views += [a]
+        print a, q, final_views
     return HttpResponse(json.dumps(final_views), 'application/javascript')
