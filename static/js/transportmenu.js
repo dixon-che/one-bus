@@ -10,7 +10,139 @@ YMaps.jQuery(function()
 
 	BusInit();
 	CreateStyles();
-	
+
+        YMaps.jQuery(document).ready(function() {
+	    YMaps.jQuery("#push").bind('click', function(event) {
+		var geocoder1 = new YMaps.Geocoder('Украина, г. Харьков, ' + YMaps.jQuery('#start:input').val(), {results: 1});
+		var geocoder2 = new YMaps.Geocoder('Украина, г. Харьков, ' + YMaps.jQuery('#finish:input').val(), {results: 1});
+		YMaps.Events.observe(geocoder1, geocoder1.Events.Load, pointFound1);
+		YMaps.Events.observe(geocoder2, geocoder2.Events.Load, pointFound2);
+	                                                         }
+                                       )
+		function pointFound1()
+	    {
+		if(this.length())
+		{
+		    var new_point = this.get(0);
+		    if(new_point.kind == 'house')
+			{
+			    map.removeOverlay(placemark);
+			    placemark = new YMaps.Placemark(new_point.getGeoPoint(), {draggable: true, style: "default#redSmallPoint"});
+			    if(Start_x == -1)
+				{
+				    Start_x = new_point.getGeoPoint().getLng();
+				    Start_y = new_point.getGeoPoint().getLat();
+				    placemark.name = 'Start';
+				    placemark.description = 'Start';
+				    YMaps.Events.observe(placemark, placemark.Events.Drag, function (obj)
+							 {
+							     Start_x = obj.getGeoPoint().getLng();
+							     Start_y = obj.getGeoPoint().getLat();
+							 });
+
+				}
+			}
+		}
+	    }
+
+		function pointFound2()
+	    {
+		if(this.length())
+		{
+		    var new_point = this.get(0);
+		    if(new_point.kind == 'house')
+			{
+			    Finish_x = new_point.getGeoPoint().getLng();
+			    Finish_y = new_point.getGeoPoint().getLat();
+			    placemark.name = 'Finish';
+			    placemark.description = 'Finish';
+			    http_request.onreadystatechange = function()
+			    {
+				if (http_request.readyState == 4) 
+				{
+				    map.removeOverlay(Marks);
+				    map.removeOverlay(Lines);
+				    Marks = new YMaps.GeoObjectCollection();
+				    Lines = new YMaps.GeoObjectCollection();
+				    var Line;
+				
+				    p = JSON.parse(http_request.responseText);
+				    
+				    oldRouteid = 0;
+				    var human_readable = '';
+				    var pm ;
+				    for (var i in p)
+				    {
+					if(p[i].idRoute != oldRouteid)
+					{
+					    if(i != 0)
+					    {
+						if(p[i].idRoute != -1)
+						    Line.addPoint(new YMaps.GeoPoint(p[i].x, p[i].y));
+						Lines.add(Line);
+					    }
+					    Line = new YMaps.Polyline();
+					    if(p[i].idRoute == -1)
+					    {
+						Line.setStyle("1bus#Peshkom");
+						if(i != 0)
+						    Line.addPoint(new YMaps.GeoPoint(p[i-1].x, p[i-1].y));										
+					    }
+					    else
+						Line.setStyle(p[i].idRoute);
+							
+					    oldRouteid = p[i].idRoute;
+					}
+					if(p[i].idRoute == -1)
+					    pm = new YMaps.Placemark(new YMaps.GeoPoint(p[i].x,p[i].y),{draggable: false, style:"1bus#Peshehod"});			
+					else {
+					    if (p[i].route__transport_type == 1)
+						pm = new YMaps.Placemark(new YMaps.GeoPoint(p[i].x,p[i].y),{draggable: false, style:"1bus#TramvayStation"});
+					    else {
+						if (p[i].route__transport_type == 2)
+						    pm = new YMaps.Placemark(new YMaps.GeoPoint(p[i].x,p[i].y),{draggable: false, style:"1bus#MetroStation"});
+						else {
+						    if (p[i].route__transport_type == 3)
+							pm = new YMaps.Placemark(new YMaps.GeoPoint(p[i].x,p[i].y),{draggable: false, style:"1bus#BusStation"});
+						    else {
+							if (p[i].route__transport_type == 4)
+							    pm = new YMaps.Placemark(new YMaps.GeoPoint(p[i].x,p[i].y),{draggable: false, style:"1bus#TrolStation"});
+							else
+							    pm = new YMaps.Placemark(new YMaps.GeoPoint(p[i].x,p[i].y),{draggable: false, style:"1bus#PovorotStation"});
+							    }}}}
+					pm.name = p[i].stopName;
+					pm.description = p[i].transportName + " t=" + p[i].t;
+					Marks.add(pm);
+					Line.addPoint(new YMaps.GeoPoint(p[i].x, p[i].y));
+					human_readable = '(' + p[i].TransportsType + '-' + p[i].routeName + ' : ' + p[i].stopName + '' + ') ' + human_readable;
+				    }
+				    Lines.add(Line);
+				    map.addOverlay(Lines);								
+				    map.addOverlay(Marks);
+				    Start_x = Start_y = Finish_x = Finish_y = -1;
+				    map.removeOverlay(placemark);
+				    YMaps.jQuery('#human_readable').html(human_readable);
+				}
+			    };
+			    var url = "/route/?x1=" + encodeURI(Start_x) 
+				+ "&y1=" + encodeURI(Start_y)
+				+ "&x2=" + encodeURI(Finish_x) 
+				+ "&y2=" + encodeURI(Finish_y)
+			        + "&Transport1=" + YMaps.jQuery('#Transport1:checked').val()
+			        + "&Transport2=" + YMaps.jQuery('#Transport2:checked').val()
+			        + "&Transport3=" + YMaps.jQuery('#Transport3:checked').val()
+			        + "&Transport4=" + YMaps.jQuery('#Transport4:checked').val();
+			    http_request.open("GET", url, true);
+			    http_request.send(null);
+			}
+		    map.addOverlay(placemark);
+		    placemark.openBalloon();
+		}
+	    }
+                                                  }
+                                      );
+
+
 	var myEventListener = YMaps.Events.observe(map, map.Events.Click, function (map, mEvent)
 
 	{
@@ -29,7 +161,7 @@ YMaps.jQuery(function()
 			});
 		}
 		else
-		{
+		{		    
 			Finish_x = mEvent.getGeoPoint().getLng();
 			Finish_y = mEvent.getGeoPoint().getLat();
 			placemark.name = 'Finish';

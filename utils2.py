@@ -7,6 +7,13 @@ from django.db.models import Max
 import os, datetime
 
 
+
+# функция нахождения cумы
+def sum(seq):
+    def add(x, y): return x+y
+    return reduce(add, seq, 0)
+
+
 # функция нахождения растояния по шаровым координатам
 def len_witput_points(start_point, end_point):
     R = 6376 # радиус земли
@@ -21,116 +28,116 @@ def len_witput_points(start_point, end_point):
 # функция создания speed_matrix "с кешем"
 def get_speed_matrix(Transport1, Transport2, Transport3, Transport4):
     s_m__txt = os.path.join(PROJECT_ROOT, 'kesh2/speed_matrix.txt')
-    if os.path.isfile(s_m__txt) == False or os.path.getmtime(s_m__txt) == 0:
-        speed_matrix = new_speed_matrix(Transport1, Transport2, Transport3, Transport4)
-        fp = open(s_m__txt, 'w')
-        fp.write(repr(speed_matrix))
-        fp.close()
-    else:
+    s_m__txt1 = os.path.join(PROJECT_ROOT, 'kesh2/speed_matrix1.txt')
+    s_m__txt2 = os.path.join(PROJECT_ROOT, 'kesh2/speed_matrix2.txt')
+    s_m__txt3 = os.path.join(PROJECT_ROOT, 'kesh2/speed_matrix3.txt')
+    s_m__txt4 = os.path.join(PROJECT_ROOT, 'kesh2/speed_matrix4.txt')
+    s_m__txt12 = os.path.join(PROJECT_ROOT, 'kesh2/speed_matrix12.txt')
+    s_m__txt13 = os.path.join(PROJECT_ROOT, 'kesh2/speed_matrix13.txt')
+    s_m__txt14 = os.path.join(PROJECT_ROOT, 'kesh2/speed_matrix14.txt')
+    s_m__txt23 = os.path.join(PROJECT_ROOT, 'kesh2/speed_matrix23.txt')
+    s_m__txt24 = os.path.join(PROJECT_ROOT, 'kesh2/speed_matrix24.txt')
+    s_m__txt34 = os.path.join(PROJECT_ROOT, 'kesh2/speed_matrix34.txt')
+    s_m__txt123 = os.path.join(PROJECT_ROOT, 'kesh2/speed_matrix123.txt')
+    s_m__txt124 = os.path.join(PROJECT_ROOT, 'kesh2/speed_matrix124.txt')
+    s_m__txt134 = os.path.join(PROJECT_ROOT, 'kesh2/speed_matrix134.txt')
+    s_m__txt234 = os.path.join(PROJECT_ROOT, 'kesh2/speed_matrix234.txt')
+    if Transport1 == 0 and Transport2 == 0 and Transport3 == 0 and Transport4 == 0:
         fp = open(s_m__txt, 'r')
+        read_file = fp.read()
+        speed_matrix = eval(read_file)
+        fp.close()            
+    if Transport1 == 0 and Transport2 == 1 and Transport3 == 1 and Transport4 == 1:
+        fp = open(s_m__txt1, 'r')
+        read_file = fp.read()
+        speed_matrix = eval(read_file)
+        fp.close()            
+    if Transport1 == 1 and Transport2 == 0 and Transport3 == 1 and Transport4 == 1:
+        fp = open(s_m__txt2, 'r')
+        read_file = fp.read()
+        speed_matrix = eval(read_file)
+        fp.close()            
+    if Transport1 == 1 and Transport2 == 1 and Transport3 == 0 and Transport4 == 1:
+        fp = open(s_m__txt3, 'r')
+        read_file = fp.read()
+        speed_matrix = eval(read_file)
+        fp.close()            
+    if Transport1 == 1 and Transport2 == 1 and Transport3 == 1 and Transport4 == 0:
+        fp = open(s_m__txt4, 'r')
+        read_file = fp.read()
+        speed_matrix = eval(read_file)
+        fp.close()            
+    if Transport1 == 0 and Transport2 == 0 and Transport3 == 1 and Transport4 == 1:
+        fp = open(s_m__txt12, 'r')
+        read_file = fp.read()
+        speed_matrix = eval(read_file)
+        fp.close()            
+    if Transport1 == 0 and Transport2 == 1 and Transport3 == 0 and Transport4 == 1:
+        fp = open(s_m__txt13, 'r')
+        read_file = fp.read()
+        speed_matrix = eval(read_file)
+        fp.close()            
+    if Transport1 == 0 and Transport2 == 1 and Transport3 == 1 and Transport4 == 0:
+        fp = open(s_m__txt14, 'r')
+        read_file = fp.read()
+        speed_matrix = eval(read_file)
+        fp.close()            
+    if Transport1 == 1 and Transport2 == 0 and Transport3 == 0 and Transport4 == 1:
+        fp = open(s_m__txt23, 'r')
+        read_file = fp.read()
+        speed_matrix = eval(read_file)
+        fp.close()            
+    if Transport1 == 1 and Transport2 == 0 and Transport3 == 1 and Transport4 == 0:
+        fp = open(s_m__txt24, 'r')
+        read_file = fp.read()
+        speed_matrix = eval(read_file)
+        fp.close()            
+    if Transport1 == 1 and Transport2 == 1 and Transport3 == 0 and Transport4 == 0:
+        fp = open(s_m__txt34, 'r')
+        read_file = fp.read()
+        speed_matrix = eval(read_file)
+        fp.close()            
+    if Transport1 == 0 and Transport2 == 0 and Transport3 == 0 and Transport4 == 1:
+        fp = open(s_m__txt123, 'r')
+        read_file = fp.read()
+        speed_matrix = eval(read_file)
+        fp.close()            
+    if Transport1 == 0 and Transport2 == 0 and Transport3 == 1 and Transport4 == 0:
+        fp = open(s_m__txt124, 'r')
+        read_file = fp.read()
+        speed_matrix = eval(read_file)
+        fp.close()            
+    if Transport1 == 0 and Transport2 == 1 and Transport3 == 0 and Transport4 == 0:
+        fp = open(s_m__txt134, 'r')
+        read_file = fp.read()
+        speed_matrix = eval(read_file)
+        fp.close()            
+    if Transport1 == 1 and Transport2 == 0 and Transport3 == 0 and Transport4 == 0:
+        fp = open(s_m__txt234, 'r')
         read_file = fp.read()
         speed_matrix = eval(read_file)
         fp.close()            
 
     return speed_matrix
 
-def new_speed_matrix(Transport1, Transport2, Transport3, Transport4):
-    Metastation = new_Metastation(Transport1, Transport2, Transport3, Transport4)
-    wating_index = 1/2.0
-    speed_Pesh = 3.0
-    points_list = Station.objects.filter(notstations=True).values_list('coordinate_x', 'coordinate_y').order_by('matrix_index')
-    len_points = len(points_list)
-    speed_matrix = [[0] * len_points  for i in range(len_points)]
 
-    routes_dict, routes_intevals, routes_speeds = dict(), dict(), dict()
-    for route_item in Route.objects.all():
-        routes_dict[route_item.id] = list(route_item.station_set.values_list('matrix_index', flat=True).order_by('order'))
-        routes_speeds[route_item.id] = route_item.speed
-        routes_intevals[route_item.id] = route_item.interval
+def get_dict_x_y():
+    x_y_txt = os.path.join(PROJECT_ROOT, 'kesh2/x_y.txt')
+    fp = open(x_y_txt, 'r')
+    read_file = fp.read()
+    all_station_list = eval(read_file)
+    fp.close()            
 
-    for para in Metastation:
-        route_interval_time = routes_intevals[Station.objects.get(matrix_index=para[1]).route_id]
-        wait_interval = route_interval_time * wating_index
-        stationx1 = Station.objects.get(matrix_index=para[0]).coordinate_x
-        stationy1 = Station.objects.get(matrix_index=para[0]).coordinate_y
-        stationx2 = Station.objects.get(matrix_index=para[1]).coordinate_x
-        stationy2 = Station.objects.get(matrix_index=para[1]).coordinate_y
-        if stationy1 != stationy2 and stationx1 != stationx2:
-            station0 = [stationx1, stationy1]
-            station1 = [stationx2, stationy2]
-            speed_matrix[para[0]][para[1]] = len_witput_points(station0, station1) / speed_Pesh + wait_interval
-        else:
-            speed_matrix[para[0]][para[1]] = wait_interval
+    return all_station_list
 
-    for route_id in routes_dict:
-        route_item_list = routes_dict[route_id]
-        langs_traector = 0
-        traector_list_to = list()
-        traector_list_from = list()
-        route_speed = float(routes_speeds[route_id]) 
-        for item_index in range(len(route_item_list)):
-            next_item_index = item_index + 1
-            if next_item_index == len(route_item_list):
-                break
-            
-            from_matrix_index = route_item_list[item_index]
-            to_matrix_index = route_item_list[next_item_index]
-            if langs_traector != 0 and from_matrix_index != -1:
-                langs_traector = 0
-                traector_list_to = list()
-                traector_list_from = list()
-            if to_matrix_index == -1 or from_matrix_index == -1:
-                q = Station.objects.filter(route=route_id, order=next_item_index).values_list('coordinate_x', 'coordinate_y')
-                a = Station.objects.filter(route=route_id, order=item_index).values_list('coordinate_x', 'coordinate_y')
-                qa = len_witput_points(q[0], a[0]) / route_speed
-                langs_traector += qa
-                traector_list_to += [to_matrix_index] 
-                traector_list_from += [from_matrix_index]
-                if to_matrix_index != -1:
-                    speed_matrix[traector_list_to[-1]][traector_list_from[0]] = \
-                        speed_matrix[traector_list_from[0]][traector_list_to[-1]] = langs_traector + 0.01
-
-            if  to_matrix_index != -1 and from_matrix_index != -1:
-                speed_matrix[to_matrix_index][from_matrix_index] = \
-                    speed_matrix[from_matrix_index][to_matrix_index] = len_witput_points(points_list[from_matrix_index],
-                                                                                         points_list[to_matrix_index]) / route_speed + 0.01
-
-    return speed_matrix
-
-
-# функция создания списка растояний от start
-def get_lenth_start(start_y_rad, start_x_rad):
+# функция создания списка растояний от start и от finish
+def get_lenth_start_finish(finish_y_rad, finish_x_rad, start_y_rad, start_x_rad, Transport1, Transport2, Transport3, Transport4):
     speed_Pesh = 3.0
     R = 6376 # радиус земли
-    all_station_list = Station.objects.filter(notstations=True).values('coordinate_x', 'coordinate_y').order_by('matrix_index')
-    lenth_start = list()
-    for station_item in all_station_list:
-        coordinate_x = float(station_item['coordinate_x'])*pi/180
-        coordinate_y = float(station_item['coordinate_y'])*pi/180
-        l_s = acos(sin(start_y_rad)*sin(coordinate_y) + cos(start_y_rad)*cos(coordinate_y)*cos(coordinate_x-start_x_rad))*R / speed_Pesh
-        lenth_start += [l_s]
-    return lenth_start
-
-# функция создания списка растояний от finish
-def get_lenth_finish(finish_y_rad, finish_x_rad):
-    speed_Pesh = 3.0
-    R = 6376 # радиус земли
-    all_station_list = Station.objects.filter(notstations=True).values('coordinate_x', 'coordinate_y').order_by('matrix_index')
-    lenth_finish = list()
-    for station_item in all_station_list:
-        coordinate_x = float(station_item['coordinate_x'])*pi/180
-        coordinate_y = float(station_item['coordinate_y'])*pi/180
-        l_s = acos(sin(finish_y_rad)*sin(coordinate_y) + cos(finish_y_rad)*cos(coordinate_y)*cos(coordinate_x-finish_x_rad))*R / speed_Pesh
-        lenth_finish += [l_s]
-
-    return lenth_finish
-
-def get_lenth_start2(start_y_rad, start_x_rad, Transport1, Transport2, Transport3, Transport4):
-    speed_Pesh = 3.0
-    R = 6376 # радиус земли
-    all_station_list = Station.objects.filter(notstations=True).values('coordinate_x', 'coordinate_y', 'matrix_index').order_by('matrix_index')
-    index_start = list()
-    lenth_start = list()
+    len_list_finish_start = list()
+    all_station_list = get_dict_x_y()
+    len_list_start = [[0] * len(all_station_list)][0]
+    len_list_finish = [[0] * len(all_station_list)][0]
     for station_item in all_station_list:
         transport = Station.objects.get(matrix_index=station_item['matrix_index']).route.transport_type_id
         if Transport1 == 0 and transport == 1:
@@ -138,92 +145,47 @@ def get_lenth_start2(start_y_rad, start_x_rad, Transport1, Transport2, Transport
             coordinate_x = float(station_item['coordinate_x'])*pi/180
             coordinate_y = float(station_item['coordinate_y'])*pi/180
             l_s = acos(sin(start_y_rad)*sin(coordinate_y) + cos(start_y_rad)*cos(coordinate_y)*cos(coordinate_x-start_x_rad))*R / speed_Pesh
-            lenth_start += [l_s]
-            index_start += [m_i_s]
+            len_list_start[m_i_s] = l_s
+            l_f = acos(sin(finish_y_rad)*sin(coordinate_y) + cos(finish_y_rad)*cos(coordinate_y)*cos(coordinate_x-finish_x_rad))*R / speed_Pesh
+            len_list_finish[m_i_s] = l_f
         if Transport2 == 0 and transport == 2:
             m_i_s = station_item['matrix_index']
             coordinate_x = float(station_item['coordinate_x'])*pi/180
             coordinate_y = float(station_item['coordinate_y'])*pi/180
             l_s = acos(sin(start_y_rad)*sin(coordinate_y) + cos(start_y_rad)*cos(coordinate_y)*cos(coordinate_x-start_x_rad))*R / speed_Pesh
-            lenth_start += [l_s]
-            index_start += [m_i_s]
+            len_list_start[m_i_s] = l_s
+            l_f = acos(sin(finish_y_rad)*sin(coordinate_y) + cos(finish_y_rad)*cos(coordinate_y)*cos(coordinate_x-finish_x_rad))*R / speed_Pesh
+            len_list_finish[m_i_s] = l_f
         if Transport3 == 0 and transport == 3:
             m_i_s = station_item['matrix_index']
             coordinate_x = float(station_item['coordinate_x'])*pi/180
             coordinate_y = float(station_item['coordinate_y'])*pi/180
             l_s = acos(sin(start_y_rad)*sin(coordinate_y) + cos(start_y_rad)*cos(coordinate_y)*cos(coordinate_x-start_x_rad))*R / speed_Pesh
-            lenth_start += [l_s]
-            index_start += [m_i_s]
+            len_list_start[m_i_s] = l_s
+            l_f = acos(sin(finish_y_rad)*sin(coordinate_y) + cos(finish_y_rad)*cos(coordinate_y)*cos(coordinate_x-finish_x_rad))*R / speed_Pesh
+            len_list_finish[m_i_s] = l_f
         if Transport4 == 0 and transport == 4:
             m_i_s = station_item['matrix_index']
             coordinate_x = float(station_item['coordinate_x'])*pi/180
             coordinate_y = float(station_item['coordinate_y'])*pi/180
             l_s = acos(sin(start_y_rad)*sin(coordinate_y) + cos(start_y_rad)*cos(coordinate_y)*cos(coordinate_x-start_x_rad))*R / speed_Pesh
-            lenth_start += [l_s]
-            index_start += [m_i_s]
+            len_list_start[m_i_s] = l_s
+            l_f = acos(sin(finish_y_rad)*sin(coordinate_y) + cos(finish_y_rad)*cos(coordinate_y)*cos(coordinate_x-finish_x_rad))*R / speed_Pesh
+            len_list_finish[m_i_s] = l_f
 
-    lth_star = lenth_start.index(min(lenth_start))
-    return index_start[lth_star]
+    len_list_finish_start += [len_list_start]
+    len_list_finish_start += [len_list_finish]
 
-# функция создания списка растояний от finish
-def get_lenth_finish2(finish_y_rad, finish_x_rad, Transport1, Transport2, Transport3, Transport4):
-    speed_Pesh = 3.0
-    R = 6376 # радиус земли
-    all_station_list = Station.objects.filter(notstations=True).values('coordinate_x', 'coordinate_y', 'matrix_index').order_by('matrix_index')
-    index_finish = list()
-    lenth_finish = list()
-    for station_item in all_station_list:
-        transport = Station.objects.get(matrix_index=station_item['matrix_index']).route.transport_type_id
-        if Transport1 == 0 and transport == 1:
-            m_i_f = station_item['matrix_index']
-            coordinate_x = float(station_item['coordinate_x'])*pi/180
-            coordinate_y = float(station_item['coordinate_y'])*pi/180
-            l_s = acos(sin(finish_y_rad)*sin(coordinate_y) + cos(finish_y_rad)*cos(coordinate_y)*cos(coordinate_x-finish_x_rad))*R / speed_Pesh
-            lenth_finish += [l_s]
-            index_finish += [m_i_f]
-        if Transport2 == 0 and transport == 2:
-            m_i_f = station_item['matrix_index']
-            coordinate_x = float(station_item['coordinate_x'])*pi/180
-            coordinate_y = float(station_item['coordinate_y'])*pi/180
-            l_s = acos(sin(finish_y_rad)*sin(coordinate_y) + cos(finish_y_rad)*cos(coordinate_y)*cos(coordinate_x-finish_x_rad))*R / speed_Pesh
-            lenth_finish += [l_s]
-            index_finish += [m_i_f]
-        if Transport3 == 0 and transport == 3:
-            m_i_f = station_item['matrix_index']
-            coordinate_x = float(station_item['coordinate_x'])*pi/180
-            coordinate_y = float(station_item['coordinate_y'])*pi/180
-            l_s = acos(sin(finish_y_rad)*sin(coordinate_y) + cos(finish_y_rad)*cos(coordinate_y)*cos(coordinate_x-finish_x_rad))*R / speed_Pesh
-            lenth_finish += [l_s]
-            index_finish += [m_i_f]
-        if Transport4 == 0 and transport == 4:
-            m_i_f = station_item['matrix_index']
-            coordinate_x = float(station_item['coordinate_x'])*pi/180
-            coordinate_y = float(station_item['coordinate_y'])*pi/180
-            l_s = acos(sin(finish_y_rad)*sin(coordinate_y) + cos(finish_y_rad)*cos(coordinate_y)*cos(coordinate_x-finish_x_rad))*R / speed_Pesh
-            lenth_finish += [l_s]
-            index_finish += [m_i_f]
+    return len_list_finish_start
 
-    lth_star = lenth_finish.index(min(lenth_finish))
-    return index_finish[lth_star]
 
 #ф-ия нахождения х(иксов) всех станций "с кешем"
 def get_all_x():
     x_txt = os.path.join(PROJECT_ROOT, 'kesh2/all_x.txt')
-    if os.path.isfile(x_txt) == False or os.path.getmtime(x_txt) == 0:
-        all_station_list = Station.objects.filter(notstations=True).values('coordinate_x').order_by('id')
-        all_station_x = list()
-        for station_item in all_station_list:
-            coordinate_x = float(station_item['coordinate_x'])
-            all_station_x += [coordinate_x]
-            
-        fp = open(x_txt, "w")
-        fp.write(repr(all_station_x))
-        fp.close()
-    else:
-        fp = open(x_txt, 'r')
-        read_file = fp.read()
-        all_station_x = eval(read_file)
-        fp.close()            
+    fp = open(x_txt, 'r')
+    read_file = fp.read()
+    all_station_x = eval(read_file)
+    fp.close()            
 
     return all_station_x
 
@@ -408,8 +370,23 @@ def points_list(points_in_radius_finish, points_in_radius_start, start_point, en
 
     return points_list_item
 
+
+def points_list2(tstart_point, tend_point):
+    routes_dict = dict()
+    points_list_item = list()
+    for route_item in Route.objects.all():
+        routes_dict[route_item.id] = list(route_item.station_set.filter(notstations=True).values_list('matrix_index', flat=True).order_by('matrix_index'))
+        for route_id in routes_dict:
+            list2 = routes_dict[route_id]
+            points_list_item += [list2]
+            if tend_point in list2 and tstart_point in list2:
+                points_list_item = []
+                points_list_item = [list2]
+                break
+    return points_list_item
+
 #функция нахождения соседних точек
-def get_border_points(points_price_min, closed_points_list, points_list_item, metastations_stations_list):
+def get_border_points(points_price_min, closed_points_list, points_list_item, metastations_stations_list, tend_point, tstart_point):
     points_list = list()
     for list_item in points_list_item:
         len_list_item = len(list_item)
@@ -425,11 +402,18 @@ def get_border_points(points_price_min, closed_points_list, points_list_item, me
                 if left_border_index not in closed_points_list:
                     points_list += [left_border_index]
 
-            for metastation in metastations_stations_list:
-                if points_price_min == metastation[0] and metastation[1] not in closed_points_list:
-                    points_list += [metastation[1]]
-                if points_price_min == metastation[1] and metastation[0] not in closed_points_list:
-                    points_list += [metastation[0]]
+            if tend_point not in list_item:
+                for metastation in metastations_stations_list:
+                    if points_price_min == metastation[0] and metastation[1] not in closed_points_list:
+                        points_list += [metastation[1]]
+                    if points_price_min == metastation[1] and metastation[0] not in closed_points_list:
+                        points_list += [metastation[0]]
+#                if metastation[0] == tend_point:
+#                    points_list = [metastation[1]]
+#                    break
+#                if metastation[1] == tend_point:
+#                    points_list = [metastation[0]]
+#                    break
 
     return list(set(points_list))
 

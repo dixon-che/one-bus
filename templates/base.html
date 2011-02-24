@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<meta name="author" content="Wink Hosting (www.winkhosting.com)" />
-	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<link rel="stylesheet" href="/s/css/style2.css" type="text/css" />
 	<script type="text/javascript" src="http://api-maps.yandex.ru/1.1/index.xml?key=ADeQTkwBAAAAuMr-NQIA8BfhPGjPxWuKOAPDJVBPAU6QyjkAAAAAAAAAAAB5fpcMwDw9jHcS4ciq3BK5Ks13Tw=="></script>
 	<script type="text/javascript" src="/s/js/transportmenu.js"></script>
@@ -28,9 +28,18 @@
 		  <table border=1 width="1184px"> 
         {% block content %}
 		    <tr>
-		      <td width="50px">qqqqq</td>
-		      <td><div id="YMapsID" style="width:800px;height:600px"></div></td>
+		      <td width="50px"></td>
+		      <td valign="top" align="center"><div id="YMapsID" style="width:800px;height:600px"></div></td>
 		      <td>
+			<div style="width:110px;height:30px">
+			<input type="text" id="start" value="пр. Ленина, 9"></br>
+			</div>
+			<div style="width:110px;height:30px">
+			<input type="text" id="finish" value="пр. Ленина, 9"></br>
+			</div>
+			<div style="width:110px;height:30px">
+			<input type="button" id="push" value="Найти"></br>
+			</div>
 			<div style="width:110px;height:20px">
 			<input type="checkbox" id="Transport1" name="Transport1" checked="checked">Трамвай</br>
 			</div>
@@ -38,10 +47,10 @@
 			<input type="checkbox" id="Transport2" name="Transport2" checked="checked">Метро</br>
 			</div>
 			<div style="width:110px;height:20px">
-			<input type="checkbox" id="Transport3" name="Transport3" checked="checked">Тролейбус</br>
+			<input type="checkbox" id="Transport3" name="Transport3" checked="checked">Автобус</br>
 			</div>
 			<div style="width:110px;height:20px">
-			<input type="checkbox" id="Transport4" name="Transport4" checked="checked">Автобус</br>
+			<input type="checkbox" id="Transport4" name="Transport4" checked="checked">Тролейбус</br>
 			</div>
 			<ul id="menu"></ul>
 		      </td>	  
@@ -57,7 +66,6 @@
 	  <td><div id="footer" class="smallgraytext" align="center">
 	      <a href="#">Home</a> | <a href="#">About Us</a> | <a href="#">Products</a> | <a href="#">Our Services</a> | <a href="#">Contact Us</a><br />
 	      Your Company Name &copy; 2007<br />
-	      <a href="http://www.winkhosting.com" title="Hosting Colombia">Hosting Colombia</a><br />
 	    </div></td>
 	  <td></td>
 	</tr>

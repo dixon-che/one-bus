@@ -1,13 +1,18 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from time import gmtime, strftime
 from django.db.models import Max
 from settings import PROJECT_ROOT
 from django.shortcuts import render_to_response
 from django.http import HttpResponse
 from apps.point.models import Route, Station, Transport, Onestation
+from apps.all_routes.models import Routes
 from math import *
-from utils2 import len_witput_points, get_speed_matrix, get_border_points, get_lenth_finish, get_lenth_start, get_all_x, get_points_in_radius_start, get_points_in_radius_finish, get_metastations_stations_list, new_Metastation, new_speed_matrix, points_list, transport_types, get_lenth_finish2, get_lenth_start2
-import json, os, datetime
+from utils3 import get_all_x, get_points_in_radius_start, get_points_in_radius_finish, new_route_speed_matrix, points_list3, sum, len_witput_points, points_dict, points_dict_open, len_start_finish, new_Metastation, get_speed_matrix, volna, revers_volna, result_adapt, Metastation_sort, volna2, revers_volna2, route_stations
+#from utyls1 import get_all_x, get_points_in_radius_start, get_points_in_radius_finish, new_route_speed_matrix, points_list3, sum, len_witput_points, points_dict_open, len_start_finish, new_Metastation, get_speed_matrix, volna, revers_volna, result_adapt, Metastation_sort
+import datetime
+import json
+import os
 
 
 def new_station_save_in_route(request):
@@ -104,29 +109,59 @@ def station_edit(request, route_id):
 
 
 def hello(request):
-#    i = 0
-#    for s in Station.objects.filter(notstations=True).order_by('id'):
-#        s.matrix_index=i
-#        s.save()
-#        i+=1
-#    qw = Onestation.objects.all()
-#    for q in qw:
-#        qa = Station.objects.filter(name=q.name)
-#        for a in qa:
-#            a.one_station = q
-#            a.save()
+    print datetime.datetime.now(), '0'
+    # Приняли данные из джава скрипта Transport1, Transport2, Transport3, Transport4, start_x, start_y, finish_y, finish_x
+    Transport1 = Transport2 = Transport4 = 0
+    Transport3 = 1
+    start_x = 0.1
+    start_y = 0.1
+    finish_x = 0.1
+    finish_y = 0.1
+    #R = 6376 # радиус земли
+    print datetime.datetime.now(), '1'
+    # Пересчитали все х координаты
+    all_station_x = get_all_x()
+    print datetime.datetime.now(), '2'
+    # Пересчитали растояние от старта к финишу
+    #s_f = (acos(sin(start_y*pi/180)*sin(finish_y*pi/180) + cos(start_y*pi/180)*cos(finish_y*pi/180)*cos(finish_x*pi/180-start_x*pi/180))*R)/3
+    print datetime.datetime.now(), '3'
+    # Расчитали матрицу переходов speed_matrix
+    speed_matrix = get_speed_matrix(Transport1, Transport2, Transport3, Transport4)
+    print datetime.datetime.now(), '5'
+    # Расчитали матрицы переходов от станции ко всем остальным станциям внутри маршрута
+    route_speed_matrix = new_route_speed_matrix(Transport1, Transport2, Transport3, Transport4)
+    print datetime.datetime.now(), '6'
+    # Просчитали все переходы между остановками
+    metastation_sort = Metastation_sort(Transport1, Transport2, Transport3, Transport4)
+    # Нашли все остановки в радиусе старта
+    points_in_radius_start = get_points_in_radius_start(start_x, start_y, all_station_x, Transport1, Transport2, Transport3, Transport4)
+    # Нашли все остановки в радиусе финиша
+    points_in_radius_finish = get_points_in_radius_finish(finish_x, finish_y, all_station_x, Transport1, Transport2, Transport3, Transport4)
+    print datetime.datetime.now(), '8'
+    # Создаём список остановок в маршруте
+    points_list = points_list3()
+    # Поставили время для всех остановок в радиусе старта
+    len_list_start_finish = len_start_finish(start_x, start_y, finish_x, finish_y, points_in_radius_start, points_in_radius_finish)
+    print datetime.datetime.now(), '9'
 
-#    qw =set(Station.objects.all().values_list('name', flat=True))
-#    for q in qw:
-#        a = Station.objects.filter(name=q).values_list('coordinate_x', flat=True)
-#        z = Station.objects.filter(name=q).values_list('coordinate_y', flat=True)
-#        Onestation.objects.create(name=q, coordinate_x=a[0], coordinate_y=z[0])
+    # Запустили считать алгоритм обратной волны
+    station_start = 312#583
+    station_finish = 282#160
+
+    dinamic_list = volna2(points_in_radius_finish, points_in_radius_start, len_list_start_finish, station_start, station_finish, all_station_x, route_speed_matrix, speed_matrix, metastation_sort, points_list)
+    print datetime.datetime.now(), '10'
+
+                # Запустили считать обратную волну и записывать данные
+    dinamic_list_min = revers_volna2(station_finish, station_start, points_list, dinamic_list, speed_matrix)
+    print dinamic_list_min
+    route_stations(Transport1, Transport2, Transport3, Transport4)
+    print datetime.datetime.now(), '11'
     text = 'Welcome to "Transplants do not"'
     return render_to_response('base.html', {"text": text})
 
 
 def transport_list(request):
-    transport_list_txt = os.path.join(PROJECT_ROOT, 'kesh/transport_list.txt')
+    transport_list_txt = os.path.join(PROJECT_ROOT, 'kesh2/transport_list.txt')
     max_station_timestamp = Station.objects.all().aggregate(Max('timestamp'))
     max_route_timestamp = Route.objects.all().aggregate(Max('timestamp'))
     max_transport_timestamp = Transport.objects.all().aggregate(Max('timestamp'))
@@ -152,172 +187,61 @@ def transport_list(request):
         fp = open(transport_list_txt, 'r')
         read_file = fp.read()
         stations = eval(read_file)
-        fp.close()            
+        fp.close()
 
     return HttpResponse(json.dumps(stations), 'application/javascript')
 
 
 def route(request):
-    closed_points_list, border_in_radius = list(), list()
-    KoeRad = 0.05
-    R = 6376 # радиус земли
-    Transport0 = Transport1 = Transport2 = 0
-    Transport3 = Transport4 = 1
-    if request.GET['Transport1'] == 'on':
-        Transport1 = 1
-    if request.GET['Transport2'] == 'on':
-        Transport2 = 1
-    if request.GET['Transport3'] == 'on':
-        Transport3 = 1
-    if request.GET['Transport1'] == 'on':
-        Transport4 = 1
-    speed_matrix = get_speed_matrix(Transport1, Transport2, Transport3, Transport4)
+    print datetime.datetime.now(), '0'
+    # Приняли данные из джава скрипта Transport1, Transport2, Transport3, Transport4, start_x, start_y, finish_y, finish_x
+    Transport1 = request.GET['Transport1']
+    Transport2 = request.GET['Transport2']
+    Transport3 = request.GET['Transport3']
+    Transport4 = request.GET['Transport4']
+    Transport1 = Transport2 = Transport4 = 0
+    Transport3 = 1
     start_x = float(request.GET['x1'])
-    start_x_rad = start_x*pi/180 
-    sx1 = start_x + KoeRad
-    sx2 = start_x - KoeRad
     start_y = float(request.GET['y1'])
-    start_y_rad = start_y*pi/180
-    sy1 = start_y + KoeRad
-    sy2 = start_y - KoeRad
     finish_x = float(request.GET['x2'])
-    finish_x_rad = finish_x*pi/180
-    fx1 = finish_x + KoeRad
-    fx2 = finish_x - KoeRad
     finish_y = float(request.GET['y2'])
-    finish_y_rad = finish_y*pi/180
-    fy1 = finish_y + KoeRad
-    fy2 = finish_y - KoeRad
-    s_f = (acos(sin(start_y_rad)*sin(finish_y_rad) + cos(start_y_rad)*cos(finish_y_rad)*cos(finish_x_rad-start_x_rad))*R)/3
+    #R = 6376 # радиус земли
+    print datetime.datetime.now(), '1'
+    # Пересчитали все х координаты
     all_station_x = get_all_x()
-    lenth_start = get_lenth_start(start_y_rad, start_x_rad)
-    lenth_finish = get_lenth_finish(finish_y_rad, finish_x_rad)
-    tstart_point = get_lenth_start2(start_y_rad, start_x_rad, Transport1, Transport2, Transport3, Transport4)
-    tend_point = get_lenth_finish2(finish_y_rad, finish_x_rad, Transport1, Transport2, Transport3, Transport4)
-    transports = transport_types()
-    start_point = len(all_station_x)
-    end_point = start_point + 1
+    print datetime.datetime.now(), '2'
+    # Пересчитали растояние от старта к финишу
+    #s_f = (acos(sin(start_y*pi/180)*sin(finish_y*pi/180) + cos(start_y*pi/180)*cos(finish_y*pi/180)*cos(finish_x*pi/180-start_x*pi/180))*R)/3
+    print datetime.datetime.now(), '3'
+    # Расчитали матрицу переходов speed_matrix
+    speed_matrix = get_speed_matrix(Transport1, Transport2, Transport3, Transport4)
+    print datetime.datetime.now(), '5'
+    # Расчитали матрицы переходов от станции ко всем остальным станциям внутри маршрута
+    route_speed_matrix = new_route_speed_matrix(Transport1, Transport2, Transport3, Transport4)
+    print datetime.datetime.now(), '6'
+    # Просчитали все переходы между остановками
+    metastation_sort = Metastation_sort(Transport1, Transport2, Transport3, Transport4)
+    # Нашли все остановки в радиусе старта
+    points_in_radius_start = get_points_in_radius_start(start_x, start_y, all_station_x, Transport1, Transport2, Transport3, Transport4)
+    # Нашли все остановки в радиусе финиша
+    points_in_radius_finish = get_points_in_radius_finish(finish_x, finish_y, all_station_x, Transport1, Transport2, Transport3, Transport4)
+    print datetime.datetime.now(), '8'
+    # Поставили время для всех остановок в радиусе старта
+    len_list_start_finish = len_start_finish(start_x, start_y, finish_x, finish_y, points_in_radius_start, points_in_radius_finish)
+    print datetime.datetime.now(), '9'
+    # Создаём список остановок в маршруте
+    points_list = points_list3()
+    # Запустили считать алгоритм обратной волны
+    station_start = 282
+    station_finish = 313
 
-    lenth_start.append(0)
-    lenth_start.append(s_f)
-    lenth_finish.append(s_f)
-    lenth_finish.append(0)
+    dinamic_list = volna(station_finish, station_start, points_in_radius_finish, points_in_radius_start, len_list_start_finish, all_station_x, route_speed_matrix, speed_matrix, metastation_sort, points_list)
+    print datetime.datetime.now(), '10'
+                # Запустили считать обратную волну и записывать данные
+    dinamic_list_min = revers_volna(points_list, dinamic_list, speed_matrix)
+    print dinamic_list_min
 
-    for Mass in speed_matrix:
-        index_Mass = speed_matrix.index(Mass)
-        Mass.append(lenth_start[index_Mass])
-        Mass.append(lenth_finish[index_Mass])
-    
-    speed_matrix.append(lenth_start)
-    speed_matrix.append(lenth_finish)
-
-    points_in_radius_finish = get_points_in_radius_finish(fx2, fx1, fy1, fy2, all_station_x, Transport1, Transport2, Transport3, Transport4)    
-    points_in_radius_start = get_points_in_radius_start(sx2, sx1, sy1, sy2, all_station_x, Transport1, Transport2, Transport3, Transport4)
-    if points_in_radius_finish == []:
-        points_in_radius_finish = [tend_point]
-    if points_in_radius_start == []:
-        points_in_radius_start = [tstart_point]
-    points_price = {str(start_point): [0, [start_point], [0]]}
-    point_list_item = points_list(points_in_radius_finish, points_in_radius_start, start_point, end_point)
-    metastations_stations_list = new_Metastation(Transport1, Transport2, Transport3, Transport4)
-    next_points_list = [start_point]
-    while next_points_list:
-        p = [[next_key, points_price[str(next_key)][0]] for next_key in next_points_list]
-        active_point = min(p, key=lambda x: x[1])[0]
-        active_point_price = points_price[str(active_point)][0]
-        active_point_P = points_price[str(active_point)][1]
-        active_point_Pe = points_price[str(active_point)][2]
-        border_points = get_border_points(active_point, closed_points_list, point_list_item, metastations_stations_list)
-        for item_point_index in border_points:
-            go_price = speed_matrix[active_point][item_point_index]
-            if str(item_point_index) not in points_price:
-                curent_point_index = [item_point_index]
-                go_price_time = active_point_price + go_price
-                time = [go_price_time]
-                points_price[str(item_point_index)] = [go_price_time, active_point_P + curent_point_index, active_point_Pe + time]
-            else:
-                item_point_price = points_price[str(active_point)][0] + go_price
-                if item_point_price < points_price[str(item_point_index)][0]:
-                    points_price[str(item_point_index)][0] = item_point_price
-                    points_price[str(item_point_index)][1] = points_price[str(active_point)][1] + [item_point_index]
-                    points_price[str(item_point_index)][2] = points_price[str(active_point)][2] + [item_point_price]
-
-        closed_points_list.append(active_point)
-        next_points_list.remove(active_point)
-        next_points_list += border_points
-        next_points_list = list(set(next_points_list))
-        if end_point in closed_points_list:
-            break
-
-    if str(end_point) in points_price:
-        print "Your way is:", points_price[str(end_point)][1]
-        print "Your time is:", points_price[str(end_point)][2]
-        final_time = round((points_price[str(end_point)][2][-1])*60, 2)
-        points_price[str(end_point)][1].remove(start_point)
-        points_price[str(end_point)][1].remove(end_point)
-        points_price[str(end_point)][2] = points_price[str(end_point)][2][1:-1]
-
-    final_views = [{'x': start_x, 'y': start_y, 'idRoute':"-1", 'transportName':"", 'stopName':"Start", 't':'0', 'TransportsType':'', 'routeName':''}]
-    i = 0
-    q_list = list()
-    for q in points_price[str(end_point)][1]:
-        q_list += [q]
-        item_dict = {}
-        point = Station.objects.get(matrix_index=q)
-        item_dict['stopName'] = point.name
-        item_dict['idRoute'] = point.route_id
-        item_dict['routeName'] = Route.objects.get(id=point.route_id).route
-        item_dict['route__transport_type'] = point.route.transport_type_id
-        transport_id = item_dict['transportName'] = item_dict['route__transport_type']
-        item_dict['TransportsType'] = Transport.objects.get(id=transport_id).name
-        item_dict['x'] = point.coordinate_x
-        item_dict['y'] = point.coordinate_y
-        item_dict['t'] = round(points_price[str(end_point)][2][i]*60, 2)
-        final_views += [item_dict]            
-        orde = point.order
-        long_route = len(Station.objects.filter(route=point.route_id).values_list('order', flat=True)) - 1
-        next_orde = orde + 1
-        prev_orde = orde - 1
-        prev_q = q - 1
-        next_q = q + 1
-        if long_route >= next_orde and Station.objects.get(order=next_orde, route=point.route_id).matrix_index == -1 and next_q not in q_list:
-            end_orde = range(Station.objects.get(matrix_index=next_q).order)
-            order_list = end_orde[next_orde:]
-            for element in order_list:
-                item_dict = {}
-                point2 = Station.objects.get(order=element, route=point.route_id)
-                item_dict['route__transport_type'] = 10
-                item_dict['idRoute'] = point.route_id
-                item_dict['x'] = point2.coordinate_x
-                item_dict['y'] = point2.coordinate_y
-                item_dict['stopName'] = element
-                item_dict['t'] = round(points_price[str(end_point)][2][i]*60, 2)
-                final_views += [item_dict]
-        elif prev_orde >= 1 and Station.objects.get(order=prev_orde, route=point.route_id).matrix_index == -1 and prev_q not in q_list:
-            end_orde = range(Station.objects.get(matrix_index=q).order)
-            end_orde2 = len(range(Station.objects.get(matrix_index=prev_q).order + 1))
-            order_list = end_orde[end_orde2:orde] 
-            order_list.reverse()
-            for element in order_list:
-                item_dict = {}
-                point2 = Station.objects.get(order=element, route=point.route_id)
-                item_dict['route__transport_type'] = 10
-                item_dict['idRoute'] = point.route_id
-                item_dict['x'] = point2.coordinate_x
-                item_dict['y'] = point2.coordinate_y
-                item_dict['stopName'] = element
-                item_dict['t'] = round(points_price[str(end_point)][2][i]*60, 2)
-                final_views += [item_dict]
-            print order_list
-        i += 1
-    final_views.append({'x': finish_x, 'y': finish_y, 'idRoute': "-1", 'transportName': "", 'stopName': "Finish", 't': final_time, 'TransportsType':'', 'routeName':''})
-    final_views.reverse()
-    if final_time > round(s_f*60, 2):
-        a = final_views[0]
-        a['t'] = round(s_f*60, 2)
-        q = final_views[-1]
-        final_views = list()
-        final_views += [q]
-        final_views += [a]
-        print a, q, final_views
+    print datetime.datetime.now(), '11'
+    # Преобразовали данные для вывода
+    final_views = result_adapt(dinamic_list, dinamic_list_min, start_x, start_y, finish_x, finish_y)
     return HttpResponse(json.dumps(final_views), 'application/javascript')
