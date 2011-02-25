@@ -377,7 +377,7 @@ def volna(station_finish, station_start, points_in_radius_finish, points_in_radi
 
     Transport1 = Transport2 = Transport4 = 0
     Transport3 = 1
-    #points_in_radius_finish = [station_finish]
+    #points_in_radius_finish = [549]#[station_finish]
     #len_list_start_finish[1] = [0]
     #points_in_radius_finish = [station_finish, 587]#[587, 586, station_finish]
     #len_list_start_finish[1] = [5, 15]#[5, 15, 16]
@@ -388,8 +388,8 @@ def volna(station_finish, station_start, points_in_radius_finish, points_in_radi
     next_points_list = points_in_radius_start#[station_start]
     mass_next_points_list = len_list_start_finish[0]#[0]
     #route_d_st = route_stations(Transport1, Transport2, Transport3, Transport4)
-    #next_points_list = [290]
-    #mass_next_points_list = [5]
+    next_points_list = [160]
+    mass_next_points_list = [0]
     test_min1 = 0
     test_min2 = 0
     test_min3 = 0
@@ -503,21 +503,22 @@ def min_in_route(list_p, dinamic_list, list_in, list_of_excluded):
         p_i_p = dinamic_list[list_p[prev_index_p]]
         i_p = dinamic_list[list_p[index_p]]
         n_i_p = dinamic_list[list_p[next_index_p]]
+        value_list_in0= dinamic_list[list_in[0]]
         if p_i_p > i_p and n_i_p > i_p:
             if index_p < list_p.index(list_in[0]):
                 z = list_p[index_p:list_p.index(list_in[0]) + 1]
                 #print z, 'z2'
             if index_p > list_p.index(list_in[0]):
                 z = list_p[list_p.index(list_in[0]):index_p + 1]
-            if len(minimal) > len(z) and list_p[index_p] != list_in[0] and list_p[index_p] not in list_of_excluded:
+            if len(minimal) > len(z) and list_p[index_p] != list_in[0] and list_p[index_p] not in list_of_excluded and dinamic_list[list_p[index_p]] < value_list_in0:
                 minimal = z
                 print z, 'z3'
-        if dinamic_list[list_p[-1]] < p_i_p and list_p[-1] != list_in[0] and list_p[-1] not in list_of_excluded:
+        if dinamic_list[list_p[-1]] < p_i_p and list_p[-1] != list_in[0] and list_p[-1] not in list_of_excluded and dinamic_list[list_p[-1]] < value_list_in0:
             z = list_p[list_p.index(list_in[0]):]
             print z, 'z4'
             if len(minimal) > len(z):
                 minimal = z
-        if dinamic_list[list_p[0]] < n_i_p and list_p[0] != list_in[0] and list_p[0] not in list_of_excluded:
+        if dinamic_list[list_p[0]] < n_i_p and list_p[0] != list_in[0] and list_p[0] not in list_of_excluded and dinamic_list[list_p[0]] < value_list_in0:
             z = list_p[0:list_p.index(list_in[0]) + 1]
             print z, 'z1'
             if len(minimal) > len(z):
@@ -700,14 +701,14 @@ def volna2(points_in_radius_finish, points_in_radius_start, len_list_start_finis
 
     Transport1 = Transport2 = Transport4 = 0
     Transport3 = 1
-    points_in_radius_finish = [587, 586, station_finish]
-    len_list_start_finish[1] = [5, 15, 1]
+    points_in_radius_finish = [549]#[587, 586, station_finish]
+    len_list_start_finish[1] = [0]#[5, 15, 1]
     route_dict = points_dict_open()
     len_dinamic = len(all_station_x)
     len_dinamic_list = len_dinamic + 2
     dinamic_list = [[100] * len_dinamic_list][0]
-    next_points_list = [station_start, 283, 99]
-    mass_next_points_list = [5, 15, 100]
+    next_points_list = [160]#[station_start, 283, 99]
+    mass_next_points_list = [0]#[5, 15, 100]
     #route_d_st = route_stations(Transport1, Transport2, Transport3, Transport4)
     test_min1 = 0
     test_min2 = 0
@@ -763,6 +764,9 @@ def volna2(points_in_radius_finish, points_in_radius_start, len_list_start_finis
                             route_dict[route_key2] = 2
                         dinamic_list[para] = dinamic_for
 
+                        if dinamic_list[para] < dinamic_list[-1] and para in points_in_radius_finish:
+                            dinamic_list[-1] = dinamic_list[para]
+                            dinamic_list[-2] = para
                 # Закрываем аршрут
                 route_dict[route_key] = 0
         # сравниваем с точкой finish если минимальная меньше идём дальше иначе выходим из цикла
