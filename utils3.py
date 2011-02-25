@@ -377,19 +377,22 @@ def volna(station_finish, station_start, points_in_radius_finish, points_in_radi
 
     Transport1 = Transport2 = Transport4 = 0
     Transport3 = 1
-    #points_in_radius_finish = [549]#[station_finish]
-    #len_list_start_finish[1] = [0]
-    #points_in_radius_finish = [station_finish, 587]#[587, 586, station_finish]
-    #len_list_start_finish[1] = [5, 15]#[5, 15, 16]
+    index_station_finish = len_list_start_finish[1].index(min(len_list_start_finish[1]))
+    station_finish = points_in_radius_finish[index_station_finish]
+    #len_list_start_finish[1] = [min(len_list_start_finish[1])]
+    points_in_radius_finish = [station_finish]#[station_finish, 587]#[587, 586, station_finish]
+    len_list_start_finish[1] = [0]#min(len_list_start_finish[1])#[5, 15]#[5, 15, 16]
     route_dict = points_dict_open()
     len_dinamic = len(all_station_x)
     len_dinamic_list = len_dinamic + 2
     dinamic_list = [[100] * len_dinamic_list][0]
-    next_points_list = points_in_radius_start#[station_start]
+    index_station_start = len_list_start_finish[0].index(min(len_list_start_finish[0]))
+    #next_points_list = points_in_radius_start#[station_start]
     mass_next_points_list = len_list_start_finish[0]#[0]
     #route_d_st = route_stations(Transport1, Transport2, Transport3, Transport4)
-    #next_points_list = [160]
-    #mass_next_points_list = [0]
+    next_points_list = [points_in_radius_start[index_station_start]]#[160]
+    mass_next_points_list = [0]#[min(len_list_start_finish[0])]
+    print next_points_list, mass_next_points_list, points_in_radius_finish, len_list_start_finish[1]
     test_min1 = 0
     test_min2 = 0
     test_min3 = 0
@@ -453,13 +456,6 @@ def volna(station_finish, station_start, points_in_radius_finish, points_in_radi
         mass_next_points_list.remove(len_in)
         if next_points_list == []:
             break
-    route_matrix5 = route_speed_matrix[0][32]
-    order_in_matrix5 = route_speed_matrix[1][290]
-    list_station_in_route5 = route_matrix5[order_in_matrix5]
-    print list_station_in_route5
-    print '---------------------------------------------------'
-    print dinamic_list[287:313], dinamic_list[71:75], dinamic_list[84:90]
-    print dinamic_list[287], dinamic_list[288], dinamic_list[289], dinamic_list[71], dinamic_list[72], speed_matrix[71][288]
     print test_min1, test_min2, test_min3, test_min4, test_min5, test_min6, test_min7
     www = route_zazor(Transport1, Transport2, Transport3, Transport4)
     point_dict1 = points_dict()
@@ -483,10 +479,10 @@ def volna(station_finish, station_start, points_in_radius_finish, points_in_radi
                     dinamic_slys[next_index_in_dinamic_slys] = dinamic_slys[index_in_dinamic_slys] + www[key_in_dict][0][index_in_dinamic_slys]
             dinamic_slys.reverse()
             dinamic_list[dinamic1:dinamic2 + 1] = dinamic_slys
-    print '+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++'
+    #print '+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++'
     # print dinamic_list[287:313], dinamic_list[71:75], dinamic_list[84:90]
     # print dinamic_list[287], dinamic_list[288], dinamic_list[289], dinamic_list[71], dinamic_list[72], speed_matrix[71][288]
-    print dinamic_list[13], dinamic_list[84], speed_matrix[13][84]
+    #print dinamic_list[13], dinamic_list[84], speed_matrix[13][84]
     return dinamic_list
 
 # Минимум в маршруте
@@ -507,9 +503,10 @@ def min_in_route(list_p, dinamic_list, list_in, list_of_excluded):
         if p_i_p > i_p and n_i_p > i_p:
             if index_p < list_p.index(list_in[0]):
                 z = list_p[index_p:list_p.index(list_in[0]) + 1]
-                #print z, 'z2'
+                print z, 'z2'
             if index_p > list_p.index(list_in[0]):
                 z = list_p[list_p.index(list_in[0]):index_p + 1]
+            print list_p[index_p], list_in[0], list_p[index_p], list_of_excluded, dinamic_list[list_p[index_p]], value_list_in0
             if len(minimal) > len(z) and list_p[index_p] != list_in[0] and list_p[index_p] not in list_of_excluded and dinamic_list[list_p[index_p]] < value_list_in0:
                 minimal = z
                 print z, 'z3'
@@ -538,8 +535,7 @@ def revers_volna(points_list, dinamic_list, speed_matrix):
         for list_p in points_list:
             if list_in[0] in list_p:
                 minimal = min_in_route(list_p, dinamic_list, list_in, list_of_excluded)
-                #if list_in[0] == 84:
-                print minimal#list_in#[0]#, dinamic_list[0:3]
+                print minimal, 'min'#list_in#[0]#, dinamic_list[0:3]
                 if list_in[0] == minimal[0]:
                     list_of_excluded += [minimal[-1]]
                 if list_in[0] == minimal[-1]:
@@ -566,9 +562,12 @@ def revers_volna(points_list, dinamic_list, speed_matrix):
                 #print dinamic_list[minimal[0]:minimal[-1]]
                 #print list_p[0], list_p[-1], index_min_dinamic, index_in_dinamic_list_min
                 #print dinamic_list[list_p[0]:list_p[-1]], min(dinamic_list[list_p[0]:list_p[-1]])
-                        print minimal, list_of_excluded
-                        print ind_ex_list2, list_in
-        if min_dinamic == min(dinamic_list[:866]):#0:#station_start == index_min_dinamic:
+                        print ind_ex_list2, list_in, list_of_excluded
+                if list_in[0] == dinamic_list.index(min(dinamic_list[:866])):
+                    #ind_ex_list2 +=[list_in[0]]
+                    break
+                print ind_ex_list2
+        if min_dinamic == min(dinamic_list[:866]) or list_in[0] == dinamic_list.index(min(dinamic_list[:866])):
             break
     return ind_ex_list2
 
@@ -701,13 +700,13 @@ def volna2(points_in_radius_finish, points_in_radius_start, len_list_start_finis
 
     Transport1 = Transport2 = Transport4 = 0
     Transport3 = 1
-    points_in_radius_finish = [549]#[587, 586, station_finish]
+    points_in_radius_finish = [0]#[587, 586, station_finish]
     len_list_start_finish[1] = [0]#[5, 15, 1]
     route_dict = points_dict_open()
     len_dinamic = len(all_station_x)
     len_dinamic_list = len_dinamic + 2
     dinamic_list = [[100] * len_dinamic_list][0]
-    next_points_list = [160]#[station_start, 283, 99]
+    next_points_list = [38]#[station_start, 283, 99]
     mass_next_points_list = [0]#[5, 15, 100]
     #route_d_st = route_stations(Transport1, Transport2, Transport3, Transport4)
     test_min1 = 0
