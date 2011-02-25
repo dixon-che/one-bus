@@ -388,8 +388,8 @@ def volna(station_finish, station_start, points_in_radius_finish, points_in_radi
     next_points_list = points_in_radius_start#[station_start]
     mass_next_points_list = len_list_start_finish[0]#[0]
     #route_d_st = route_stations(Transport1, Transport2, Transport3, Transport4)
-    next_points_list = [160]
-    mass_next_points_list = [0]
+    #next_points_list = [160]
+    #mass_next_points_list = [0]
     test_min1 = 0
     test_min2 = 0
     test_min3 = 0
