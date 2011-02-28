@@ -1136,6 +1136,7 @@ def route_zazor(Transport1, Transport2, Transport3, Transport4):
                     break
                 go_in += [speed_matrix[index + z[0]][next_index + z[0]]]
                 go_out += [speed_matrix[next_index + z[0]][index + z[0]]]
+            go_out.reverse()
             all_list += [go_out]
             all_list += [go_in]
             speed_matrix_short[item] = all_list

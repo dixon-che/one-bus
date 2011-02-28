@@ -109,53 +109,53 @@ def station_edit(request, route_id):
 
 
 def hello(request):
-    print datetime.datetime.now(), '0'
-    # Приняли данные из джава скрипта Transport1, Transport2, Transport3, Transport4, start_x, start_y, finish_y, finish_x
-    Transport1 = Transport2 = Transport4 = 0
-    Transport3 = 1
-    start_x = 0.1
-    start_y = 0.1
-    finish_x = 0.1
-    finish_y = 0.1
-    #R = 6376 # радиус земли
-    print datetime.datetime.now(), '1'
-    # Пересчитали все х координаты
-    all_station_x = get_all_x()
-    print datetime.datetime.now(), '2'
-    # Пересчитали растояние от старта к финишу
-    #s_f = (acos(sin(start_y*pi/180)*sin(finish_y*pi/180) + cos(start_y*pi/180)*cos(finish_y*pi/180)*cos(finish_x*pi/180-start_x*pi/180))*R)/3
-    print datetime.datetime.now(), '3'
-    # Расчитали матрицу переходов speed_matrix
-    speed_matrix = get_speed_matrix(Transport1, Transport2, Transport3, Transport4)
-    print datetime.datetime.now(), '5'
-    # Расчитали матрицы переходов от станции ко всем остальным станциям внутри маршрута
-    route_speed_matrix = new_route_speed_matrix(Transport1, Transport2, Transport3, Transport4)
-    print datetime.datetime.now(), '6'
-    # Просчитали все переходы между остановками
-    metastation_sort = Metastation_sort(Transport1, Transport2, Transport3, Transport4)
-    # Нашли все остановки в радиусе старта
-    points_in_radius_start = get_points_in_radius_start(start_x, start_y, all_station_x, Transport1, Transport2, Transport3, Transport4)
-    # Нашли все остановки в радиусе финиша
-    points_in_radius_finish = get_points_in_radius_finish(finish_x, finish_y, all_station_x, Transport1, Transport2, Transport3, Transport4)
-    print datetime.datetime.now(), '8'
-    # Создаём список остановок в маршруте
-    points_list = points_list3()
-    # Поставили время для всех остановок в радиусе старта
-    len_list_start_finish = len_start_finish(start_x, start_y, finish_x, finish_y, points_in_radius_start, points_in_radius_finish)
-    print datetime.datetime.now(), '9'
-
-    # Запустили считать алгоритм обратной волны
-    station_start = 312#583
-    station_finish = 282#160
-
-    dinamic_list = volna2(points_in_radius_finish, points_in_radius_start, len_list_start_finish, station_start, station_finish, all_station_x, route_speed_matrix, speed_matrix, metastation_sort, points_list)
-    print datetime.datetime.now(), '10'
-
-                # Запустили считать обратную волну и записывать данные
-    dinamic_list_min = revers_volna2(station_finish, station_start, points_list, dinamic_list, speed_matrix)
-    print dinamic_list_min
-    route_stations(Transport1, Transport2, Transport3, Transport4)
-    print datetime.datetime.now(), '11'
+    # print datetime.datetime.now(), '0'
+    # # Приняли данные из джава скрипта Transport1, Transport2, Transport3, Transport4, start_x, start_y, finish_y, finish_x
+    # Transport1 = Transport2 = Transport4 = 0
+    # Transport3 = 1
+    # start_x = 0.1
+    # start_y = 0.1
+    # finish_x = 0.1
+    # finish_y = 0.1
+    # #R = 6376 # радиус земли
+    # print datetime.datetime.now(), '1'
+    # # Пересчитали все х координаты
+    # all_station_x = get_all_x()
+    # print datetime.datetime.now(), '2'
+    # # Пересчитали растояние от старта к финишу
+    # #s_f = (acos(sin(start_y*pi/180)*sin(finish_y*pi/180) + cos(start_y*pi/180)*cos(finish_y*pi/180)*cos(finish_x*pi/180-start_x*pi/180))*R)/3
+    # print datetime.datetime.now(), '3'
+    # # Расчитали матрицу переходов speed_matrix
+    # speed_matrix = get_speed_matrix(Transport1, Transport2, Transport3, Transport4)
+    # print datetime.datetime.now(), '5'
+    # # Расчитали матрицы переходов от станции ко всем остальным станциям внутри маршрута
+    # route_speed_matrix = new_route_speed_matrix(Transport1, Transport2, Transport3, Transport4)
+    # print datetime.datetime.now(), '6'
+    # # Просчитали все переходы между остановками
+    # metastation_sort = Metastation_sort(Transport1, Transport2, Transport3, Transport4)
+    # # Нашли все остановки в радиусе старта
+    # points_in_radius_start = get_points_in_radius_start(start_x, start_y, all_station_x, Transport1, Transport2, Transport3, Transport4)
+    # # Нашли все остановки в радиусе финиша
+    # points_in_radius_finish = get_points_in_radius_finish(finish_x, finish_y, all_station_x, Transport1, Transport2, Transport3, Transport4)
+    # print datetime.datetime.now(), '8'
+    # # Создаём список остановок в маршруте
+    # points_list = points_list3()
+    # # Поставили время для всех остановок в радиусе старта
+    # len_list_start_finish = len_start_finish(start_x, start_y, finish_x, finish_y, points_in_radius_start, points_in_radius_finish)
+    # print datetime.datetime.now(), '9'
+    # 
+    # # Запустили считать алгоритм обратной волны
+    # station_start = 312#583
+    # station_finish = 282#160
+    # 
+    # dinamic_list = volna2(points_in_radius_finish, points_in_radius_start, len_list_start_finish, station_start, station_finish, all_station_x, route_speed_matrix, speed_matrix, metastation_sort, points_list)
+    # print datetime.datetime.now(), '10'
+    # 
+    #             # Запустили считать обратную волну и записывать данные
+    # dinamic_list_min = revers_volna2(station_finish, station_start, points_list, dinamic_list, speed_matrix)
+    # print dinamic_list_min
+    # route_stations(Transport1, Transport2, Transport3, Transport4)
+    # print datetime.datetime.now(), '11'
     text = 'Welcome to "Transplants do not"'
     return render_to_response('base.html', {"text": text})
 
