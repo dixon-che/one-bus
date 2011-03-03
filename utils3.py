@@ -432,7 +432,7 @@ def volna(points_in_radius_finish, points_in_radius_start, len_list_start_finish
                 if ob_element in points_in_radius_finish and dinamic_list[-1] > dinamic_list[zero_order:slys_order + 1][list_index.index(ob_element)] + len_list_start_finish[1][points_in_radius_finish.index(ob_element)]:
                     dinamic_list[-1] = dinamic_list[zero_order:slys_order + 1][list_index.index(ob_element)] + len_list_start_finish[1][points_in_radius_finish.index(ob_element)]
                     dinamic_list[-2] = ob_element
-                    #print ob_element, dinamic_list[zero_order:slys_order + 1], list_index.index(ob_element), len_list_start_finish[1][points_in_radius_finish.index(ob_element)], dinamic_list[-1], dinamic_list[-2]
+
                 # Считаем все переходы записываем соответствующие значения в словарь и закрываем маршрут.
                 for para in metastation_sort[ob_element]:
                     test_min5 += 1

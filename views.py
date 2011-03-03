@@ -196,14 +196,14 @@ def route(request):
     print datetime.datetime.now(), '0'
     # Приняли данные из джава скрипта Transport1, Transport2, Transport3, Transport4, start_x, start_y, finish_y, finish_x
     Transport1 = Transport2 = Transport3 = Transport4 = 0
-    if request.GET['Transport1'] == 'undefined':
-        Transport1 = 1
-    if request.GET['Transport2'] == 'undefined':
-        Transport2 = 1
-    if request.GET['Transport3'] == 'undefined':
-        Transport3 = 1
-    if request.GET['Transport4'] == 'undefined':
-        Transport4 = 1
+    # if request.GET['Transport1'] == 'undefined':
+    #     Transport1 = 1
+    # if request.GET['Transport2'] == 'undefined':
+    #     Transport2 = 1
+    # if request.GET['Transport3'] == 'undefined':
+    #     Transport3 = 1
+    # if request.GET['Transport4'] == 'undefined':
+    #     Transport4 = 1
     Transport3 = 1
     start_x = float(request.GET['x1'])
     start_y = float(request.GET['y1'])

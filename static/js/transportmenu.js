@@ -12,7 +12,6 @@ YMaps.jQuery(function()
 	CreateStyles();
 
         YMaps.jQuery(document).ready(function() {
-//-----------------------------------------------------------------------------------------------------------
 	    YMaps.jQuery("#hide_route").bind('click', function()
 					     {
 						 YMaps.jQuery('#routes').hide('<ul id="menu"></ul>')
@@ -21,14 +20,6 @@ YMaps.jQuery(function()
 					     {
 						 YMaps.jQuery('#routes').show('<ul id="menu"></ul>')
 					     })
-
-	    // YMaps.jQuery("#show_route").bind('click', CreateStyles())
-	    // YMaps.jQuery("#hide_route").bind('click', function() 
-	    // 				     {
-	    // 				     	 YMaps.jQuery('#routes').html('<div></div>');	 
-	    // 				     })
-
-//------------------------------------------------------------------------------------------------------------
 	    YMaps.jQuery("#push").bind('click', function(event) {
 		var geocoder1 = new YMaps.Geocoder('Украина, г. Харьков, ' + YMaps.jQuery('#start:input').val(), {results: 1});
 		var geocoder2 = new YMaps.Geocoder('Украина, г. Харьков, ' + YMaps.jQuery('#finish:input').val(), {results: 1});
@@ -131,14 +122,37 @@ YMaps.jQuery(function()
 					pm.description = p[i].transportName + " t=" + p[i].t;
 					Marks.add(pm);
 					Line.addPoint(new YMaps.GeoPoint(p[i].x, p[i].y));
-					human_readable = '(' + p[i].TransportsType + '-' + p[i].routeName + ' : ' + p[i].stopName + '' + ') ' + human_readable;
+					    if(p[i].TransportsType != undefined)
+					    {
+					    if(p[i].stopName == 'Start')
+					    {
+						human_readable = 'Пешком - ' + human_readable;
+					    }
+					    else
+					    {
+						if(p[i].stopName == 'Finish')
+						{
+						    human_readable = 'Пешком' + human_readable;
+						}
+						else
+						{
+						    if(p[i].TransportsType == 'trolley'){p[i].TransportsType = 'Тр.'}
+						    if(p[i].TransportsType == 'Metro'){p[i].TransportsType = 'M.'}
+						    if(p[i].TransportsType == 'tram'){p[i].TransportsType = 'T.'}
+						    if(p[i].TransportsType == 'bus'){p[i].TransportsType = 'B.'}
+						    if(p[i].routeName == 'SALTOVKA'){p[i].routeName = 'S'}
+						    if(p[i].routeName == 'Holodnogorskaya'){p[i].routeName = 'H'}
+						    if(p[i].routeName == 'Alekseevka'){p[i].routeName = 'A'}
+						    human_readable = p[i].TransportsType + '(' + p[i].routeName + '' + ') -' + human_readable;
+						}
+					    }}
 				    }
 				    Lines.add(Line);
 				    map.addOverlay(Lines);								
 				    map.addOverlay(Marks);
 				    Start_x = Start_y = Finish_x = Finish_y = -1;
 				    map.removeOverlay(placemark);
-				    YMaps.jQuery('#human_readable').html(human_readable);
+				    YMaps.jQuery('#human_readable').html('<table border=1 cellspacing=0 width=800><tr><td>№</td><td>Время</td><td>Длительность</td><td>Цена</td><td>Транспорт</td></tr><tr><td>1</td><td></td><td></td><td></td><td>' + human_readable + '</td></tr></table>');
 				}
 			    };
 			    var url = "/route/?x1=" + encodeURI(Start_x) 
@@ -198,6 +212,8 @@ YMaps.jQuery(function()
 				    oldRouteid = 0;
 				    var human_readable = '';
 				    var myyy_route = '';
+				    var a = '';
+				    var b = '';
 					var pm ;
 					for (var i in p)
 					{
@@ -263,7 +279,12 @@ YMaps.jQuery(function()
 						    if(p[i].routeName == 'SALTOVKA'){p[i].routeName = 'S'}
 						    if(p[i].routeName == 'Holodnogorskaya'){p[i].routeName = 'H'}
 						    if(p[i].routeName == 'Alekseevka'){p[i].routeName = 'A'}
-						    human_readable = p[i].TransportsType + '(' + p[i].routeName + '' + ') -' + human_readable;
+						    if(p[i].TransportsType != a || p[i].routeName != b)
+						    {
+							a = p[i].TransportsType;
+							b = p[i].routeName;
+							human_readable = p[i].TransportsType + '(' + p[i].routeName + '' + ') -' + human_readable;
+						    }
 						}
 					    }}
 					}
