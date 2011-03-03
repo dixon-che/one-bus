@@ -8,7 +8,7 @@ from django.http import HttpResponse
 from apps.point.models import Route, Station, Transport, Onestation
 from apps.all_routes.models import Routes
 from math import *
-from utils3 import get_all_x, get_points_in_radius_start, get_points_in_radius_finish, new_route_speed_matrix, points_list3, sum, len_witput_points, points_dict, points_dict_open, len_start_finish, new_Metastation, get_speed_matrix, volna, revers_volna, result_adapt, Metastation_sort, volna2, revers_volna2, route_stations
+from utils3 import get_all_x, get_points_in_radius_start, get_points_in_radius_finish, new_route_speed_matrix, points_list3, sum, len_witput_points, points_dict, points_dict_open, len_start_finish, new_Metastation, get_speed_matrix, volna, revers_volna, result_adapt, Metastation_sort, route_stations
 #from utyls1 import get_all_x, get_points_in_radius_start, get_points_in_radius_finish, new_route_speed_matrix, points_list3, sum, len_witput_points, points_dict_open, len_start_finish, new_Metastation, get_speed_matrix, volna, revers_volna, result_adapt, Metastation_sort
 import datetime
 import json
@@ -178,7 +178,7 @@ def transport_list(request):
     if timestamp < max_timestamp or file_size == 0:
         stations = list(Station.objects.all().values('route__id', 'route__route',
                                                      'route__color', 'route__transport_type', 'name',
-                                                     'coordinate_x', 'coordinate_y').order_by('route__id', 'order'))
+                                                     'coordinate_x', 'coordinate_y').order_by('route__transport_type', 'route__id', 'order'))
 
         fp = open(transport_list_txt, 'w+')
         fp.write(repr(stations))
@@ -195,27 +195,27 @@ def transport_list(request):
 def route(request):
     print datetime.datetime.now(), '0'
     # Приняли данные из джава скрипта Transport1, Transport2, Transport3, Transport4, start_x, start_y, finish_y, finish_x
-    Transport1 = request.GET['Transport1']
-    Transport2 = request.GET['Transport2']
-    Transport3 = request.GET['Transport3']
-    Transport4 = request.GET['Transport4']
-    Transport1 = Transport2 = Transport4 = 0
+    Transport1 = Transport2 = Transport3 = Transport4 = 0
+    if request.GET['Transport1'] == 'undefined':
+        Transport1 = 1
+    if request.GET['Transport2'] == 'undefined':
+        Transport2 = 1
+    if request.GET['Transport3'] == 'undefined':
+        Transport3 = 1
+    if request.GET['Transport4'] == 'undefined':
+        Transport4 = 1
     Transport3 = 1
     start_x = float(request.GET['x1'])
     start_y = float(request.GET['y1'])
     finish_x = float(request.GET['x2'])
     finish_y = float(request.GET['y2'])
     #R = 6376 # радиус земли
-    print datetime.datetime.now(), '1'
     # Пересчитали все х координаты
     all_station_x = get_all_x()
-    print datetime.datetime.now(), '2'
     # Пересчитали растояние от старта к финишу
     #s_f = (acos(sin(start_y*pi/180)*sin(finish_y*pi/180) + cos(start_y*pi/180)*cos(finish_y*pi/180)*cos(finish_x*pi/180-start_x*pi/180))*R)/3
-    print datetime.datetime.now(), '3'
     # Расчитали матрицу переходов speed_matrix
     speed_matrix = get_speed_matrix(Transport1, Transport2, Transport3, Transport4)
-    print datetime.datetime.now(), '5'
     # Расчитали матрицы переходов от станции ко всем остальным станциям внутри маршрута
     route_speed_matrix = new_route_speed_matrix(Transport1, Transport2, Transport3, Transport4)
     print datetime.datetime.now(), '6'
@@ -232,15 +232,11 @@ def route(request):
     # Создаём список остановок в маршруте
     points_list = points_list3()
     # Запустили считать алгоритм обратной волны
-    station_start = 282
-    station_finish = 313
-
-    dinamic_list = volna(station_finish, station_start, points_in_radius_finish, points_in_radius_start, len_list_start_finish, all_station_x, route_speed_matrix, speed_matrix, metastation_sort, points_list)
+    dinamic_list = volna(points_in_radius_finish, points_in_radius_start, len_list_start_finish, all_station_x, route_speed_matrix, speed_matrix, metastation_sort, points_list, Transport1, Transport2, Transport3, Transport4)
     print datetime.datetime.now(), '10'
                 # Запустили считать обратную волну и записывать данные
     dinamic_list_min = revers_volna(points_list, dinamic_list, speed_matrix)
     print dinamic_list_min
-
     print datetime.datetime.now(), '11'
     # Преобразовали данные для вывода
     final_views = result_adapt(dinamic_list, dinamic_list_min, start_x, start_y, finish_x, finish_y)

@@ -186,93 +186,94 @@ def len_start_finish(start_x, start_y, finish_x, finish_y, points_in_radius_star
 # функция создания speed_matrix "с кешем"
 
 def get_speed_matrix(Transport1, Transport2, Transport3, Transport4):
-    s_m__txt = os.path.join(PROJECT_ROOT, 'kesh2/speed_matrix.txt')
-    s_m__txt1 = os.path.join(PROJECT_ROOT, 'kesh2/speed_matrix1.txt')
-    s_m__txt2 = os.path.join(PROJECT_ROOT, 'kesh2/speed_matrix2.txt')
-    s_m__txt3 = os.path.join(PROJECT_ROOT, 'kesh2/speed_matrix3.txt')
-    s_m__txt4 = os.path.join(PROJECT_ROOT, 'kesh2/speed_matrix4.txt')
-    s_m__txt12 = os.path.join(PROJECT_ROOT, 'kesh2/speed_matrix12.txt')
-    s_m__txt13 = os.path.join(PROJECT_ROOT, 'kesh2/speed_matrix13.txt')
-    s_m__txt14 = os.path.join(PROJECT_ROOT, 'kesh2/speed_matrix14.txt')
-    s_m__txt23 = os.path.join(PROJECT_ROOT, 'kesh2/speed_matrix23.txt')
-    s_m__txt24 = os.path.join(PROJECT_ROOT, 'kesh2/speed_matrix24.txt')
-    s_m__txt34 = os.path.join(PROJECT_ROOT, 'kesh2/speed_matrix34.txt')
-    s_m__txt123 = os.path.join(PROJECT_ROOT, 'kesh2/speed_matrix123.txt')
-    #s_m__txt124 = os.path.join(PROJECT_ROOT, 'kesh2/speed_matrix124.txt')
-    s_m__txt134 = os.path.join(PROJECT_ROOT, 'kesh2/speed_matrix134.txt')
-    s_m__txt234 = os.path.join(PROJECT_ROOT, 'kesh2/speed_matrix234.txt')
-    if Transport1 == 0 and Transport2 == 0 and Transport3 == 0 and Transport4 == 0:
-        fp = open(s_m__txt, 'r')
-        read_file = fp.read()
-        speed_matrix = eval(read_file)
-        fp.close()
-    if Transport1 == 0 and Transport2 == 1 and Transport3 == 1 and Transport4 == 1:
-        fp = open(s_m__txt1, 'r')
-        read_file = fp.read()
-        speed_matrix = eval(read_file)
-        fp.close()
-    if Transport1 == 1 and Transport2 == 0 and Transport3 == 1 and Transport4 == 1:
-        fp = open(s_m__txt2, 'r')
-        read_file = fp.read()
-        speed_matrix = eval(read_file)
-        fp.close()
-    if Transport1 == 1 and Transport2 == 1 and Transport3 == 0 and Transport4 == 1:
-        fp = open(s_m__txt3, 'r')
-        read_file = fp.read()
-        speed_matrix = eval(read_file)
-        fp.close()
-    if Transport1 == 1 and Transport2 == 1 and Transport3 == 1 and Transport4 == 0:
-        fp = open(s_m__txt4, 'r')
-        read_file = fp.read()
-        speed_matrix = eval(read_file)
-        fp.close()
-    if Transport1 == 0 and Transport2 == 0 and Transport3 == 1 and Transport4 == 1:
-        fp = open(s_m__txt12, 'r')
-        read_file = fp.read()
-        speed_matrix = eval(read_file)
-        fp.close()
-    if Transport1 == 0 and Transport2 == 1 and Transport3 == 0 and Transport4 == 1:
-        fp = open(s_m__txt13, 'r')
-        read_file = fp.read()
-        speed_matrix = eval(read_file)
-        fp.close()
-    if Transport1 == 0 and Transport2 == 1 and Transport3 == 1 and Transport4 == 0:
-        fp = open(s_m__txt14, 'r')
-        read_file = fp.read()
-        speed_matrix = eval(read_file)
-        fp.close()
-    if Transport1 == 1 and Transport2 == 0 and Transport3 == 0 and Transport4 == 1:
-        fp = open(s_m__txt23, 'r')
-        read_file = fp.read()
-        speed_matrix = eval(read_file)
-        fp.close()
-    if Transport1 == 1 and Transport2 == 0 and Transport3 == 1 and Transport4 == 0:
-        fp = open(s_m__txt24, 'r')
-        read_file = fp.read()
-        speed_matrix = eval(read_file)
-        fp.close()
-    if Transport1 == 1 and Transport2 == 1 and Transport3 == 0 and Transport4 == 0:
-        fp = open(s_m__txt34, 'r')
-        read_file = fp.read()
-        speed_matrix = eval(read_file)
-        fp.close()
-    if Transport1 == 0 and Transport2 == 0 and Transport3 == 0 and Transport4 == 1:
-        fp = open(s_m__txt123, 'r')
-        read_file = fp.read()
-        speed_matrix = eval(read_file)
-        fp.close()
-    if Transport1 == 0 and Transport2 == 0 and Transport3 == 1 and Transport4 == 0:
-        speed_matrix = speed_matrix124()
-    if Transport1 == 0 and Transport2 == 1 and Transport3 == 0 and Transport4 == 0:
-        fp = open(s_m__txt134, 'r')
-        read_file = fp.read()
-        speed_matrix = eval(read_file)
-        fp.close()
-    if Transport1 == 1 and Transport2 == 0 and Transport3 == 0 and Transport4 == 0:
-        fp = open(s_m__txt234, 'r')
-        read_file = fp.read()
-        speed_matrix = eval(read_file)
-        fp.close()
+    speed_matrix = speed_matrix124()
+    # s_m__txt = os.path.join(PROJECT_ROOT, 'kesh2/speed_matrix.txt')
+    # s_m__txt1 = os.path.join(PROJECT_ROOT, 'kesh2/speed_matrix1.txt')
+    # s_m__txt2 = os.path.join(PROJECT_ROOT, 'kesh2/speed_matrix2.txt')
+    # s_m__txt3 = os.path.join(PROJECT_ROOT, 'kesh2/speed_matrix3.txt')
+    # s_m__txt4 = os.path.join(PROJECT_ROOT, 'kesh2/speed_matrix4.txt')
+    # s_m__txt12 = os.path.join(PROJECT_ROOT, 'kesh2/speed_matrix12.txt')
+    # s_m__txt13 = os.path.join(PROJECT_ROOT, 'kesh2/speed_matrix13.txt')
+    # s_m__txt14 = os.path.join(PROJECT_ROOT, 'kesh2/speed_matrix14.txt')
+    # s_m__txt23 = os.path.join(PROJECT_ROOT, 'kesh2/speed_matrix23.txt')
+    # s_m__txt24 = os.path.join(PROJECT_ROOT, 'kesh2/speed_matrix24.txt')
+    # s_m__txt34 = os.path.join(PROJECT_ROOT, 'kesh2/speed_matrix34.txt')
+    # s_m__txt123 = os.path.join(PROJECT_ROOT, 'kesh2/speed_matrix123.txt')
+    # #s_m__txt124 = os.path.join(PROJECT_ROOT, 'kesh2/speed_matrix124.txt')
+    # s_m__txt134 = os.path.join(PROJECT_ROOT, 'kesh2/speed_matrix134.txt')
+    # s_m__txt234 = os.path.join(PROJECT_ROOT, 'kesh2/speed_matrix234.txt')
+    # if Transport1 == 0 and Transport2 == 0 and Transport3 == 0 and Transport4 == 0:
+    #     fp = open(s_m__txt, 'r')
+    #     read_file = fp.read()
+    #     speed_matrix = eval(read_file)
+    #     fp.close()
+    # if Transport1 == 0 and Transport2 == 1 and Transport3 == 1 and Transport4 == 1:
+    #     fp = open(s_m__txt1, 'r')
+    #     read_file = fp.read()
+    #     speed_matrix = eval(read_file)
+    #     fp.close()
+    # if Transport1 == 1 and Transport2 == 0 and Transport3 == 1 and Transport4 == 1:
+    #     fp = open(s_m__txt2, 'r')
+    #     read_file = fp.read()
+    #     speed_matrix = eval(read_file)
+    #     fp.close()
+    # if Transport1 == 1 and Transport2 == 1 and Transport3 == 0 and Transport4 == 1:
+    #     fp = open(s_m__txt3, 'r')
+    #     read_file = fp.read()
+    #     speed_matrix = eval(read_file)
+    #     fp.close()
+    # if Transport1 == 1 and Transport2 == 1 and Transport3 == 1 and Transport4 == 0:
+    #     fp = open(s_m__txt4, 'r')
+    #     read_file = fp.read()
+    #     speed_matrix = eval(read_file)
+    #     fp.close()
+    # if Transport1 == 0 and Transport2 == 0 and Transport3 == 1 and Transport4 == 1:
+    #     fp = open(s_m__txt12, 'r')
+    #     read_file = fp.read()
+    #     speed_matrix = eval(read_file)
+    #     fp.close()
+    # if Transport1 == 0 and Transport2 == 1 and Transport3 == 0 and Transport4 == 1:
+    #     fp = open(s_m__txt13, 'r')
+    #     read_file = fp.read()
+    #     speed_matrix = eval(read_file)
+    #     fp.close()
+    # if Transport1 == 0 and Transport2 == 1 and Transport3 == 1 and Transport4 == 0:
+    #     fp = open(s_m__txt14, 'r')
+    #     read_file = fp.read()
+    #     speed_matrix = eval(read_file)
+    #     fp.close()
+    # if Transport1 == 1 and Transport2 == 0 and Transport3 == 0 and Transport4 == 1:
+    #     fp = open(s_m__txt23, 'r')
+    #     read_file = fp.read()
+    #     speed_matrix = eval(read_file)
+    #     fp.close()
+    # if Transport1 == 1 and Transport2 == 0 and Transport3 == 1 and Transport4 == 0:
+    #     fp = open(s_m__txt24, 'r')
+    #     read_file = fp.read()
+    #     speed_matrix = eval(read_file)
+    #     fp.close()
+    # if Transport1 == 1 and Transport2 == 1 and Transport3 == 0 and Transport4 == 0:
+    #     fp = open(s_m__txt34, 'r')
+    #     read_file = fp.read()
+    #     speed_matrix = eval(read_file)
+    #     fp.close()
+    # if Transport1 == 0 and Transport2 == 0 and Transport3 == 0 and Transport4 == 1:
+    #     fp = open(s_m__txt123, 'r')
+    #     read_file = fp.read()
+    #     speed_matrix = eval(read_file)
+    #     fp.close()
+    # if Transport1 == 0 and Transport2 == 0 and Transport3 == 1 and Transport4 == 0:
+    #     speed_matrix = speed_matrix124()
+    # if Transport1 == 0 and Transport2 == 1 and Transport3 == 0 and Transport4 == 0:
+    #     fp = open(s_m__txt134, 'r')
+    #     read_file = fp.read()
+    #     speed_matrix = eval(read_file)
+    #     fp.close()
+    # if Transport1 == 1 and Transport2 == 0 and Transport3 == 0 and Transport4 == 0:
+    #     fp = open(s_m__txt234, 'r')
+    #     read_file = fp.read()
+    #     speed_matrix = eval(read_file)
+    #     fp.close()
 
     return speed_matrix
 
@@ -373,24 +374,25 @@ def new_Metastation(Transport1, Transport2, Transport3, Transport4):
 
 # Запустили считать волновой  алгоритм
 
-def volna(station_finish, station_start, points_in_radius_finish, points_in_radius_start, len_list_start_finish, all_station_x, route_speed_matrix, speed_matrix, metastation_sort, points_list):
+def volna(points_in_radius_finish, points_in_radius_start, len_list_start_finish, all_station_x, route_speed_matrix, speed_matrix, metastation_sort, points_list, Transport1, Transport2, Transport3, Transport4):
 
-    Transport1 = Transport2 = Transport4 = 0
-    Transport3 = 1
+    #Transport1 = Transport2 = Transport4 = 0
+    #Transport3 = 1
     #index_station_finish = len_list_start_finish[1].index(min(len_list_start_finish[1]))
     #station_finish = points_in_radius_finish[index_station_finish]
     #points_in_radius_finish = [station_finish]#[station_finish, 587]#[587, 586, station_finish]
     #len_list_start_finish[1] = [0]#min(len_list_start_finish[1])#[5, 15]#[5, 15, 16]
+    point_dict1 = points_dict()
     route_dict = points_dict_open()
     len_dinamic = len(all_station_x)
     len_dinamic_list = len_dinamic + 2
     dinamic_list = [[100] * len_dinamic_list][0]
-    index_station_start = len_list_start_finish[0].index(min(len_list_start_finish[0]))
-    #next_points_list = points_in_radius_start#[station_start]
-    #mass_next_points_list = len_list_start_finish[0]#[0]
-    #route_d_st = route_stations(Transport1, Transport2, Transport3, Transport4)
-    next_points_list = [points_in_radius_start[index_station_start]]#[160]
-    mass_next_points_list = [0]#[min(len_list_start_finish[0])]
+    #index_station_start = len_list_start_finish[0].index(min(len_list_start_finish[0]))
+    next_points_list = points_in_radius_start#[station_start]
+    mass_next_points_list = len_list_start_finish[0]#[0]
+    route_d_st = route_stations(Transport1, Transport2, Transport3, Transport4)
+    # next_points_list = [points_in_radius_start[index_station_start]]#[160]
+    # mass_next_points_list = [0]#[min(len_list_start_finish[0])]
     #print next_points_list, mass_next_points_list, points_in_radius_finish, len_list_start_finish[1]
     test_min1 = 0
     test_min2 = 0
@@ -404,7 +406,7 @@ def volna(station_finish, station_start, points_in_radius_finish, points_in_radi
         len_in = min(mass_next_points_list)
         index_start_point = mass_next_points_list.index(len_in)
         point_in = next_points_list[index_start_point]
-        route_key = Station.objects.get(matrix_index=point_in).route_id
+        route_key = route_d_st[point_in]#Station.objects.get(matrix_index=point_in).route_id
         test_min1 += 1
         if route_dict[route_key] == 1:
             test_min2 += 1
@@ -437,17 +439,44 @@ def volna(station_finish, station_start, points_in_radius_finish, points_in_radi
                     if dinamic_list[para] > dinamic_list[ob_element] + speed_matrix[ob_element][para] and para not in list_index and (para not in next_points_list or mass_next_points_list[next_points_list.index(para)] > dinamic_list[ob_element] + speed_matrix[ob_element][para]) and dinamic_list[-1] > dinamic_list[ob_element] + speed_matrix[ob_element][para]:
 
                         dinamic_for = dinamic_list[ob_element] + speed_matrix[ob_element][para]
-                        route_key2 = Station.objects.get(matrix_index=para).route_id
+                        route_key2 = route_d_st[para]#Station.objects.get(matrix_index=para).route_id
                         if route_dict[route_key2] == 1 and para not in next_points_list:
                             next_points_list += [para]
                             mass_next_points_list += [dinamic_for]
 
                         if route_dict[route_key2] == 0 or route_dict[route_key2] == 2:
                             route_dict[route_key2] = 2
+
+                        if para in next_points_list and mass_next_points_list[next_points_list.index(para)] > dinamic_list[ob_element] + speed_matrix[ob_element][para]:
+                            index_next_points_list = next_points_list.index(para)
+                            mass_next_points_list[index_next_points_list] = dinamic_for
                         dinamic_list[para] = dinamic_for
 
                 # Закрываем аршрут
                 route_dict[route_key] = 0
+                                    # Двойная волна с начала маршрута и конца
+            www = route_zazor(Transport1, Transport2, Transport3, Transport4)
+            for key_in_dict in route_dict:
+                if route_dict[key_in_dict] == 2:
+                    dinamic1 = point_dict1[key_in_dict][0]
+                    dinamic2 = point_dict1[key_in_dict][-1]
+                    dinamic_slys = dinamic_list[dinamic1:dinamic2 + 1]
+                    for index_in_dinamic_slys in range(len(dinamic_slys)):
+                        next_index_in_dinamic_slys = index_in_dinamic_slys + 1
+                        if next_index_in_dinamic_slys == len(dinamic_slys):
+                            break
+                        if dinamic_slys[next_index_in_dinamic_slys] > dinamic_slys[index_in_dinamic_slys] + www[key_in_dict][1][index_in_dinamic_slys]:
+                            dinamic_slys[next_index_in_dinamic_slys] = dinamic_slys[index_in_dinamic_slys] + www[key_in_dict][1][index_in_dinamic_slys]
+                    dinamic_slys.reverse()
+                    for index_in_dinamic_slys in range(len(dinamic_slys)):
+                        next_index_in_dinamic_slys = index_in_dinamic_slys + 1
+                        if next_index_in_dinamic_slys == len(dinamic_slys):
+                            break
+                        if dinamic_slys[next_index_in_dinamic_slys] > dinamic_slys[index_in_dinamic_slys] + www[key_in_dict][0][index_in_dinamic_slys]:
+                            dinamic_slys[next_index_in_dinamic_slys] = dinamic_slys[index_in_dinamic_slys] + www[key_in_dict][0][index_in_dinamic_slys]
+                    dinamic_slys.reverse()
+                    dinamic_list[dinamic1:dinamic2 + 1] = dinamic_slys
+                    route_dict[key_in_dict] = 0
         # сравниваем с точкой finish если минимальная меньше идём дальше иначе выходим из цикла
         if min(mass_next_points_list) > dinamic_list[-1]:
             break
@@ -456,41 +485,14 @@ def volna(station_finish, station_start, points_in_radius_finish, points_in_radi
         if next_points_list == []:
             break
     print test_min1, test_min2, test_min3, test_min4, test_min5, test_min6, test_min7
-    www = route_zazor(Transport1, Transport2, Transport3, Transport4)
-    point_dict1 = points_dict()
-    for key_in_dict in route_dict:
-        if route_dict[key_in_dict] == 2:
-            dinamic1 = point_dict1[key_in_dict][0]
-            dinamic2 = point_dict1[key_in_dict][-1]
-            dinamic_slys = dinamic_list[dinamic1:dinamic2 + 1]
-            for index_in_dinamic_slys in range(len(dinamic_slys)):
-                next_index_in_dinamic_slys = index_in_dinamic_slys + 1
-                if next_index_in_dinamic_slys == len(dinamic_slys):
-                    break
-                if dinamic_slys[next_index_in_dinamic_slys] > dinamic_slys[index_in_dinamic_slys] + www[key_in_dict][1][index_in_dinamic_slys]:
-                    dinamic_slys[next_index_in_dinamic_slys] = dinamic_slys[index_in_dinamic_slys] + www[key_in_dict][1][index_in_dinamic_slys]
-            dinamic_slys.reverse()
-            for index_in_dinamic_slys in range(len(dinamic_slys)):
-                next_index_in_dinamic_slys = index_in_dinamic_slys + 1
-                if next_index_in_dinamic_slys == len(dinamic_slys):
-                    break
-                if dinamic_slys[next_index_in_dinamic_slys] > dinamic_slys[index_in_dinamic_slys] + www[key_in_dict][0][index_in_dinamic_slys]:
-                    dinamic_slys[next_index_in_dinamic_slys] = dinamic_slys[index_in_dinamic_slys] + www[key_in_dict][0][index_in_dinamic_slys]
-            dinamic_slys.reverse()
-            dinamic_list[dinamic1:dinamic2 + 1] = dinamic_slys
-    #print '+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++'
-    # print dinamic_list[287:313], dinamic_list[71:75], dinamic_list[84:90]
-    # print dinamic_list[287], dinamic_list[288], dinamic_list[289], dinamic_list[71], dinamic_list[72], speed_matrix[71][288]
-    #print dinamic_list[13], dinamic_list[84], speed_matrix[13][84]
     return dinamic_list
 
 # Минимум в маршруте
 
 def min_in_route(list_p, dinamic_list, list_in, list_of_excluded):
     minimal = list_p
+    #print 'list_of_excluded', list_of_excluded
     for index_p in range(len(list_p)):
-        #print 'list_of_excluded', list_of_excluded
-        # if index_p not in list_of_excluded:
         next_index_p = index_p + 1
         prev_index_p = index_p - 1
         if next_index_p == len(list_p):
@@ -502,21 +504,21 @@ def min_in_route(list_p, dinamic_list, list_in, list_of_excluded):
         if p_i_p > i_p and n_i_p > i_p:
             if index_p < list_p.index(list_in[0]):
                 z = list_p[index_p:list_p.index(list_in[0]) + 1]
-                #print z, 'z2'
+                print z, 'z2'
             if index_p > list_p.index(list_in[0]):
                 z = list_p[list_p.index(list_in[0]):index_p + 1]
             #print list_p[index_p], list_in[0], list_p[index_p], list_of_excluded, dinamic_list[list_p[index_p]], value_list_in0
             if len(minimal) > len(z) and list_p[index_p] != list_in[0] and list_p[index_p] not in list_of_excluded and dinamic_list[list_p[index_p]] < value_list_in0:
                 minimal = z
-                #print z, 'z3'
+                print z, 'z3'
         if dinamic_list[list_p[-1]] < p_i_p and list_p[-1] != list_in[0] and list_p[-1] not in list_of_excluded and dinamic_list[list_p[-1]] < value_list_in0:
             z = list_p[list_p.index(list_in[0]):]
-            #print z, 'z4'
+            print z, 'z4'
             if len(minimal) > len(z):
                 minimal = z
         if dinamic_list[list_p[0]] < n_i_p and list_p[0] != list_in[0] and list_p[0] not in list_of_excluded and dinamic_list[list_p[0]] < value_list_in0:
             z = list_p[0:list_p.index(list_in[0]) + 1]
-            #print z, 'z1'
+            print z, 'z1'
             if len(minimal) > len(z):
                 minimal = z
 
@@ -526,12 +528,14 @@ def min_in_route(list_p, dinamic_list, list_in, list_of_excluded):
 
 def revers_volna(points_list, dinamic_list, speed_matrix):
     ind_ex_list2 = list()
-    #print dinamic_list[-2], min(dinamic_list[:866]), dinamic_list.index(min(dinamic_list[:866]))
+    print dinamic_list[-2], min(dinamic_list[:866]), dinamic_list.index(min(dinamic_list[:866])), dinamic_list[305]
+    min_dinamic_list866 = min(dinamic_list[:866])
     list_in = [dinamic_list[-2]]
     list_of_excluded = []
     while list_in:
-        print list_in[0]
+        #print list_in[0]
         for list_p in points_list:
+            i = 0
             if list_in[0] in list_p:
                 minimal = min_in_route(list_p, dinamic_list, list_in, list_of_excluded)
                 #print minimal, 'min'#list_in#[0]#, dinamic_list[0:3]
@@ -554,19 +558,24 @@ def revers_volna(points_list, dinamic_list, speed_matrix):
                         dinamic_slyse.reverse()
                 #print dinamic_slyse
                 ind_ex_list2 += dinamic_slyse
-                for ind_ex in dinamic_list:
+                for ind_ex in dinamic_list[:866]:
                     if ind_ex < min_dinamic and round(speed_matrix[dinamic_list.index(ind_ex)][index_in_dinamic_list_min], 6) == round(dinamic_list[index_in_dinamic_list_min] - dinamic_list[dinamic_list.index(ind_ex)], 6) and min_dinamic != list_in[0]:
                         list_in += [dinamic_list.index(ind_ex)]
                         list_in.remove(list_in[0])
+                        i += 1
                 #print dinamic_list[minimal[0]:minimal[-1]]
                 #print list_p[0], list_p[-1], index_min_dinamic, index_in_dinamic_list_min
                 #print dinamic_list[list_p[0]:list_p[-1]], min(dinamic_list[list_p[0]:list_p[-1]])
-                #        print ind_ex_list2, list_in, list_of_excluded
+                        print ind_ex_list2, list_in, list_of_excluded
+                        break
                 if list_in[0] == dinamic_list.index(min(dinamic_list[:866])):
-                    #ind_ex_list2 +=[list_in[0]]
+                    ind_ex_list2 +=[list_in[0]]
                     break
-                print ind_ex_list2
-        if min_dinamic == min(dinamic_list[:866]) or list_in[0] == dinamic_list.index(min(dinamic_list[:866])):
+                if i == 0:
+                    min_dinamic_list866 = min_dinamic
+                    break
+                #print ind_ex_list2
+        if min_dinamic == min_dinamic_list866 or list_in[0] == dinamic_list.index(min_dinamic_list866):
             break
     return ind_ex_list2
 
@@ -694,162 +703,6 @@ def route_zazor(Transport1, Transport2, Transport3, Transport4):
 # 
 #     return speed_matrix_short
 
-
-def volna2(points_in_radius_finish, points_in_radius_start, len_list_start_finish, station_start, station_finish, all_station_x, route_speed_matrix, speed_matrix, metastation_sort, points_list):
-
-    Transport1 = Transport2 = Transport4 = 0
-    Transport3 = 1
-    points_in_radius_finish = [0]#[587, 586, station_finish]
-    len_list_start_finish[1] = [0]#[5, 15, 1]
-    route_dict = points_dict_open()
-    len_dinamic = len(all_station_x)
-    len_dinamic_list = len_dinamic + 2
-    dinamic_list = [[100] * len_dinamic_list][0]
-    next_points_list = [38]#[station_start, 283, 99]
-    mass_next_points_list = [0]#[5, 15, 100]
-    #route_d_st = route_stations(Transport1, Transport2, Transport3, Transport4)
-    test_min1 = 0
-    test_min2 = 0
-    test_min3 = 0
-    test_min4 = 0
-    test_min5 = 0
-    test_min6 = 0
-    test_min7 = 0
-    while next_points_list:
-        # Находим минимальную остановку среди открытых маршрутов
-        len_in = min(mass_next_points_list)
-        index_start_point = mass_next_points_list.index(len_in)
-        point_in = next_points_list[index_start_point]
-        route_key = Station.objects.get(matrix_index=point_in).route_id
-        test_min1 += 1
-        if route_dict[route_key] == 1:
-            test_min2 += 1
-            # Берём соответствующий минимальной остановке маршрут и переносим его в словарь всех остановок в
-            # соответствующиие места увеличив значение на значение до минимальной остановки.
-            route_matrix = route_speed_matrix[0][route_key]
-            order_in_matrix = route_speed_matrix[1][point_in]
-            list_station_in_route = route_matrix[order_in_matrix]
-            len_list_station_in_route = len(list_station_in_route)
-            zero_order = point_in - order_in_matrix
-            slys_order = zero_order + len_list_station_in_route - 1
-            # Приращение маршрута на минимальное
-            for station_in in range(len_list_station_in_route):
-                test_min3 += 1
-                list_station_in_route[station_in] += len_in
-                if dinamic_list[zero_order:slys_order + 1][station_in] < list_station_in_route[station_in]:
-                    list_station_in_route[station_in] = dinamic_list[zero_order:slys_order + 1][station_in]
-            dinamic_list[zero_order:slys_order + 1] = list_station_in_route
-            list_index = range(zero_order, slys_order + 1)
-            for ob_element in list_index:
-                test_min4 += 1
-                # Если попалась остановка из списка радиуса finish мы её записываем в список с ключём finish.
-                if ob_element in points_in_radius_finish and dinamic_list[-1] > dinamic_list[zero_order:slys_order + 1][list_index.index(ob_element)] + len_list_start_finish[1][points_in_radius_finish.index(ob_element)]:
-                    dinamic_list[-1] = dinamic_list[zero_order:slys_order + 1][list_index.index(ob_element)] + len_list_start_finish[1][points_in_radius_finish.index(ob_element)]
-                    dinamic_list[-2] = ob_element
-                    #print ob_element, dinamic_list[zero_order:slys_order + 1], list_index.index(ob_element), len_list_start_finish[1][points_in_radius_finish.index(ob_element)], dinamic_list[-1], dinamic_list[-2]
-                # Считаем все переходы записываем соответствующие значения в словарь и закрываем маршрут.
-                for para in metastation_sort[ob_element]:
-                    test_min5 += 1
-                    if dinamic_list[para] > dinamic_list[ob_element] + speed_matrix[ob_element][para] and para not in list_index and (para not in next_points_list or mass_next_points_list[next_points_list.index(para)] > dinamic_list[ob_element] + speed_matrix[ob_element][para]) and dinamic_list[-1] > dinamic_list[ob_element] + speed_matrix[ob_element][para]:
-
-                        dinamic_for = dinamic_list[ob_element] + speed_matrix[ob_element][para]
-                        route_key2 = Station.objects.get(matrix_index=para).route_id
-                        if route_dict[route_key2] == 1 and para not in next_points_list:
-                            next_points_list += [para]
-                            mass_next_points_list += [dinamic_for]
-
-                        if route_dict[route_key2] == 0 or route_dict[route_key2] == 2:
-                            route_dict[route_key2] = 2
-                        dinamic_list[para] = dinamic_for
-
-                        if dinamic_list[para] < dinamic_list[-1] and para in points_in_radius_finish:
-                            dinamic_list[-1] = dinamic_list[para]
-                            dinamic_list[-2] = para
-                # Закрываем аршрут
-                route_dict[route_key] = 0
-        # сравниваем с точкой finish если минимальная меньше идём дальше иначе выходим из цикла
-        if min(mass_next_points_list) > dinamic_list[-1]:
-            break
-        next_points_list.remove(point_in)
-        mass_next_points_list.remove(len_in)
-        if next_points_list == []:
-            break
-    print test_min1, test_min2, test_min3, test_min4, test_min5, test_min6, test_min7
-    www = route_zazor(Transport1, Transport2, Transport3, Transport4)
-    point_dict1 = points_dict()
-    for key_in_dict in route_dict:
-        if route_dict[key_in_dict] == 2:
-            dinamic1 = point_dict1[key_in_dict][0]
-            dinamic2 = point_dict1[key_in_dict][-1]
-            dinamic_slys = dinamic_list[dinamic1:dinamic2 + 1]
-            for index_in_dinamic_slys in range(len(dinamic_slys)):
-                next_index_in_dinamic_slys = index_in_dinamic_slys + 1
-                if next_index_in_dinamic_slys == len(dinamic_slys):
-                    break
-                if dinamic_slys[next_index_in_dinamic_slys] > dinamic_slys[index_in_dinamic_slys] + www[key_in_dict][1][index_in_dinamic_slys]:
-                    dinamic_slys[next_index_in_dinamic_slys] = dinamic_slys[index_in_dinamic_slys] + www[key_in_dict][1][index_in_dinamic_slys]
-            dinamic_slys.reverse()
-            for index_in_dinamic_slys in range(len(dinamic_slys)):
-                next_index_in_dinamic_slys = index_in_dinamic_slys + 1
-                if next_index_in_dinamic_slys == len(dinamic_slys):
-                    break
-                if dinamic_slys[next_index_in_dinamic_slys] > dinamic_slys[index_in_dinamic_slys] + www[key_in_dict][0][index_in_dinamic_slys]:
-                    dinamic_slys[next_index_in_dinamic_slys] = dinamic_slys[index_in_dinamic_slys] + www[key_in_dict][0][index_in_dinamic_slys]
-            dinamic_slys.reverse()
-            dinamic_list[dinamic1:dinamic2 + 1] = dinamic_slys
-    print dinamic_list[282:313], dinamic_list[71:75], dinamic_list[84:90]
-    print dinamic_list[287], dinamic_list[288], dinamic_list[289], dinamic_list[71], dinamic_list[72], speed_matrix[71][288]
-    return dinamic_list
-
-
-def revers_volna2(station_finish, station_start, points_list, dinamic_list, speed_matrix):
-    ind_ex_list2 = list()
-    print dinamic_list[-2], min(dinamic_list[:866]), dinamic_list.index(min(dinamic_list[:866]))
-    list_in = [dinamic_list[-2]]
-    list_of_excluded = []
-    while list_in:
-        for list_p in points_list:
-            if list_in[0] in list_p:
-                #print list_in#[0]#, dinamic_list[0:3]
-                minimal = min_in_route(list_p, dinamic_list, list_in, list_of_excluded)
-                print minimal, 'min'
-                if list_in[0] == minimal[0]:
-                    list_of_excluded += [minimal[-1]]
-                if list_in[0] == minimal[-1]:
-                    list_of_excluded += [minimal[0]]
-                set(list_of_excluded)
-                min_dinamic = min(dinamic_list[minimal[0]:minimal[-1] + 1])
-                index_min_dinamic = dinamic_list[minimal[0]:minimal[-1] + 1].index(min_dinamic)
-                index_station_finish = dinamic_list[minimal[0]:minimal[-1] + 1].index(dinamic_list[list_in[0]])
-                index_in_dinamic_list_min = minimal[0] + index_min_dinamic
-                #print index_station_finish, index_min_dinamic
-                dinamic_slyse = list()
-                if index_min_dinamic < index_station_finish:
-                    dinamic_slyse = range(minimal[0] + index_min_dinamic, minimal[0] + index_station_finish + 1)
-                if index_min_dinamic > index_station_finish:
-                    dinamic_slyse = range(minimal[0] + index_station_finish, minimal[0] + index_min_dinamic + 1)
-                if dinamic_slyse != []:
-                    if dinamic_slyse[-1] == list_in[0]:
-                        dinamic_slyse.reverse()
-                #print dinamic_slyse
-                ind_ex_list2 += dinamic_slyse
-                for ind_ex in dinamic_list:
-                    if ind_ex < min_dinamic and round(speed_matrix[dinamic_list.index(ind_ex)][index_in_dinamic_list_min], 6) == round(dinamic_list[index_in_dinamic_list_min] - dinamic_list[dinamic_list.index(ind_ex)], 6) and min_dinamic != list_in[0]:
-                        # route_ind_ex = Station.objects.get(matrix_index=dinamic_list.index(ind_ex)).route_id
-                        # route_min_dinamic = Station.objects.get(matrix_index=index_in_dinamic_list_min).route_id
-                        # print route_ind_ex, route_min_dinamic
-                        # if route_ind_ex != route_min_dinamic:
-                        list_in += [dinamic_list.index(ind_ex)]
-                        list_in.remove(list_in[0])
-                #print dinamic_list[minimal[0]:minimal[-1]]
-                #print list_p[0], list_p[-1], index_min_dinamic, index_in_dinamic_list_min
-                #print dinamic_list[list_p[0]:list_p[-1]], min(dinamic_list[list_p[0]:list_p[-1]])
-                        print ind_ex_list2, list_in, list_of_excluded
-        if min_dinamic == min(dinamic_list[:866]):#0:#station_start == index_min_dinamic:
-            break
-    return ind_ex_list2
-
-
 def route_stations(Transport1, Transport2, Transport3, Transport4):
-    stash = route_stat124
+    stash = route_stat124()
     return stash

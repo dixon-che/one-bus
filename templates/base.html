@@ -24,13 +24,13 @@
 			</div>
 		</div>
 
-		<div id="contenttext" align="center">
-		  <table border=1 width="1184px"> 
+		<div id="contenttext" align="left">
+		  <table width=1010px> 
         {% block content %}
 		    <tr>
-		      <td width="50px"></td>
-		      <td valign="top" align="center"><div id="YMapsID" style="width:800px;height:600px"></div></td>
-		      <td>
+		      <td></td>
+		      <td valign="top" align="center"><div id="YMapsID" style="width:800px;height:480px"></div></td>
+		      <td width="200">
 			<div style="width:110px;height:30px">
 			<input type="text" id="start" value="пр. Ленина, 9"></br>
 			</div>
@@ -52,7 +52,15 @@
 			<div style="width:110px;height:20px">
 			<input type="checkbox" id="Transport4" name="Transport4" checked="checked">Тролейбус</br>
 			</div>
-			<ul id="menu"></ul>
+			<div style="width:110px;height:30px">
+<p><input type="button" id="show_route" value="show"></br><input type="button" id="hide_route" value="hide"></br></p>
+			</div>
+			<div id="routes">
+			  <ul id="menu"></ul>
+			</div>
+			<div>
+			{#<ul id="menu"></ul>#}
+			</div>
 		      </td>	  
 		    </tr>
 	{% endblock %}
@@ -65,7 +73,7 @@
 	  <td></td>
 	  <td><div id="footer" class="smallgraytext" align="center">
 	      <a href="#">Home</a> | <a href="#">About Us</a> | <a href="#">Products</a> | <a href="#">Our Services</a> | <a href="#">Contact Us</a><br />
-	      Your Company Name &copy; 2007<br />
+	      Peresadok.net &copy; 2011<br />
 	    </div></td>
 	  <td></td>
 	</tr>
