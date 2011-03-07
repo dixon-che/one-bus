@@ -12,6 +12,8 @@ from utyls.points_list3 import points_list_3
 from utyls.all_x import all_x
 from utyls.route_zazor124 import route_zazor124
 from utyls.route_stat124 import route_stat124
+from utyls.points_list_for_sort124 import points_list_for_sort124
+from utyls.metastation_sort124 import metastation_sort124
 
 
 # функция нахождения cумы
@@ -170,7 +172,7 @@ def len_start_finish(start_x, start_y, finish_x, finish_y, points_in_radius_star
     start = [start_x, start_y]
     finish = [finish_x, finish_y]
     len_list_start_finish = []
-    points_list = Station.objects.filter(notstations=True).values_list('coordinate_x', 'coordinate_y').order_by('matrix_index')
+    points_list = points_list_for_sort124()#Station.objects.filter(notstations=True).values_list('coordinate_x', 'coordinate_y').order_by('matrix_index')
     list_lenths1 = list()
     for station in points_in_radius_start:
         lenth = len_witput_points(start, points_list[station]) / 3
@@ -641,40 +643,40 @@ def result_adapt(dinamic_list, dinamic_list_min, start_x, start_y, finish_x, fin
 
 
 def Metastation_sort(Transport1, Transport2, Transport3, Transport4):
-    Metastation_sort124_txt = os.path.join(PROJECT_ROOT, 'kesh2/Metastation_sort124.txt')
-    max_station_timestamp = Station.objects.all().aggregate(Max('timestamp'))
-    max_route_timestamp = Route.objects.all().aggregate(Max('timestamp'))
-    max_transport_timestamp = Transport.objects.all().aggregate(Max('timestamp'))
-    max_onestation_timestamp = Onestation.objects.all().aggregate(Max('timestamp'))
-    max_timestamp = max(max_onestation_timestamp, max_station_timestamp, max_route_timestamp, max_transport_timestamp)
-    max_timestamp = max_timestamp['timestamp__max']
-    if os.path.isfile(Metastation_sort124_txt) == False:
-        open(Metastation_sort124_txt, 'w')
-    sm_file = os.path.getmtime(Metastation_sort124_txt)
-    stat = os.stat(Metastation_sort124_txt)
-    file_size = stat.st_size
-    timestamp = datetime.datetime.fromtimestamp(sm_file)
-
-    if timestamp < max_timestamp or file_size == 0:
-        list_in_raduus = [[]] * 866
-        metastations_stations_list = new_Metastation(Transport1, Transport2, Transport3, Transport4)
-        metastations_stations_list.sort()
-        for element in range(866):
-            one_list = list()
-            for para in metastations_stations_list:
-                if element == para[0]:
-                    one_list += [para[1]]
-            list_in_raduus[element] = one_list
-
-        fp = open(Metastation_sort124_txt, "w")
-        fp.write(repr(list_in_raduus))
-        fp.close()
-    else:
-        fp = open(Metastation_sort124_txt, 'r')
-        read_file = fp.read()
-        list_in_raduus = eval(read_file)
-        fp.close()
-
+    # Metastation_sort124_txt = os.path.join(PROJECT_ROOT, 'kesh2/Metastation_sort124.txt')
+    # max_station_timestamp = Station.objects.all().aggregate(Max('timestamp'))
+    # max_route_timestamp = Route.objects.all().aggregate(Max('timestamp'))
+    # max_transport_timestamp = Transport.objects.all().aggregate(Max('timestamp'))
+    # max_onestation_timestamp = Onestation.objects.all().aggregate(Max('timestamp'))
+    # max_timestamp = max(max_onestation_timestamp, max_station_timestamp, max_route_timestamp, max_transport_timestamp)
+    # max_timestamp = max_timestamp['timestamp__max']
+    # if os.path.isfile(Metastation_sort124_txt) == False:
+    #     open(Metastation_sort124_txt, 'w')
+    # sm_file = os.path.getmtime(Metastation_sort124_txt)
+    # stat = os.stat(Metastation_sort124_txt)
+    # file_size = stat.st_size
+    # timestamp = datetime.datetime.fromtimestamp(sm_file)
+    # 
+    # if timestamp < max_timestamp or file_size == 0:
+    #     list_in_raduus = [[]] * 866
+    #     metastations_stations_list = new_Metastation(Transport1, Transport2, Transport3, Transport4)
+    #     metastations_stations_list.sort()
+    #     for element in range(866):
+    #         one_list = list()
+    #         for para in metastations_stations_list:
+    #             if element == para[0]:
+    #                 one_list += [para[1]]
+    #         list_in_raduus[element] = one_list
+    # 
+    #     fp = open(Metastation_sort124_txt, "w")
+    #     fp.write(repr(list_in_raduus))
+    #     fp.close()
+    # else:
+    #     fp = open(Metastation_sort124_txt, 'r')
+    #     read_file = fp.read()
+    #     list_in_raduus = eval(read_file)
+    #     fp.close()
+    list_in_raduus = metastation_sort124()
     return list_in_raduus
 
 
@@ -706,3 +708,33 @@ def route_zazor(Transport1, Transport2, Transport3, Transport4):
 def route_stations(Transport1, Transport2, Transport3, Transport4):
     stash = route_stat124()
     return stash
+
+
+# def points_list_for_sort():
+#     points_list124_txt = os.path.join(PROJECT_ROOT, 'kesh2/points_list_for_sort124.txt')
+#     max_station_timestamp = Station.objects.all().aggregate(Max('timestamp'))
+#     max_route_timestamp = Route.objects.all().aggregate(Max('timestamp'))
+#     max_transport_timestamp = Transport.objects.all().aggregate(Max('timestamp'))
+#     max_onestation_timestamp = Onestation.objects.all().aggregate(Max('timestamp'))
+#     max_timestamp = max(max_onestation_timestamp, max_station_timestamp, max_route_timestamp, max_transport_timestamp)
+#     max_timestamp = max_timestamp['timestamp__max']
+#     if os.path.isfile(points_list124_txt) == False:
+#         open(points_list124_txt, 'w')
+#     sm_file = os.path.getmtime(points_list124_txt)
+#     stat = os.stat(points_list124_txt)
+#     file_size = stat.st_size
+#     timestamp = datetime.datetime.fromtimestamp(sm_file)
+# 
+#     if timestamp < max_timestamp or file_size == 0:
+#         points_list = list(Station.objects.filter(notstations=True).values_list('coordinate_x', 'coordinate_y').order_by('matrix_index'))
+# 
+#         fp = open(points_list124_txt, "w")
+#         fp.write(repr(points_list))
+#         fp.close()
+#     else:
+#         fp = open(points_list124_txt, 'r')
+#         read_file = fp.read()
+#         points_list = eval(read_file)
+#         fp.close()
+# 
+#     return points_list

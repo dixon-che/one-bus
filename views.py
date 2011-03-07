@@ -8,7 +8,7 @@ from django.http import HttpResponse
 from apps.point.models import Route, Station, Transport, Onestation
 from apps.all_routes.models import Routes
 from math import *
-from utils3 import get_all_x, get_points_in_radius_start, get_points_in_radius_finish, new_route_speed_matrix, points_list3, sum, len_witput_points, points_dict, points_dict_open, len_start_finish, new_Metastation, get_speed_matrix, volna, revers_volna, result_adapt, Metastation_sort, route_stations
+from utils3 import get_all_x, get_points_in_radius_start, get_points_in_radius_finish, new_route_speed_matrix, points_list3, sum, len_witput_points, points_dict, points_dict_open, len_start_finish, new_Metastation, get_speed_matrix, volna, revers_volna, result_adapt, Metastation_sort, route_stations#, points_list_for_sort
 #from utyls1 import get_all_x, get_points_in_radius_start, get_points_in_radius_finish, new_route_speed_matrix, points_list3, sum, len_witput_points, points_dict_open, len_start_finish, new_Metastation, get_speed_matrix, volna, revers_volna, result_adapt, Metastation_sort
 import datetime
 import json
@@ -236,6 +236,7 @@ def route(request):
     print datetime.datetime.now(), '10'
                 # Запустили считать обратную волну и записывать данные
     dinamic_list_min = revers_volna(points_list, dinamic_list, speed_matrix)
+#    points_list_for_sort()
     print dinamic_list_min
     print datetime.datetime.now(), '11'
     # Преобразовали данные для вывода

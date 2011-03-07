@@ -78,6 +78,9 @@ YMaps.jQuery(function()
 				    
 				    oldRouteid = 0;
 				    var human_readable = '';
+				    var human_readable2 = '';
+				    var a = '';
+				    var b = '';
 				    var pm ;
 				    for (var i in p)
 				    {
@@ -136,23 +139,43 @@ YMaps.jQuery(function()
 						}
 						else
 						{
-						    if(p[i].TransportsType == 'trolley'){p[i].TransportsType = 'Тр.'}
+						    if(p[i].TransportsType == 'trolley'){p[i].TransportsType = 'Тс'}
 						    if(p[i].TransportsType == 'Metro'){p[i].TransportsType = 'M.'}
-						    if(p[i].TransportsType == 'tram'){p[i].TransportsType = 'T.'}
-						    if(p[i].TransportsType == 'bus'){p[i].TransportsType = 'B.'}
+						    if(p[i].TransportsType == 'tram'){p[i].TransportsType = 'Tй'}
+						    if(p[i].TransportsType == 'bus'){p[i].TransportsType = 'А'}
 						    if(p[i].routeName == 'SALTOVKA'){p[i].routeName = 'S'}
 						    if(p[i].routeName == 'Holodnogorskaya'){p[i].routeName = 'H'}
 						    if(p[i].routeName == 'Alekseevka'){p[i].routeName = 'A'}
-						    human_readable = p[i].TransportsType + '(' + p[i].routeName + '' + ') -' + human_readable;
+						    if(p[i].TransportsType != a || p[i].routeName != b)
+						    {
+							a = p[i].TransportsType;
+							b = p[i].routeName;
+							human_readable = p[i].TransportsType + '(' + p[i].routeName + '' + ') -' + human_readable;
+						    }
 						}
 					    }}
-				    }
+					    if(p[i].stopName != 'Start' && p[i].stopName != 'Finish' && p[i].TransportsType != undefined)
+					    {
+						human_readable2 = '<ul>' + p[i].TransportsType + '(' + p[i].routeName + ' )' + p[i].stopName + '--' + p[i].t + '</ul>' + human_readable2;
+					    }
+					}
+				    human_readable2 = human_readable2 + '<input type="button" id="more3" value="Скрыть"></br>';
+				    YMaps.jQuery('#human_readable2').html(human_readable2);
+				    YMaps.jQuery('#human_readable2').hide();
+				    YMaps.jQuery('#human_readable').html('<table border=1 cellspacing=0 width=800><tr><td>№</td><td>Время</td><td>Длительность</td><td>Цена</td><td>Транспорт</td></tr><tr><td>1</td><td></td><td></td><td></td><td>' + human_readable + '</td></tr></table><input type="button" id="more2" value="Подробней"></br>');
+				    YMaps.jQuery("#more2").bind('click', function()
+				    				{
+				    				    YMaps.jQuery('#human_readable2').show();
+				    				});
+				    YMaps.jQuery("#more3").bind('click', function()
+				    				{
+				    				    YMaps.jQuery('#human_readable2').hide();
+				    				});
 				    Lines.add(Line);
 				    map.addOverlay(Lines);								
 				    map.addOverlay(Marks);
 				    Start_x = Start_y = Finish_x = Finish_y = -1;
 				    map.removeOverlay(placemark);
-				    YMaps.jQuery('#human_readable').html('<table border=1 cellspacing=0 width=800><tr><td>№</td><td>Время</td><td>Длительность</td><td>Цена</td><td>Транспорт</td></tr><tr><td>1</td><td></td><td></td><td></td><td>' + human_readable + '</td></tr></table>');
 				}
 			    };
 			    var url = "/route/?x1=" + encodeURI(Start_x) 
@@ -211,6 +234,7 @@ YMaps.jQuery(function()
 				    
 				    oldRouteid = 0;
 				    var human_readable = '';
+				    var human_readable2 = '';
 				    var myyy_route = '';
 				    var a = '';
 				    var b = '';
@@ -272,10 +296,10 @@ YMaps.jQuery(function()
 						}
 						else
 						{
-						    if(p[i].TransportsType == 'trolley'){p[i].TransportsType = 'Тр.'}
+						    if(p[i].TransportsType == 'trolley'){p[i].TransportsType = 'Тс'}
 						    if(p[i].TransportsType == 'Metro'){p[i].TransportsType = 'M.'}
-						    if(p[i].TransportsType == 'tram'){p[i].TransportsType = 'T.'}
-						    if(p[i].TransportsType == 'bus'){p[i].TransportsType = 'B.'}
+						    if(p[i].TransportsType == 'tram'){p[i].TransportsType = 'Tй'}
+						    if(p[i].TransportsType == 'bus'){p[i].TransportsType = 'А'}
 						    if(p[i].routeName == 'SALTOVKA'){p[i].routeName = 'S'}
 						    if(p[i].routeName == 'Holodnogorskaya'){p[i].routeName = 'H'}
 						    if(p[i].routeName == 'Alekseevka'){p[i].routeName = 'A'}
@@ -287,13 +311,28 @@ YMaps.jQuery(function()
 						    }
 						}
 					    }}
+					    if(p[i].stopName != 'Start' && p[i].stopName != 'Finish' && p[i].TransportsType != undefined)
+					    {
+						human_readable2 = '<ul>' + p[i].TransportsType + '(' + p[i].routeName + ' )' + p[i].stopName + '--' + p[i].t + '</ul>' + human_readable2;
+					    }
 					}
-					Lines.add(Line);
-					map.addOverlay(Lines);								
-					map.addOverlay(Marks);
-					Start_x = Start_y = Finish_x = Finish_y = -1;
-					map.removeOverlay(placemark);
-				        YMaps.jQuery('#human_readable').html('<table border=1 cellspacing=0 width=800><tr><td>№</td><td>Время</td><td>Длительность</td><td>Цена</td><td>Транспорт</td></tr><tr><td>1</td><td></td><td></td><td></td><td>' + human_readable + '</td></tr></table>');
+				    human_readable2 = human_readable2 + '<input type="button" id="more3" value="Скрыть"></br>';
+				    YMaps.jQuery('#human_readable2').html(human_readable2);
+				    YMaps.jQuery('#human_readable2').hide();
+				    YMaps.jQuery('#human_readable').html('<table border=1 cellspacing=0 width=800><tr><td>№</td><td>Время</td><td>Длительность</td><td>Цена</td><td>Транспорт</td></tr><tr><td>1</td><td></td><td></td><td></td><td>' + human_readable + '</td></tr></table><input type="button" id="more2" value="Подробней"></br>');
+				    YMaps.jQuery("#more2").bind('click', function()
+				    				{
+				    				    YMaps.jQuery('#human_readable2').show();
+				    				});
+				    YMaps.jQuery("#more3").bind('click', function()
+				    				{
+				    				    YMaps.jQuery('#human_readable2').hide();
+				    				});
+				    Lines.add(Line);
+				    map.addOverlay(Lines);								
+				    map.addOverlay(Marks);
+				    Start_x = Start_y = Finish_x = Finish_y = -1;
+				    map.removeOverlay(placemark);
 				} 
 			};
 			var url = "/route/?x1=" + encodeURI(Start_x) 
