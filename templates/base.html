@@ -40,23 +40,37 @@
 			<div style="width:110px;height:30px">
 			<input type="button" id="push" value="Найти"></br>
 			</div>
-			<div style="width:110px;height:20px">
-			<input type="checkbox" id="Transport1" name="Transport1" checked="checked">Трамвай</br>
+			<div style="width:140px;height:20px">
+			  <p><input type="checkbox" id="Transport1" name="Transport1" checked="checked"></br>
+			    <input type="button" id="show_route1" value="Трамвай"></br></p>
 			</div>
-			<div style="width:110px;height:20px">
-			<input type="checkbox" id="Transport2" name="Transport2" checked="checked">Метро</br>
+			<div style="width:140px;height:20px">
+			  <p><input type="checkbox" id="Transport2" name="Transport2" checked="checked"></br>
+			    <input type="button" id="show_route2" value="Метро"></br></p>
 			</div>
-			<div style="width:110px;height:20px">
-			<input type="checkbox" id="Transport3" name="Transport3" checked="checked">Автобус</br>
+			<div style="width:140px;height:20px">
+			  <p><input type="checkbox" id="Transport3" name="Transport3" checked="checked"></br>
+			    <input type="button" id="show_route3" value="Автобус"></br></p>
 			</div>
-			<div style="width:110px;height:20px">
-			<input type="checkbox" id="Transport4" name="Transport4" checked="checked">Тролейбус</br>
+			<div style="width:140px;height:20px">
+			  <p><input type="checkbox" id="Transport4" name="Transport4" checked="checked"></br>
+			    <input type="button" id="show_route4" value="Тролейбус"></br></p>
 			</div>
-			<div style="width:110px;height:30px">
-<p><input type="button" id="show_route" value="show"></br><input type="button" id="hide_route" value="hide"></br></p>
+			<div id="routes1">
+			  <ul id="menu1"></ul>
+			  <input type="button" id="hide_route1" value="hide"></br>
 			</div>
-			<div id="routes">
-			  <ul id="menu"></ul>
+			<div id="routes2">
+			  <ul id="menu2"></ul>
+			  <input type="button" id="hide_route2" value="hide"></br>
+			</div>
+			<div id="routes3">
+			  <ul id="menu3"></ul>
+			  <input type="button" id="hide_route3" value="hide"></br>
+			</div>
+			<div id="routes4">
+			  <ul id="menu4"></ul>
+			  <input type="button" id="hide_route4" value="hide"></br>
 			</div>
 			<div>
 			{#<ul id="menu"></ul>#}

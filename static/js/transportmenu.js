@@ -12,14 +12,19 @@ YMaps.jQuery(function()
 	CreateStyles();
 
         YMaps.jQuery(document).ready(function() {
-	    YMaps.jQuery("#hide_route").bind('click', function()
-					     {
-						 YMaps.jQuery('#routes').hide('<ul id="menu"></ul>')
-					     })
-	    YMaps.jQuery("#show_route").bind('click', function()
-					     {
-						 YMaps.jQuery('#routes').show('<ul id="menu"></ul>')
-					     })
+	    YMaps.jQuery('#routes1').hide();
+	    YMaps.jQuery('#routes2').hide();
+	    YMaps.jQuery('#routes3').hide();
+	    YMaps.jQuery('#routes4').hide();
+	    YMaps.jQuery("#show_route1").bind('click', function(){ YMaps.jQuery('#routes1').show() })
+	    YMaps.jQuery("#hide_route1").bind('click', function(){ YMaps.jQuery('#routes1').hide() })
+	    YMaps.jQuery("#show_route2").bind('click', function(){ YMaps.jQuery('#routes2').show() })
+	    YMaps.jQuery("#hide_route2").bind('click', function(){ YMaps.jQuery('#routes2').hide() })
+	    YMaps.jQuery("#show_route3").bind('click', function(){ YMaps.jQuery('#routes3').show() })
+	    YMaps.jQuery("#hide_route3").bind('click', function(){ YMaps.jQuery('#routes3').hide() })
+	    YMaps.jQuery("#show_route4").bind('click', function(){ YMaps.jQuery('#routes4').show() })
+	    YMaps.jQuery("#hide_route4").bind('click', function(){ YMaps.jQuery('#routes4').hide() })
+
 	    YMaps.jQuery("#push").bind('click', function(event) {
 		var geocoder1 = new YMaps.Geocoder('Украина, г. Харьков, ' + YMaps.jQuery('#start:input').val(), {results: 1});
 		var geocoder2 = new YMaps.Geocoder('Украина, г. Харьков, ' + YMaps.jQuery('#finish:input').val(), {results: 1});
@@ -81,6 +86,7 @@ YMaps.jQuery(function()
 				    var human_readable2 = '';
 				    var a = '';
 				    var b = '';
+				    var final_time = '';
 				    var pm ;
 				    for (var i in p)
 				    {
@@ -125,18 +131,13 @@ YMaps.jQuery(function()
 					pm.description = p[i].transportName + " t=" + p[i].t;
 					Marks.add(pm);
 					Line.addPoint(new YMaps.GeoPoint(p[i].x, p[i].y));
-					    if(p[i].TransportsType != undefined)
+					if(p[i].stopName == 'Finish'){ final_time = p[i].t }
+					if(p[i].TransportsType != undefined)
 					    {
-					    if(p[i].stopName == 'Start')
-					    {
-						human_readable = 'Пешком - ' + human_readable;
-					    }
+					    if(p[i].stopName == 'Start'){ human_readable = 'Пешком - ' + human_readable;}
 					    else
 					    {
-						if(p[i].stopName == 'Finish')
-						{
-						    human_readable = 'Пешком' + human_readable;
-						}
+						if(p[i].stopName == 'Finish'){ human_readable = 'Пешком' + human_readable;}
 						else
 						{
 						    if(p[i].TransportsType == 'trolley'){p[i].TransportsType = 'Тс'}
@@ -162,7 +163,7 @@ YMaps.jQuery(function()
 				    human_readable2 = human_readable2 + '<input type="button" id="more3" value="Скрыть"></br>';
 				    YMaps.jQuery('#human_readable2').html(human_readable2);
 				    YMaps.jQuery('#human_readable2').hide();
-				    YMaps.jQuery('#human_readable').html('<table border=1 cellspacing=0 width=800><tr><td>№</td><td>Время</td><td>Длительность</td><td>Цена</td><td>Транспорт</td></tr><tr><td>1</td><td></td><td></td><td></td><td>' + human_readable + '</td></tr></table><input type="button" id="more2" value="Подробней"></br>');
+				    YMaps.jQuery('#human_readable').html('<table border=1 cellspacing=0 width=800><tr><td>№</td><td>Время</td><td>Длительность</td><td>Цена</td><td>Транспорт</td></tr><tr><td>1</td><td></td><td>' + final_time + '</td><td></td><td>' + human_readable + '</td></tr></table><input type="button" id="more2" value="Подробней"></br>');
 				    YMaps.jQuery("#more2").bind('click', function()
 				    				{
 				    				    YMaps.jQuery('#human_readable2').show();
@@ -238,6 +239,7 @@ YMaps.jQuery(function()
 				    var myyy_route = '';
 				    var a = '';
 				    var b = '';
+				    var final_time = '';
 					var pm ;
 					for (var i in p)
 					{
@@ -282,18 +284,13 @@ YMaps.jQuery(function()
 						pm.description = p[i].transportName + " t=" + p[i].t;
 						Marks.add(pm);
 						Line.addPoint(new YMaps.GeoPoint(p[i].x, p[i].y));
+					    if(p[i].stopName == 'Finish'){ final_time = p[i].t }
 					    if(p[i].TransportsType != undefined)
 					    {
-					    if(p[i].stopName == 'Start')
-					    {
-						human_readable = 'Пешком - ' + human_readable;
-					    }
+					    if(p[i].stopName == 'Start'){ human_readable = 'Пешком - ' + human_readable; }
 					    else
 					    {
-						if(p[i].stopName == 'Finish')
-						{
-						    human_readable = 'Пешком' + human_readable;
-						}
+						if(p[i].stopName == 'Finish'){ human_readable = 'Пешком' + human_readable; }
 						else
 						{
 						    if(p[i].TransportsType == 'trolley'){p[i].TransportsType = 'Тс'}
@@ -319,7 +316,7 @@ YMaps.jQuery(function()
 				    human_readable2 = human_readable2 + '<input type="button" id="more3" value="Скрыть"></br>';
 				    YMaps.jQuery('#human_readable2').html(human_readable2);
 				    YMaps.jQuery('#human_readable2').hide();
-				    YMaps.jQuery('#human_readable').html('<table border=1 cellspacing=0 width=800><tr><td>№</td><td>Время</td><td>Длительность</td><td>Цена</td><td>Транспорт</td></tr><tr><td>1</td><td></td><td></td><td></td><td>' + human_readable + '</td></tr></table><input type="button" id="more2" value="Подробней"></br>');
+				    YMaps.jQuery('#human_readable').html('<table border=1 cellspacing=0 width=800><tr><td>№</td><td>Время</td><td>Длительность</td><td>Цена</td><td>Транспорт</td></tr><tr><td>1</td><td></td><td>' + final_time + '</td><td></td><td>' + human_readable + '</td></tr></table><input type="button" id="more2" value="Подробней"></br>');
 				    YMaps.jQuery("#more2").bind('click', function()
 				    				{
 				    				    YMaps.jQuery('#human_readable2').show();
@@ -488,13 +485,28 @@ YMaps.jQuery(function()
 						TransportMenuItem = new YMaps.GeoObjectCollection();
 						TransportMenuItem.title = Transports[i].route__route;
 						c = Transports[i].route__color[0] + Transports[i].route__color[1] + Transports[i].route__color[2] + Transports[i].route__color[3] + Transports[i].route__color[4] + Transports[i].route__color[5];
-					        addMenuItem(TransportMenuItem, YMaps.jQuery("#menu"), c);
-					    YMaps.jQuery('#routes').hide('<ul id="menu"></ul>');
+					    if(Transports[i].route__transport_type == 1)
+					    {
+						addMenuItem(TransportMenuItem, YMaps.jQuery("#menu1"), c);
+					    }
+					    if(Transports[i].route__transport_type == 2)
+					    {
+						addMenuItem(TransportMenuItem, YMaps.jQuery("#menu2"), c);
+					    }
+					    if(Transports[i].route__transport_type == 3)
+					    {
+						addMenuItem(TransportMenuItem, YMaps.jQuery("#menu3"), c);
+					    }
+					    if(Transports[i].route__transport_type == 4)
+					    {
+						addMenuItem(TransportMenuItem, YMaps.jQuery("#menu4"), c);
+					    }
+
 						tline = new YMaps.Polyline();
 						TransportMenuItem.add(tline);
 						tline.setStyle(tstyle);
 					}
-				        if(Transports[i].route__transport_type == 1)
+				    if(Transports[i].route__transport_type == 1)
 					    {
 						pm = new YMaps.Placemark(new YMaps.GeoPoint(Transports[i].coordinate_x,Transports[i].coordinate_y),{draggable: false, style:TramvayStationStyle});
 					    }

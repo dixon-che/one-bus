@@ -45,27 +45,33 @@ def get_all_x():
 
 def get_points_in_radius_start(start_x, start_y, all_station_x, Transport1, Transport2, Transport3, Transport4):
     KoeRad = 0.01
-    sx1 = start_x + KoeRad
-    sx2 = start_x - KoeRad
-    sy1 = start_y + KoeRad
-    sy2 = start_y - KoeRad
-    radius_x_start, points_in_radius_start = list(), list()
-    for station_x in all_station_x:
-        if sx2 < station_x < sx1:
-            radius_x_start += [station_x]
-    for x_start in radius_x_start:
-        station_for_y = Station.objects.filter(coordinate_x=x_start, notstations=True).values_list('coordinate_y', 'matrix_index')
-        for station_y in station_for_y:
-            if sy2 < station_y[0] < sy1:
-                transport = Station.objects.get(matrix_index=station_y[1]).route.transport_type_id
-                if Transport1 == 0 and transport == 1:
-                    points_in_radius_start += [station_y[1]]
-                if Transport2 == 0 and transport == 2:
-                    points_in_radius_start += [station_y[1]]
-                if Transport3 == 0 and transport == 3:
-                    points_in_radius_start += [station_y[1]]
-                if Transport4 == 0 and transport == 4:
-                    points_in_radius_start += [station_y[1]]
+    ninee = [1, 2]
+    while ninee:
+        sx1 = start_x + KoeRad
+        sx2 = start_x - KoeRad
+        sy1 = start_y + KoeRad
+        sy2 = start_y - KoeRad
+        radius_x_start, points_in_radius_start = list(), list()
+        for station_x in all_station_x:
+            if sx2 < station_x < sx1:
+                radius_x_start += [station_x]
+        for x_start in radius_x_start:
+            station_for_y = Station.objects.filter(coordinate_x=x_start, notstations=True).values_list('coordinate_y', 'matrix_index')
+            for station_y in station_for_y:
+                if sy2 < station_y[0] < sy1:
+                    transport = Station.objects.get(matrix_index=station_y[1]).route.transport_type_id
+                    if Transport1 == 0 and transport == 1:
+                        points_in_radius_start += [station_y[1]]
+                    if Transport2 == 0 and transport == 2:
+                        points_in_radius_start += [station_y[1]]
+                    if Transport3 == 0 and transport == 3:
+                        points_in_radius_start += [station_y[1]]
+                    if Transport4 == 0 and transport == 4:
+                        points_in_radius_start += [station_y[1]]
+        if points_in_radius_start == []:
+            KoeRad = KoeRad * 2
+        else:
+            break
 
     return list(set(points_in_radius_start))
 
@@ -73,27 +79,33 @@ def get_points_in_radius_start(start_x, start_y, all_station_x, Transport1, Tran
 
 def get_points_in_radius_finish(finish_x, finish_y, all_station_x, Transport1, Transport2, Transport3, Transport4):
     KoeRad = 0.01
-    fx1 = finish_x + KoeRad
-    fx2 = finish_x - KoeRad
-    fy1 = finish_y + KoeRad
-    fy2 = finish_y - KoeRad
-    radius_x_finish, points_in_radius_finish = list(), list()
-    for station_x in all_station_x:
-        if fx2 < station_x < fx1:
-            radius_x_finish += [station_x]
-    for x_finish in radius_x_finish:
-        station_for_y = Station.objects.filter(coordinate_x=x_finish, notstations=True).values_list('coordinate_y', 'matrix_index')
-        for station_y in station_for_y:
-            if fy2 < station_y[0] < fy1:
-                transport = Station.objects.get(matrix_index=station_y[1]).route.transport_type_id
-                if Transport1 == 0 and transport == 1:
-                    points_in_radius_finish += [station_y[1]]
-                if Transport2 == 0 and transport == 2:
-                    points_in_radius_finish += [station_y[1]]
-                if Transport3 == 0 and transport == 3:
-                    points_in_radius_finish += [station_y[1]]
-                if Transport4 == 0 and transport == 4:
-                    points_in_radius_finish += [station_y[1]]
+    ninee = [1, 2]
+    while ninee:
+        fx1 = finish_x + KoeRad
+        fx2 = finish_x - KoeRad
+        fy1 = finish_y + KoeRad
+        fy2 = finish_y - KoeRad
+        radius_x_finish, points_in_radius_finish = list(), list()
+        for station_x in all_station_x:
+            if fx2 < station_x < fx1:
+                radius_x_finish += [station_x]
+        for x_finish in radius_x_finish:
+            station_for_y = Station.objects.filter(coordinate_x=x_finish, notstations=True).values_list('coordinate_y', 'matrix_index')
+            for station_y in station_for_y:
+                if fy2 < station_y[0] < fy1:
+                    transport = Station.objects.get(matrix_index=station_y[1]).route.transport_type_id
+                    if Transport1 == 0 and transport == 1:
+                        points_in_radius_finish += [station_y[1]]
+                    if Transport2 == 0 and transport == 2:
+                        points_in_radius_finish += [station_y[1]]
+                    if Transport3 == 0 and transport == 3:
+                        points_in_radius_finish += [station_y[1]]
+                    if Transport4 == 0 and transport == 4:
+                        points_in_radius_finish += [station_y[1]]
+        if points_in_radius_finish == []:
+            KoeRad = KoeRad * 2
+        else:
+            break
 
     return list(set(points_in_radius_finish))
 
@@ -378,24 +390,14 @@ def new_Metastation(Transport1, Transport2, Transport3, Transport4):
 
 def volna(points_in_radius_finish, points_in_radius_start, len_list_start_finish, all_station_x, route_speed_matrix, speed_matrix, metastation_sort, points_list, Transport1, Transport2, Transport3, Transport4):
 
-    #Transport1 = Transport2 = Transport4 = 0
-    #Transport3 = 1
-    #index_station_finish = len_list_start_finish[1].index(min(len_list_start_finish[1]))
-    #station_finish = points_in_radius_finish[index_station_finish]
-    #points_in_radius_finish = [station_finish]#[station_finish, 587]#[587, 586, station_finish]
-    #len_list_start_finish[1] = [0]#min(len_list_start_finish[1])#[5, 15]#[5, 15, 16]
     point_dict1 = points_dict()
     route_dict = points_dict_open()
     len_dinamic = len(all_station_x)
     len_dinamic_list = len_dinamic + 2
     dinamic_list = [[100] * len_dinamic_list][0]
-    #index_station_start = len_list_start_finish[0].index(min(len_list_start_finish[0]))
-    next_points_list = points_in_radius_start#[station_start]
-    mass_next_points_list = len_list_start_finish[0]#[0]
+    next_points_list = points_in_radius_start
+    mass_next_points_list = len_list_start_finish[0]
     route_d_st = route_stations(Transport1, Transport2, Transport3, Transport4)
-    # next_points_list = [points_in_radius_start[index_station_start]]#[160]
-    # mass_next_points_list = [0]#[min(len_list_start_finish[0])]
-    #print next_points_list, mass_next_points_list, points_in_radius_finish, len_list_start_finish[1]
     test_min1 = 0
     test_min2 = 0
     test_min3 = 0
@@ -454,7 +456,7 @@ def volna(points_in_radius_finish, points_in_radius_start, len_list_start_finish
                             mass_next_points_list[index_next_points_list] = dinamic_for
                         dinamic_list[para] = dinamic_for
 
-                # Закрываем аршрут
+                # Закрываем маршрут
                 route_dict[route_key] = 0
                                     # Двойная волна с начала маршрута и конца
             www = route_zazor(Transport1, Transport2, Transport3, Transport4)
@@ -493,7 +495,6 @@ def volna(points_in_radius_finish, points_in_radius_start, len_list_start_finish
 
 def min_in_route(list_p, dinamic_list, list_in, list_of_excluded):
     minimal = list_p
-    #print 'list_of_excluded', list_of_excluded
     for index_p in range(len(list_p)):
         next_index_p = index_p + 1
         prev_index_p = index_p - 1
@@ -509,7 +510,7 @@ def min_in_route(list_p, dinamic_list, list_in, list_of_excluded):
                 print z, 'z2'
             if index_p > list_p.index(list_in[0]):
                 z = list_p[list_p.index(list_in[0]):index_p + 1]
-            #print list_p[index_p], list_in[0], list_p[index_p], list_of_excluded, dinamic_list[list_p[index_p]], value_list_in0
+
             if len(minimal) > len(z) and list_p[index_p] != list_in[0] and list_p[index_p] not in list_of_excluded and dinamic_list[list_p[index_p]] < value_list_in0:
                 minimal = z
                 print z, 'z3'
@@ -530,17 +531,15 @@ def min_in_route(list_p, dinamic_list, list_in, list_of_excluded):
 
 def revers_volna(points_list, dinamic_list, speed_matrix):
     ind_ex_list2 = list()
-    print dinamic_list[-2], min(dinamic_list[:866]), dinamic_list.index(min(dinamic_list[:866])), dinamic_list[305]
+    print dinamic_list[-2], min(dinamic_list[:866]), dinamic_list.index(min(dinamic_list[:866])), dinamic_list[:866].count(min(dinamic_list[:866]))
     min_dinamic_list866 = min(dinamic_list[:866])
     list_in = [dinamic_list[-2]]
     list_of_excluded = []
     while list_in:
-        #print list_in[0]
         for list_p in points_list:
             i = 0
             if list_in[0] in list_p:
                 minimal = min_in_route(list_p, dinamic_list, list_in, list_of_excluded)
-                #print minimal, 'min'#list_in#[0]#, dinamic_list[0:3]
                 if list_in[0] == minimal[0]:
                     list_of_excluded += [minimal[-1]]
                 if list_in[0] == minimal[-1]:
@@ -549,7 +548,6 @@ def revers_volna(points_list, dinamic_list, speed_matrix):
                 index_min_dinamic = dinamic_list[minimal[0]:minimal[-1] + 1].index(min_dinamic)
                 index_station_finish = dinamic_list[minimal[0]:minimal[-1] + 1].index(dinamic_list[list_in[0]])
                 index_in_dinamic_list_min = minimal[0] + index_min_dinamic
-                #print index_station_finish, index_min_dinamic
                 dinamic_slyse = list()
                 if index_min_dinamic < index_station_finish:
                     dinamic_slyse = range(minimal[0] + index_min_dinamic, minimal[0] + index_station_finish + 1)
@@ -558,16 +556,12 @@ def revers_volna(points_list, dinamic_list, speed_matrix):
                 if dinamic_slyse != []:
                     if dinamic_slyse[-1] == list_in[0]:
                         dinamic_slyse.reverse()
-                #print dinamic_slyse
                 ind_ex_list2 += dinamic_slyse
                 for ind_ex in dinamic_list[:866]:
                     if ind_ex < min_dinamic and round(speed_matrix[dinamic_list.index(ind_ex)][index_in_dinamic_list_min], 6) == round(dinamic_list[index_in_dinamic_list_min] - dinamic_list[dinamic_list.index(ind_ex)], 6) and min_dinamic != list_in[0]:
                         list_in += [dinamic_list.index(ind_ex)]
                         list_in.remove(list_in[0])
                         i += 1
-                #print dinamic_list[minimal[0]:minimal[-1]]
-                #print list_p[0], list_p[-1], index_min_dinamic, index_in_dinamic_list_min
-                #print dinamic_list[list_p[0]:list_p[-1]], min(dinamic_list[list_p[0]:list_p[-1]])
                         print ind_ex_list2, list_in, list_of_excluded
                         break
                 if list_in[0] == dinamic_list.index(min(dinamic_list[:866])):
@@ -576,7 +570,6 @@ def revers_volna(points_list, dinamic_list, speed_matrix):
                 if i == 0:
                     min_dinamic_list866 = min_dinamic
                     break
-                #print ind_ex_list2
         if min_dinamic == min_dinamic_list866 or list_in[0] == dinamic_list.index(min_dinamic_list866):
             break
     return ind_ex_list2
